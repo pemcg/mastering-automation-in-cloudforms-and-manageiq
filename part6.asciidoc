@@ -1,0 +1,6 @@
+[[part6]]
+[part]
+:numbered!:
+== Miscellaneous
+
+Part VI wraps up the book with some miscellaneous topics

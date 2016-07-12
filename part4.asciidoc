@@ -1,0 +1,6 @@
+[[part4]]
+[part]
+:numbered!:
+== Retirement
+
+The retirement process for virtual machines, instances and services was substantially re-written for ManageIQ _Botvinnik_. Part IV describes the current retirement workflows for virtual machines and services.

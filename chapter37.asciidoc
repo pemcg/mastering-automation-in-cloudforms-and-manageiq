@@ -1,0 +1,248 @@
+[[service-hierarchies]]
+== Service Hierarchies
+
+We have seen how service catalogs made up of catalog items and bundles can simplify the process of ordering infrastructure or cloud instance and virtual machines. Simplicity of ordering is not the only benefit of services however.
+
+When we order one or more virtual machines from a service catalog, a new _service_ is created for us that appears in *All Services* in the WebUI. This service gives us a useful summary of its resources in the *Totals for Service VMs* section. We can use this feature to extend the utility of services into tracking and organising resources. We could, for example, use a service to represent a project comprising many dozens of virtual machines. We would be able to see the total virtual machine resource consumption for the entire project in a single place in the WebUI.
+
+In line with this organisational use, we can arrange services in hierarchies for further convenience (see <<c37i1>>).
+
+[[c37i1]]
+.A service hierarchy
+image::part3/chapter37/images/screenshot1hd.png[Screenshot,370,align="center"]
+
+In this example we have three child services, representing the three tiers of our simple intranet platform. <<c37i2>> shows the single server making up the database tier of our architecture.
+
+[[c37i2]]
+.The database tier
+image::part3/chapter37/images/screenshot2hd.png[Screenshot,700,align="center"]
+
+<<c37i3>> shows the two servers making up the middleware tier of our architecture.
+
+[[c37i3]]
+.The middleware tier
+image::part3/chapter37/images/screenshot3hd.png[Screenshot,700,align="center"]
+
+<<c37i4>> shows the four servers making up the web tier of our architecture.
+
+[[c37i4]]
+.The web tier
+image::part3/chapter37/images/screenshot4hd.png[Screenshot,700,align="center"]
+
+When we view the parent service, we see that it contains details of all child services, including the cumulative CPU, memory and disk counts (see <<c37i5>>).
+
+[[c37i5]]
+.Parent service view 
+image::part3/chapter37/images/screenshot5hd.png[Screenshot,700,align="center"]
+
+=== Organising Our Services
+
+To make maximum use of service hierarchies, it is useful to be able to create empty services, and to be able to move both services and VMs into existing services.
+
+==== Creating an Empty Service
+
+We could create a new service directly from automation, using the lines:
+
+[source,ruby]
+----
+new_service = $evm.vmdb('service').create(:name => "My New Service")
+new_service.display = true
+----
+
+For this example though, we'll create our new empty service from a service catalog.
+
+===== State machine
+
+First we'll copy _ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template/default_ into our own Domain, and rename it _EmptyService_. We'll add a *pre5* relationship to a new instance that we'll create, called _/Service/Provisioning/StateMachines/Methods/RenameService_ (see <<c37i6>>).
+
+[[c37i6]]
+.Schema of the EmptyService state machine
+image::part3/chapter37/images/screenshot6hd.png[Screenshot,600,align="center"]
+
+===== Method
+
+The *pre5* stage of this state machine is a relationship to a _RenameService_ instance. This instance calls a _rename_service_ method containing the following code:
+
+[source,ruby]
+----
+begin
+  service_template_provision_task = $evm.root['service_template_provision_task']
+  service = service_template_provision_task.destination
+  dialog_options = service_template_provision_task.dialog_options
+  if dialog_options.has_key? 'dialog_service_name'
+    service.name = "#{dialog_options['dialog_service_name']}"
+  end
+  if dialog_options.has_key? 'dialog_service_description'
+    service.description = "#{dialog_options['dialog_service_description']}"
+  end
+
+  $evm.root['ae_result'] = 'ok'
+  exit MIQ_OK
+rescue => err
+  $evm.log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
+  $evm.root['ae_result'] = 'error'
+  $evm.root['ae_reason'] = "Error: #{err.message}"
+  exit MIQ_ERROR
+end
+----
+
+===== Service dialog
+
+We create a simple service dialog called "New Service" with element names *service_name* and **service_description** (see <<c37i7>>).
+
+[[c37i7]]
+.Service dialog
+image::part3/chapter37/images/screenshot7hd.png[Screenshot,300,align="center"]
+
+===== Putting it all together
+
+Finally we assemble all of these parts by creating a new service catalog called **General Services**, a new catalog item of type **Generic** called _Empty Service_ (see <<c37i8>>).
+
+[[c37i8]]
+.The completed "Empty Service" service catalog item
+image::part3/chapter37/images/screenshot8hd.png[Screenshot,500,align="center"]
+
+We can order from this service catalog item to create our new empty services.
+
+=== Adding VMs and Services to Existing Services
+
+We'll provide the ability to move both services and virtual machines into existing services, from a button. The button will present a drop-down list of existing services that we can add as a new parent service (see <<c37i9>>).
+
+[[c37i9]]
+.Listing available services in a dynamic drop-down
+image::part3/chapter37/images/screenshot9hd.png[Screenshot,450,align="center"]
+
+==== Adding the Button
+
+As before, the process of adding a button involves the creation of the button dialog, and a button script. For this example however our dialog will contain a dynamic drop-down list, so we must create a dynamic element method as well to populate this list.
+
+===== Button Dialog
+
+We create a simple button dialog with a dynamic drop-down element named **service** (see <<c37i10>>).
+
+[[c37i10]]
+.Button Dialog
+image::part3/chapter37/images/screenshot10hd.png[Screenshot,500,align="center"]
+
+===== Dialog element method
+
+The dynamic drop-down element in the service dialog calls a method called _list_services_. We only wish to display a service in the drop-down list if the user has permissions to see it via their role-based access control (RBAC) filter. We define two methods; +get_current_group_rbac_array+ to retrieve a user's RBAC filter array, and +service_visible?+ to check that a service has a tag that matches the filter:
+
+[source,ruby]
+----
+def get_current_group_rbac_array(user, rbac_array=[])
+  unless user.current_group.filters.blank?
+    user.current_group.filters['managed'].flatten.each do |filter|
+      next unless /(?<category>\w*)\/(?<tag>\w*)$/i =~ filter
+      rbac_array << {category=>tag}
+    end
+  end
+  rbac_array
+end
+  
+def service_visible?(rbac_array, service)
+  $evm.log(:info, "Evaluating Service #{service.name}") 
+  if rbac_array.length.zero?
+    $evm.log(:info, "No Filter, service: #{service.name} is visible to this user")
+    return true 
+  else
+    rbac_array.each do |rbac_hash| 
+      rbac_hash.each do |category, tag|
+        if service.tagged_with?(category, tag)
+          $evm.log(:info, "Service: #{service.name} is visible to this user") return true
+        end 
+      end
+    end
+    false
+  end 
+end
+----
+
+When we enumerate the services, we check on visibility to the user before adding to the drop-down list:
+
+[source,ruby]
+----
+$evm.vmdb(:service).find(:all).each do |service|
+  if service['display']
+    $evm.log(:info, "Found service: #{service.name}")
+    if service_visible?(rbac_array, service)
+      visible_services << service
+    end
+  end
+end
+if visible_services.length > 0
+  if visible_services.length > 1
+    values_hash['!'] = '-- select from list --'
+  end
+  visible_services.each do |service|
+    values_hash[service.id] = service.name
+  end
+else
+  values_hash['!'] = 'No services are available'
+end
+----
+
+Here we use a simple technique of keeping the string "-- select from list --" at the top of the list, by using a key string of "!" which is the first ASCII printable nonwhitespace character.
+
+[[button-method]]
+===== Button method
+
+The main instance and method called from the button are called _AddToService_ and _add_to_service_. This method adds the current virtual machine or service, into the service selected from the drop-down list. As we wish to be able to call this from a button on either a _Service_ object type or a _VM and instance_ object type, we identify our context using +$evm.root['vmdb_object_type']+.
+
+If we are adding a virtual machine to an existing service, we should allow for the fact that the virtual machine might itself have been provisioned from a service. We detect any existing service membership, and if the old service is empty after we move the virtual machine, we delete the service from the VMDB:
+
+[source,ruby]
+----
+begin
+  parent_service_id = $evm.root['dialog_service']
+  parent_service = $evm.vmdb('service').find_by_id(parent_service_id)
+  if parent_service.nil?
+    $evm.log(:error, "Can't find service with ID: #{parent_service_id}")
+    exit MIQ_ERROR
+  else
+    case $evm.root['vmdb_object_type']
+    when 'service'
+      $evm.log(:info, "Adding Service #{$evm.root['service'].name} to \
+                                                         #{parent_service.name}")
+      $evm.root['service'].parent_service = parent_service
+    when 'vm'
+      vm = $evm.root['vm']
+      #
+      # See if the VM is already part of a service
+      #
+      unless vm.service.nil?
+        old_service = vm.service
+        vm.remove_from_service
+        if old_service.v_total_vms.zero?
+          old_service.remove_from_vmdb
+        end
+      end
+      $evm.log(:info, "Adding VM #{vm.name} to #{parent_service.name}")
+      vm.add_to_service(parent_service)
+    end
+  end
+  exit MIQ_OK
+rescue => err
+  $evm.log(:error, "[#{err}]\n#{err.backtrace.join("\n")}")
+  exit MIQ_ERROR
+end
+----
+
+The scripts in this chapter are available https://github.com/pemcg/oreilly-mastering-cloudforms-automation[here]
+
+===== Putting it all together
+
+Finally we create two *Add to Service* buttons, one on a _Service_ object type, and one on a _VM and Instance_ object type. We can go ahead and organise our service hierarchies.
+
+[NOTE]
+====
+__Exercise__
+
+Filter the list of services presented in the drop-down to remove the _current_ service - we would never wish to add a service as its own parent.
+====
+
+=== Summary
+
+Organising our services in this way changes the way that we think about our cloud or virtual infrastructure. We start to think in terms of service workloads, rather than individual virtual machines or instances. We can start to work in a more "cloudy" way, where we treat our virtual machines as anonymous entities, and scale out or scale back according to point-in-time application demand.
+
+We can also use service bundles and hierachies of bundles to keep track of the resources in projects and subprojects. This can help from an organisational point of view, for example we can tag services, and our method to add a virtual machine to a service can propagate any service tags to the virtual machine. In this way we can assign project-related chargeback costs to the tagged VMs, or apply WebUI display filters that display project resources. 

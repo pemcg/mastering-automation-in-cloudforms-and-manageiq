@@ -1,0 +1,200 @@
+[[creating-provisioning-requests-programmatically]]
+== Creating Provisioning Requests Programmatically
+
+As we've seen, the most common way to provision a virtual machine is via the ManageIQ WebUI (see <<provisioning-a-vm>>). We click on *Lifecycle -> Provision VMs*, complete the provisioning dialog, and a few minutes later our new virtual machine is ready.
+
+There are times however when it is useful to be able to start the virtual machine provisioning process from an automation script, with no manual interaction. This then allows us to autoscale our virtual infrastructure, based on real-time or anticipated performance criteria. Perhaps we are an online retailer selling barbeques, for example. We could automatically monitor the short-range weather forecast via the API of a well-known weather web site, and scale out our online store servers if a period of fine weather is anticipated.
+
+=== Making the Call
+
+We can initiate the provisioning process programmatically by calling +$evm.execute+ to run the method +create_provision_request+ (see <<evm-and-the-workspace>> for more information on these methods).
+
+The +create_provision_request+ method takes a number of arguments, which correspond to the argument list for the original +EVMProvisionRequestEx+ SOAP API call. A typical call to provision a VM into RHEV might be:
+
+[source,ruby]
+----
+# arg1 = version
+args = ['1.1']
+
+# arg2 = templateFields
+args << {'name'         => 'rhel7-generic', 
+         'request_type' => 'template'}
+
+# arg3 = vmFields
+args << {'vm_name'   => 'rhel7srv010', 
+         'vlan'      => 'public', 
+         'vm_memory' => '1024'}
+
+# arg4 = requester
+args << {'owner_email'      => 'pemcg@bit63.com', 
+         'owner_first_name' => 'Peter',
+         'owner_last_name'  => 'McGowan'}
+
+# arg5 = tags
+args << nil
+
+# arg6 = additionalValues (ws_values)
+args << {'disk_size_gb' => '50',
+           'mountpoint' => '/opt'}
+
+# arg7 = emsCustomAttributes
+args << nil
+
+# arg8 = miqCustomAttributes
+args << nil
+
+request_id = $evm.execute('create_provision_request', *args)
+----
+
+=== Argument List
+
+The arguments to the +create_provision_request+ call are described below. The arguments match the fields in the provisioning dialog (and the values from the corresponding YAML template), and any arguments that are set to +required: true+ in the dialog YAML, but don't have a +:default:+ value, should be specified. The exception for this is for sub-dependencies of other options, for example if +:provision_type:+ is _pxe_ then the sub-option +:pxe_image_id:+ is mandatory. If the +:provision_type:+ value is anything else then +:pxe_image_id:+ is not relevant.
+
+In ManageIQ versions prior to _Capablanca_ the arguments were specified as a string, with each value separated by a pipe ('|') symbol, like so:
+
+[source,ruby]
+....
+"vm_name=rhel7srv010|vlan=public|vm_memory=1024"
+....
+
+With _Capablanca_ however this syntax has been deprecated, and the options within each argument type should be defined as a hash as shown in the preceding example. This is more compatible with the equivalent RESTful API call to create a provisioning request.
+
+The _value_ for each hashed argument pair should always be a string, for example:
+
+[source,ruby]
+....
+{'number_of_vms' => '4'}
+....
+
+rather than:
+
+[source,ruby]
+....
+{'number_of_vms' => 4}
+....
+
+==== version
+
+The _version_ argument refers to the interface version. It be set to 1.1
+
+==== templateFields
+
+The _templateFields_ argument denoted fields specifying the VM or template to use as the source for the provisioning operation. We supply a _guid_ or _ems_guid_ to protect against matching same-named templates on different providers within ManageIQ. Currently the only +request_type+ field supported is +template+, for example:
+
+[source,ruby]
+----
+'request_type' => 'template'
+----
+
+[[vmfields]]
+==== vmFields
+
++vmFields+ allows for the setting of properties from the +Catalog+, +Hardware+, +Network+, +Customize+, and +Schedule+ tabs in the provisioning dialog. Some of these are provider-specific, so when provisioning an OpenStack instance for example, we need to specify the +instance_type+
+
+[source,ruby]
+----
+# arg2 = vmFields
+arg2 = {'number_of_vms'   => '3',
+        'instance_type'   => '1000000000007', # m1.small
+        'vm_name'         => "#{$instance_name}",
+        'retirement_warn' => "#{2.weeks}"}
+args << arg2
+----
+
+==== requester
+
+The +requester+ argument allows for the setting of properties from the +Request+ tab in the provisioning dialog. +owner_email+, +owner_first_name+ and +owner_last_name+ are required fields.
+
+==== tags
+
+The +tags+ argument refers to tags to apply to newly created VM, for example:
+
+[source,ruby]
+----
+{'server_role' => 'web_server',
+ 'cost_centre' => '0011'}
+----
+
+==== additionalValues (aka ws_values)
+
+Additional values, also known as +ws_values+, are name/value pairs stored with a provision request, but not used by the core provisioning code. These values are usually referenced from automate methods for custom processing. They are added into the request options hash, and can be retrieved as a hash from:
+
+[source,ruby]
+----
+$evm.root['miq_provision'].options[:ws_values]
+----
+
+==== emsCustomAttributes
+
++emsCustomAttributes+ are custom attributes applied to the virtual machine through the provider as part of provisioning. Not all providers support this, although VMware does support native vCenter custom attributes, which if set are visible both in ManageIQ and in the vSphere/vCenter UI.
+
+==== miqCustomAttributes
+
++miqCustomAttributes+ are custom attributes applied to the virtual machine and stored in the ManageIQ database as part of provisioning. These VMDB-specific custom attributes are displayed on the VM details page (see chapter 5 for an example of setting a custom attribute from a script).
+
+=== Setting Placement Options
+
+The Rails code that implements the +create_provision_request+ call makes the assumption that any noninteractive provision request will be using automatic placement, and it sets +options[:placement_auto] = [true, 1]+ as a request option. This also means however that it disregards any +vmFields+ options that we may set that are normally found under the +Environment+ tab of an interactive provision request, such as +cloud_tenant+ or +cloud_network+ (these are hidden in the WebUI if we select *Choose Automatically*).
+
+.Setting the environment placement options for a cloud instance
+image::part2/chapter27/images/screenshot1hd.png[Screenshot,450,align="center"]
+
+If we try adding one of these (such as +cloud_network+), we see in _evm.log_:
+
+....
+Unprocessed key <cloud_network> with value <"1000000000007">
+....
+
+The only way that we can set any of these placement options is to add them to the +additionalValues/ws_values (arg6)+ argument list, and then handle them ourselves in the *CustomizeRequest* stage of the state machine.
+
+For example, in our call to +create_provision_request+ we can set:
+
+[source,ruby]
+----
+# arg6 = additionalValues (ws_values)
+args << {'cloud_network' => '10000000000031'
+         'cloud_tenant'  => '10000000000012'}
+----
+
+We can then copy _ManageIQ/Cloud/VM/Provisioning/StateMachines/Methods/openstack_CustomizeRequest_ into our own domain, and edit as follows:
+
+[source,ruby]
+----
+#
+# Description: Customize the OpenStack Provisioning Request
+#
+def find_object_for(rsc_class, id_or_name)
+  obj = $evm.vmdb(rsc_class, id_or_name.to_s) || 
+        $evm.vmdb(rsc_class).find_by_name(id_or_name.to_s)
+  $evm.log(:warn, "Couldn\'t find an object of class #{rsc_class} \
+                with an ID or name matching \'#{id_or_name}\'") if obj.nil?
+  obj
+end
+
+# Get provisioning object
+prov = $evm.root["miq_provision"]
+ws_values = prov.options.fetch(:ws_values, {})
+
+if ws_values.has_key?(:cloud_network)
+  cloud_network = find_object_for('CloudNetwork', ws_values[:cloud_network])
+  prov.set_cloud_network(cloud_network)
+end
+if ws_values.has_key?(:cloud_tenant)
+  cloud_tenant = find_object_for('CloudTenant', ws_values[:cloud_tenant])
+  prov.set_cloud_tenant(cloud_tenant)
+end
+
+$evm.log("info", "Provisioning ID:<#{prov.id}> \
+                  Provision Request ID:<#{prov.miq_provision_request.id}> \
+                  Provision Type: <#{prov.provision_type}>")
+----
+
+=== Summary
+
+Being able to create provisioning requests programmatically gives us complete control over the process, and has many uses. For example when managing a scalable cloud application, we can configure a ManageIQ alert to detect high CPU utilisation on any of the existing cloud instances making up the workload. We could use the alert to send a management event that runs an Automate method to scale out the workload by provisioning additional instances (see <<ways-of-entering-automate>>).
+
+We can also use +create_provision_request+ to create custom service catalog items, when the out-of-the-box service provisioning state machines do not provide the functionality that we need (see <<service-tips-and-tricks>>).
+
+==== Further Reading
+
+https://github.com/ManageIQ/manageiq_docs/blob/master/api/reference/provision_requests.adoc#provision-requests-attribute-groups[Provision Request Attribute Groups]

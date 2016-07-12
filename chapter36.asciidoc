@@ -1,0 +1,306 @@
+[[log-analysis-during-service-provisioning]]
+== Log Analysis During Service Provisioning
+
+The workflow of provisioning a virtual machine from a service catalog involves a request, an approval stage, several tasks, and multiple concurrently running state machines.
+
+If we are curious to discover more about their interaction, we can follow this workflow by examining the log lines written to _automation.log_ during the service provisioning operation. This can reveal some interesting details about the interleaving of the various operations and state machines.
+
+For this example we've grepped for the "Following.. Followed" message pairs in _automation.log_ on ManageIQ _Botvinnik_ (the workflow is similar in ManageIQ _Capablanca_). The service provisioning request was from a non-admin user in a group _Bit63Group_vm_user_, so we see some group-specific profile processing. For the purposes of brevity _service_template_provision_ is abbreviated to _stp_ in the following outputs.
+
+=== Initial Request
+
+We see the initial automation request being created though the
+_/System/Request/UI_PROVISION_INFO_ entry point:
+
+....
+Following /System/Request/UI_PROVISION_INFO
+Following /unknown/VM/Provisioning/Profile/Bit63Group_vm_user#get_domains
+Followed /unknown/VM/Provisioning/Profile/Bit63Group_vm_user#get_domains
+Followed /System/Request/UI_PROVISION_INFO
+Following /System/Event/request_created
+Following /System/Policy/request_created
+Following /System/Process/parse_provider_category
+Followed /System/Process/parse_provider_category
+Following /System/Policy/ \
+                                  ServiceTemplateProvisionRequest_created
+....
+
+=== Profile Lookup
+
+We see a _service_ provisioning profile lookup to get the auto-approval state machine, and some events raised and processed:
+
+....
+Following /service/Provisioning/Profile/Bit63Group_vm_user \
+                                        #get_auto_approval_state_machine
+Followed /service/Provisioning/Profile/Bit63Group_vm_user \
+                                        #get_auto_approval_state_machine
+Following /service/Provisioning/StateMachines/ \
+                                    ServiceProvisionRequestApproval/Default
+Followed /service/Provisioning/StateMachines/ \
+                                    ServiceProvisionRequestApproval/Default
+Followed /System/Policy/ServiceTemplateProvisionRequest_created
+Followed /System/Policy/request_created
+Followed /System/Event/request_created
+Following /System/Event/request_approved
+Following /System/Policy/request_approved
+Following /System/Process/parse_provider_category
+Followed /System/Process/parse_provider_category
+....
+
+=== Request Processing and Approval
+
+We see the request approval, and the creation of the service template provisioning _request_ (service_template_provision_request_11). We see some processing in _request_ context:
+
+....
+Following /System/Policy/ServiceTemplateProvisionRequest_Approved
+Following /Service/Provisioning/Email/ServiceTemplateProvisionRequest_Approved
+([stp_request_11]) Following /System/Event/request_starting
+([stp_request_11]) Following /System/Policy/request_starting
+([stp_request_11]) Following /System/Process/parse_provider_category
+Followed /Service/Provisioning/Email/ServiceTemplateProvisionRequest_Approved
+Followed /System/Policy/ServiceTemplateProvisionRequest_Approved
+Followed /System/Policy/request_approved
+Followed /System/Event/request_approved
+([stp_request_11]) Followed /System/Process/parse_provider_category
+([stp_request_11]) Following /System/Policy/ \
+                                        ServiceTemplateProvisionRequest_starting
+([stp_request_11]) Following /service/ \
+                 Provisioning/Profile/Bit63Group_vm_user#get_quota_state_machine
+([stp_request_11]) Followed /service/ \
+                 Provisioning/Profile/Bit63Group_vm_user#get_quota_state_machine
+([stp_request_11]) Following /service/Provisioning/StateMachines/ \
+                         ServiceProvisionRequestQuotaVerification/Default
+([stp_request_11]) Followed /service/Provisioning/StateMachines/ \
+                         ServiceProvisionRequestQuotaVerification/Default
+([stp_request_11]) Followed /System/Policy/ \
+                                        ServiceTemplateProvisionRequest_starting
+([stp_request_11]) Followed /System/Policy/request_starting
+([stp_request_11]) Followed /System/Event/request_starting
+([stp_request_11]) Following /System/Request/UI_PROVISION_INFO
+([stp_request_11]) Following /infrastructure/ \
+                           VM/Provisioning/Profile/Bit63Group_vm_user#get_vmname
+([stp_request_11]) Following /Infrastructure/VM/Provisioning/Naming/Default
+([stp_request_11]) Followed /Infrastructure/VM/Provisioning/Naming/Default
+([stp_request_11]) Followed /infrastructure/ \
+                           VM/Provisioning/Profile/Bit63Group_vm_user#get_vmname
+([stp_request_11]) Followed /System/Request/UI_PROVISION_INFO
+....
+
+Notice that this _request_ processing runs the naming method, which is therefore processed *before* _CatalogItemInitialization_ (which is processed in _task_ context).
+
+=== Service Template Provisioning Tasks
+
+Next we see two service template provisioning _tasks_ created, our top-level and child task objects (service_template_provision_task_31 and service_template_provision_task_32).
+
+[NOTE]
+====
+The two tasks are actually running through two separate state machines.
+
+Task _service_template_provision_task_31_ is running through _/Service/Provisioning/StateMachines/ServiceProvision_Template/CatalogItemInitialization_.
+
+Task _service_template_provision_task_32_ is running through _/Service/Provisioning/StateMachines/ServiceProvision_Template/clone_to_service_.
+====
+
+....
+([stp_task_31]) Following /Service/Provisioning/StateMachines/Methods/DialogParser
+([stp_task_31]) Followed /Service/Provisioning/StateMachines/Methods/DialogParser
+([stp_task_31]) Following /Service/Provisioning/StateMachines/Methods/ \
+                                                    CatalogItemInitialization
+([stp_task_31]) Followed /Service/Provisioning/StateMachines/Methods/ \
+                                                    CatalogItemInitialization
+([stp_task_31]) Following /Service/Provisioning/StateMachines/Methods/Provision
+([stp_task_31]) Followed /Service/Provisioning/StateMachines/Methods/Provision
+([stp_task_31]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_31]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Following /Service/Provisioning/StateMachines/Methods/GroupSequenceCheck
+([stp_task_32]) Followed /Service/Provisioning/StateMachines/Methods/GroupSequenceCheck
+([stp_task_32]) Following /Service/Provisioning/StateMachines/Methods/Provision
+([stp_task_32]) Followed /Service/Provisioning/StateMachines/Methods/Provision
+([stp_task_32]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+....
+
+=== VM Provisioning Task
+
+We see our grandchild miq_provision task object created (miq_provision_33), and it processing the _/Infrastructure/VM/Provisioning/StateMachines_ methods in the state
+machine defined in our user profile:
+
+....
+([miq_provision_33]) Following /infrastructure/VM/Lifecycle/Provisioning
+([miq_provision_33]) Following /Infrastructure/ \
+                    VM/Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Followed /Infrastructure/ \
+                    VM/Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Following /Infrastructure/ \
+                    VM/Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Following /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CustomizeRequest#VMware
+([miq_provision_33]) Followed /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CustomizeRequest#VMware
+([miq_provision_33]) Following /Infrastructure/ \
+                                        VM/Provisioning/Placement/default#VMware
+([miq_provision_33]) Followed /Infrastructure/ \
+                                        VM/Provisioning/Placement/default#VMware
+([miq_provision_33]) Following /Infrastructure/ \
+                       VM/Provisioning/StateMachines/Methods/PreProvision#VMware
+([miq_provision_33]) Followed /Infrastructure/ \
+                       VM/Provisioning/StateMachines/Methods/PreProvision#VMware
+([miq_provision_33]) Following /Infrastructure/ \
+                          VM/Provisioning/StateMachines/Methods/Provision
+([miq_provision_33]) Followed /Infrastructure/ \
+                          VM/Provisioning/StateMachines/Methods/Provision
+([miq_provision_33]) Following /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/ \
+                    VM/Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Followed /infrastructure/VM/Lifecycle/Provisioning
+([miq_provision_33]) Following /System/Request/UI_PROVISION_INFO
+([miq_provision_33]) Following /infrastructure/ \
+                 VM/Provisioning/Profile/Bit63Group_vm_user#get_host_and_storage
+([miq_provision_33]) Followed /infrastructure/ \
+                 VM/Provisioning/Profile/Bit63Group_vm_user#get_host_and_storage
+([miq_provision_33]) Followed /System/Request/UI_PROVISION_INFO
+....
+
+=== Service State Machine _CheckProvisioned_
+
+We see both top-level and child service template provisioning tasks running their _CheckProvisioned_ methods:
+
+....
+([stp_task_31]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_31]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+....
+
+=== VM State Machine _CheckProvisioned_
+
+We see the VM provision state machine running its _CheckProvisioned_ method. We can see the entire _/Infrastructure/VM/Provisioning/StateMachines_ state machine being re-instantiated for each call of its _CheckProvisioned_ method, including the profile lookup:
+
+....
+Following /infrastructure/VM/Lifecycle/Provisioning
+Following /Infrastructure/VM/Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+Following /Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template
+Following /Infrastructure/VM/Provisioning/StateMachines/Methods/CheckProvisioned
+....        
+
+[NOTE]
+Recall that if a state exits with +$evm.root['ae_result'] = 'retry'+, the entire state machine is re-launched after the retry interval, starting at the state to be retried.
+
+We see the service and VM provisioning state machines both running their _CheckProvisioned_ methods:
+
+....
+([miq_provision_33]) Following /infrastructure/VM/Lifecycle/Provisioning
+([miq_provision_33]) Following /Infrastructure/ \
+                    VM/Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Followed /Infrastructure/ \
+                    VM/Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Following /Infrastructure/ \
+                    VM/Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Following /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/ \
+                    VM/Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Followed /infrastructure/VM/Lifecycle/Provisioning
+([stp_task_31]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_31]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Following /infrastructure/VM/Lifecycle/Provisioning
+([miq_provision_33]) Following /Infrastructure/ \
+                    VM/Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Followed /Infrastructure/ \
+                    VM/Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Following /Infrastructure/ \
+                    VM/Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Following /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/ \
+                   VM/Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/ \
+                    VM/Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Followed /infrastructure/VM/Lifecycle/Provisioning
+([stp_task_31]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_31]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
+...
+....
+
+=== Virtual Machine Provision Complete
+
+We see the _Infrastructure/VM_ provisioning state machine _CheckProvisioned_ method return success, and continue with the remainder of the state machine:
+
+....
+([miq_provision_33]) Following /infrastructure/VM/Lifecycle/Provisioning
+([miq_provision_33]) Following /Infrastructure/VM/ \
+                       Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Followed /Infrastructure/VM/ \
+                       Provisioning/Profile/Bit63Group_vm_user#get_state_machine
+([miq_provision_33]) Following /Infrastructure/VM/ \
+                       Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Following /Infrastructure/VM/ \
+                      Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/VM/ \
+                      Provisioning/StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Following /Infrastructure/VM/ \
+                         Provisioning/StateMachines/Methods/PostProvision#VMware
+([miq_provision_33]) Followed /Infrastructure/VM/ \
+                         Provisioning/StateMachines/Methods/PostProvision#VMware
+([miq_provision_33]) Following /Infrastructure/VM/ \
+            Provisioning/Email/MiqProvision_Complete?event=vm_provisioned
+([stp_task_31]) Following /Service/Provisioning/ \
+                                   StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Followed /Infrastructure/VM/ \
+            Provisioning/Email/MiqProvision_Complete?event=vm_provisioned
+([stp_task_31]) Followed /Service/Provisioning/ \
+                                   StateMachines/Methods/CheckProvisioned
+([miq_provision_33]) Following /System/CommonMethods/ \
+                                StateMachineMethods/vm_provision_finished
+([miq_provision_33]) Following /System/Event/service_provisioned
+([miq_provision_33]) Followed /System/Event/service_provisioned
+([miq_provision_33]) Followed /System/CommonMethods/ \
+                                StateMachineMethods/vm_provision_finished
+([miq_provision_33]) Followed /Infrastructure/VM/ \
+                       Provisioning/StateMachines/VMProvision_vm/template
+([miq_provision_33]) Followed /infrastructure/VM/Lifecycle/Provisioning
+....
+
+=== Service Provision Complete
+
+Finally we see both of the _Service_ provisioning state machine _CheckProvisioned_ methods return success, and continue with the remainder of their state machines:
+
+....
+([stp_task_32]) Following /Service/Provisioning/ \
+                                   StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Followed /Service/Provisioning/ \
+                                   StateMachines/Methods/CheckProvisioned
+([stp_task_32]) Following /Service/Provisioning/Email/ \
+                      ServiceProvision_complete?event=service_provisioned
+([stp_task_32]) Followed /Service/Provisioning/Email/ \
+                      ServiceProvision_complete?event=service_provisioned
+([stp_task_32]) Following /System/CommonMethods/ \
+                           StateMachineMethods/service_provision_finished
+([stp_task_32]) Followed /System/CommonMethods/ \
+                           StateMachineMethods/service_provision_finished
+([stp_task_31]) Following /Service/Provisioning/ \
+                                   StateMachines/Methods/CheckProvisioned
+([stp_task_31]) Followed /Service/Provisioning/ \
+                                   StateMachines/Methods/CheckProvisioned
+([stp_task_31]) Following /Service/Provisioning/Email/ \
+                      ServiceProvision_complete?event=service_provisioned
+([stp_task_31]) Followed /Service/Provisioning/Email/ \
+                      ServiceProvision_complete?event=service_provisioned
+([stp_task_31]) Following /System/CommonMethods/ \
+                           StateMachineMethods/service_provision_finished
+([stp_task_31]) Followed /System/CommonMethods/ \
+                           StateMachineMethods/service_provision_finished
+....
+
+=== Summary
+
+Tracing the steps of various workflows though _automation.log_ can reveal a lot about the inner workings of the Automation Engine. All students of automation are encouraged to investigate the "Following.. Followed" message pairs in the logs to get a feel for how state machines sequence tasks and handle retry operations.

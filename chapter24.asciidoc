@@ -1,0 +1,45 @@
+[[vm-placement-during-provisioning]]
+== Virtual Machine Placement During Provisioning
+
+The process of deciding where in our virtual infrastructure to position a new virtual machine - the hypervisor or cluster, and datastore - is another step that can be automated as part of the VM provisioning workflow. We might wish to locate VMs on the cluster with the lightest current load for example, or restrict visibility of selected datastores to some of our users.
+
+ManageIQ refers to this process as _placement_, and there is a corresponding *Placement* stage in the _VMProvision_VM_ state machine.
+
+In this chapter we'll look at the various options for automating placement, and how we can create customised placement algorithms to suit our own requirements.
+
+=== Placement Methods
+
+There are several alternative placement methods that we can use out-of-the-box to determine where to place our new virtual machines, for example there are three in the _ManageIQ_ domain (see <<c24i1>>).
+
+[[c24i1]]
+.Placement methods in the ManageIQ domain
+image::part2/chapter24/images/screenshot2hd.png[Screenshot,350,align="center"]
+
+The default value for the *Placement* stage in the _VMProvision_VM/template_ state machine is as follows:
+
+----
+/Infra.../VM/Provisioning/Placement/default#${/#miq_provision.source.vendor}
+----
+
+We can see that this URI includes a _message_ component at the end, which corresponds to the runtime value of the +${/#miq_provision.source.vendor}+ attribute. This is the string value for the provider type that we are provisioning into.
+
+If we look at the schema fields in the _/Infrastructure/VM/Provisioning/Placement/default_ placement instance, we see that the messages correspond to the same provider type string: 'redhat', 'vmware' or 'microsoft' (see <<c24i2>>).
+
+[[c24i2]]
+.The schema fields of the default placement instance
+image::part2/chapter24/images/screenshot1hd.png[Screenshot,500,align="center"]
+
+This is a neat way of handling provider-specific placement requirements in an automated manner. The message is dynamically translated for each provisioning operation, and this selects the correct placement method.
+
+=== Method Description
+The _redhat_best_fit_cluster_ method just places the new VM into the same cluster as the source template. The other two methods select the host with the least running VMs, and most available datastore space.
+
+=== Summary
+
+We can see that we have a lot of per-provider control of the placement options available to us when we provision a virtual machine. We can also add our own placement methods to take into account our own specific requirements if we wish.
+
+When we start working with custom placement methods, we also need to take into account the infrastructure components that a user can see from their role-based access control filters. When we configure ManageIQ access control groups, we can set optional _assigned filters_ to selected hosts and clusters. We can also restrict a group's visibility of infrastructure components to those tagged with specific tags. If we use assigned filters in this way, we need to ensure that our placement logic doesn't select a host, cluster or datastore that the user doesn't have RBAC permission to see, otherwise the provisioning operation will fail.
+
+==== Further Reading
+
+http://cloudformsblog.redhat.com/2013/09/06/placement-profile-best-fit-cluster-using-tags/[Placement Profile – Best Fit Cluster using Tags]
