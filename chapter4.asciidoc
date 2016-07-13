@@ -1,7 +1,7 @@
 [[using-schema-variables]]
 == Using Schema Variables
 
-Our simple HelloWorld instance in the previous chapter had a very simple schema, containing a single field that ran a simple self-contained method. As we become more adventurous with Automate, we'll find that it can be useful to associate variables or _attributes_ with an instance. Any Automate method run by the instance can read these instance attributes, allowing us to define variables or constants outside of our Ruby scripts. This simplifies maintenance and promotes code reuse. Methods can also write to these instance attributes, allowing a degree of data sharing between multiple methods that might be run in sequence from the same instance. 
+Our simple hello_world instance in the previous chapter had a very simple schema, containing a single field that ran a simple self-contained method. As we become more adventurous with Automate, we'll find that it can be useful to associate variables or _attributes_ with an instance. Any Automate method run by the instance can read these instance attributes, allowing us to define variables or constants outside of our Ruby scripts. This simplifies maintenance and promotes code reuse. Methods can also write to these instance attributes, allowing a degree of data sharing between multiple methods that might be run in sequence from the same instance. 
 
 In our next Automate example, we'll add some attribute fields to our class schema, set values for those attributes in our instance, and read them from our method. 
 

@@ -1,11 +1,11 @@
 [[introduction-to-the-automate-datastore]]
 == Introduction to the Automate Datastore
 
-When we use the Automate capability of ManageIQ, we write scripts in the Ruby language, and use objects that the ManageIQ _Automation Engine_ makes available to us. The ManageIQ Web User Interface (WebUI) allows us to access the Automate functionality via the *Automate* top-level menu (see <<c2i1>>).
+When we use the Automate capability of CloudForms/ManageIQ, we write scripts in the Ruby language, and use objects that the _Automation Engine_ makes available to us. The CloudForms/ManageIQ Web User Interface (WebUI) allows us to access the Automate functionality via the *Automate* top-level menu (see <<c2i1>>).
 
 [[c2i1]]
-.Automate top-tevel menu
-image::images/ch2_ss1.png[screenshot,450,align="center"]
+.Automate top-tevel menu for CloudForms 4.1
+image::images/ch2_ss1.png[screenshot,270,align="center"]
 
 === The Automate Explorer
 
@@ -13,9 +13,9 @@ The first menu item that we see takes us to the _Explorer_. This is our visual i
 
 [[c2i2]]
 .Automate Explorer
-image::images/ch2_ss2.png[screenshot,280,align="center"]
+image::images/ch2_ss2.png[screenshot,450,align="center"]
 
-Before we start our journey into learning ManageIQ Automate, we'll take a tour of the Automate Datastore to familiarise ourselves with the objects that we'll find there.
+Before we start our journey into learning CloudForms/ManageIQ Automate, we'll take a tour of the Automate Datastore to familiarise ourselves with the objects that we'll find there.
 
 === The Automate Datastore
 
@@ -29,12 +29,12 @@ We can look at each of these types of object in more detail.
 
 === Domains
 
-A _domain_ is a collection of namespaces, classes, instances and methods. The ManageIQ project provides a single _ManageIQ_ domain for all supplied automation code (Red Hat adds the supplemental _RedHat_ domain containing added-value code for the CloudForms product). The ManageIQ domain is locked, indicating its read-only nature, however we can create new domains for our own custom automation code. <<c2i4>> shows the default domain, and an additional two custom domains: _Bit63_ and _ACME_. 
+A _domain_ is a collection of namespaces, classes, instances and methods. The ManageIQ project provides a single _ManageIQ_ domain for all supplied automation code, whilst Red Hat adds the supplemental _RedHat_ domain containing added-value code for the CloudForms product. The ManageIQ and RedHat domains are locked, indicating their read-only nature, however we can create new domains for our own custom automation code. <<c2i2>> shows the default domains, and an additional two custom domains: _Bit63_ and _ACME_. 
 
-Organising our own code into custom domains greatly simplifies the task of exporting and importing code (simplifying code portability and reuse). It also leaves the ManageIQ project free to update the locked domain through minor releases without fear of overwriting our customisations.
+Organising our own code into custom domains greatly simplifies the task of exporting and importing code (simplifying code portability and reuse). It also leaves Red Hat or the ManageIQ project free to update the locked domain through minor releases without fear of overwriting our customisations.
 
 [NOTE]
-If we are logged into ManageIQ as an account in a child tenant, we may see domains created by a parent tenant in the Automate Datastore, but they will also appear as locked.
+If we are logged into CloudForms/ManageIQ as an account in a child tenant, we may see domains created by a parent tenant in the Automate Datastore, but they will also appear as locked.
 
 ==== Domain Priority
 
@@ -55,11 +55,11 @@ ENABLED=true DOMAIN=Export PREVIEW=false
 
 ==== Copying Objects Between Domains
 
-We frequently need to customise code in the locked ManageIQ domain, for example when implementing our own custom VM Placement method. Fortunately we can easily copy any object from a locked domain into our own, using *Configuration -> Copy this ...* (see <<c2i6>>).
+We frequently need to customise code in one of the the locked domains, for example when implementing our own custom VM Placement method. Fortunately we can easily copy any object from a locked domain into our own, using *Configuration -> Copy this ...* (see <<c2i6>>).
 
 [[c2i6]]
 .Copying a class
-image::images/ch2_ss4.png[screenshot,350,align="center"]
+image::images/ch2_ss4.png[screenshot,450,align="center"]
 
 When we copy an object such as a class, we are prompted for the *From* and *To* domains. We can optionally deselect *Copy to same path* and specify our own destination path for the object (see <<c2i7>>).
 
@@ -69,7 +69,7 @@ image::images/ch2_ss5.png[screenshot,400,align="center"]
 
 ==== Importing Old Format Exports
 
-Domains were a new feature of the Automate Datastore in ManageIQ _Anand_. Prior to this release all factory-supplied and user-created automation code was contained in a common structure, which made updates difficult when any user-added code was introduced (the user-supplied modifications needed exporting and reimporting/merging whenever an automation update was released).
+Domains were a new feature of the Automate Datastore in CloudForms 3.1/ManageIQ _Anand_. Prior to this release all factory-supplied and user-created automation code was contained in a common structure, which made updates difficult when any user-added code was introduced (the user-supplied modifications needed exporting and reimporting/merging whenever an automation update was released).
 
 To import a Datastore backup from a CloudForms 3.0 and prior format Datastore, we must convert it to the new Datastore format first, like so:
 
@@ -180,7 +180,7 @@ We are now ready to use this information to write our first automation script.
 
 ==== Further Reading
 
-http://manageiq.org/pdf/ManageIQ-0-Scripting_Actions_in_ManageIQ-en-US.pdf[Scripting Actions in ManageIQ] 
+http://CloudForms/ManageIQ.org/pdf/CloudForms/ManageIQ-0-Scripting_Actions_in_CloudForms/ManageIQ-en-US.pdf[Scripting Actions in CloudForms/ManageIQ] 
 
 https://access.redhat.com/solutions/1225313[CloudForms 3.1 Exporting Automate Domains]
 

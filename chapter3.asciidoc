@@ -1,13 +1,13 @@
 [[writing-running-our-own-automation-scripts]]
 == Writing and Running Our Own Automation Scripts
 
-Let's jump right in and start writing our first automation script. In time-honoured fashion we'll write "Hello, World!" to the Automate Engine logfile.
+Let's jump right in and start writing our first automation script. In time-honoured fashion we'll write "Hello, World!" to the Automate logfile.
 
 Before we do anything we need to ensure that the *Automation Engine* server role is ticked on our ManageIQ appliance. We do this from the *Configure -> Configuration* menu, selecting the ManageIQ server in the _Settings_ accordion (see <<c3i1>>).
 
 [TIP]
 ====
-The *Automation Engine* server role is now enabled by default in ManageIQ _Capablanca_, but it's still worthwhile to check that this role is set on our ManageIQ appliance.
+The *Automation Engine* server role is now enabled by default in CloudForms 4.0 (ManageIQ _Capablanca_) and later, but it's still worthwhile to check that this role is set on our ManageIQ appliance.
 ====
 
 [[c3i1]]
@@ -27,7 +27,7 @@ Before we create our first automation script, we need to put some things in plac
 
 ==== Adding a New Domain
 
-In the Automate Explorer, highlight the *Datastore* icon in the sidebar, and click *Configuration -> Add a New Domain* (see <<c3i2>>).
+In the Automate Explorer, highlight the *Datastore* icon, and click *Configuration -> Add a New Domain* (see <<c3i2>>).
 
 [[c3i2]]
 .Adding a new domain
@@ -66,7 +66,7 @@ We'll create a simple schema. Click the *Schema* tab for the _Methods_ class, an
 
 [[c3i5]]
 .Editing the schema
-image::images/ch3_ss5.png[Screenshot,450,align="center"]
+image::images/ch3_ss5.png[Screenshot,600,align="center"]
 
 Click **New Field**, and add a single field with name __execute__, *Type* _Method_ and *Data Type* __String__ (see <<c3i6>>).
 
@@ -88,17 +88,17 @@ exit MIQ_OK
 
 ==== Adding a New Instance
 
-First we need to create an instance from our class. In the *Instances* tab of the new *Methods* class, select **Configuration -> Add a New Instance** (see <<c3i8>>).
+As mentioned in <<introduction-to-the-automate-datastore>> the Automation Engine runs scripts within the context of _instances_, so first we need to create an instance from our class. In the *Instances* tab of the new *Methods* class, select **Configuration -> Add a New Instance** (see <<c3i8>>).
 
 [[c3i8]]
 .Adding a new instance to our class
-image::images/ch3_ss8.png[Screenshot,450,align="center"]
+image::images/ch3_ss8.png[Screenshot,500,align="center"]
 
-We'll call the instance __HelloWorld__, and it'll run (execute) a method called __hello_world__ (see <<c3i9>>).
+We'll call the instance __hello_world__, and it'll run (execute) a method called __hello_world__ (see <<c3i9>>).
 
 [[c3i9]]
 .Entering the instance details
-image::images/ch3_ss9.png[Screenshot,380,align="center"]
+image::images/ch3_ss9.png[Screenshot,430,align="center"]
 
 Click the *Add* button.
 
@@ -108,13 +108,13 @@ In the *Methods* tab of the new _Methods_ class, select **Configuration -> Add a
 
 [[c3i10]]
 .Adding a new method to our class
-image::images/ch3_ss10.png[Screenshot,450,align="center"]
+image::images/ch3_ss10.png[Screenshot,500,align="center"]
 
 Name the method _hello_world_, and paste our two lines of code into the *Data* window (see <<c3i11>>).
 
 [[c3i11]]
 .Entering the method details
-image::images/ch3_ss11.png[Screenshot,380,align="center"]
+image::images/ch3_ss11.png[Screenshot,430,align="center"]
 
 Click *Validate*, and then the *Add* button.
 
@@ -123,18 +123,18 @@ Get into the habit of using the *Validate* button, it can save a lot of time cat
 
 === Running the Instance
 
-We'll run our new instance using the _simulation_ functionality of Automate, but before we do that, login to ManageIQ again from another browser or a private browsing tab, and navigate to *Automate -> Log* in the WebUI footnote:[Alternatively ssh into the ManageIQ appliance as _root_, and +tail -f /var/www/miq/vmdb/log/automation.log+]
+We'll run our new instance using the _Simulation_ functionality of Automate, but before we do that, login to CloudForms/ManageIQ again from another browser or a private browsing tab, and navigate to *Automate -> Log* in the WebUI footnote:[Alternatively ssh into the appliance as _root_, and +tail -f /var/www/miq/vmdb/log/automation.log+]
 
 [NOTE]
-The ManageIQ WebUI uses browser session cookies, so if we want two or more concurrent login sessions (particularly as different users), it helps to use different web browsers or private/incognito windows.
+The CloudForms/ManageIQ WebUI uses browser session cookies, so if we want two or more concurrent login sessions (particularly as different users), it helps to use different web browsers or private/incognito windows.
 
-In the simulation we actually run an instance called _Call_Instance_ in the _/System/Request/_ namespace of the _ManageIQ_ domain, and this in turn calls our _HelloWorld_ instance using the _Namespace_, _Class_ and _Instance_ attribute/value pairs that we pass to it (see <<ways-of-entering-automate>>).
+In the simulation we actually run an instance called _call_instance_ in the _/System/Request/_ namespace of the _ManageIQ_ domain, and this in turn calls our _hello_world_ instance using the _namespace_, _class_ and _instance_ attribute/value pairs that we pass to it (see <<ways-of-entering-automate>>).
 
 From the *Automate -> Simulation* menu, complete the details (see <<c3i12>>).
 
 [[c3i12]]
 .Completing the Simulation details
-image::images/ch3_ss12.png[Screenshot,340,align="center"]
+image::images/ch3_ss12.png[Screenshot,480,align="center"]
 
 Click *Submit*
 
