@@ -11,7 +11,7 @@ Let's edit the schema of the _Methods_ Class (see <<c4i1>>).
 
 [[c4i1]]
 .Editing the schema of the methods class
-image::images/ch4_ss1.png[Screenshot,450,align="center"]
+image::images/ch4_ss1.png[Screenshot,500,align="center"]
 
 We'll add three attributes, _servername_, _username_ and _password_. The _servername_ and _username_ attributes will be simple text strings, but the _password_ attribute will have a Data Type of *Password*, meaning it will be stored in an encrypted form in the database (see <<c4i2>>).
 
@@ -28,11 +28,11 @@ We need to ensure that the schema method (our _execute_ field) is listed _after_
 image::images/ch4_ss4.png[Screenshot,420,align="center"]
 
 === The Instance
-Now we'll create a new instance in our _Methods_ class as before, but this time called _GetCredentials_. We'll fill in some values for the _servername_, _username_ and _password_ schema attributes (see <<c4i5>>).
+Now we'll create a new instance in our _Methods_ class as before, but this time called _get_credentials_. We'll fill in some values for the _servername_, _username_ and _password_ schema attributes (see <<c4i5>>).
 
 [[c4i5]]
-.Entering the instance schema field details
-image::images/ch4_ss5.png[Screenshot,280,align="center""]
+.Entering the instance attribute details
+image::images/ch4_ss5.png[Screenshot,380,align="center""]
 
 Notice that our _password_ schema value has been obfuscated.
 
@@ -62,7 +62,7 @@ Finally we'll run the new instance through *Automate -> Simulation* again, invok
 
 [[c4i7]]
 .Argument name/value pairs for Call_Instance
-image::images/ch4_ss7.png[Screenshot,400,align="center"]
+image::images/ch4_ss7.png[Screenshot,450,align="center"]
 
 We check _automation.log_ and see that the attributes have been retrieved from the instance schema, and the password has been decrypted:
 
@@ -76,7 +76,7 @@ Method exited with rc=MIQ_OK
 ....
 
 [NOTE]
-The password value is encrypted using the _v2_key_ created when the ManageIQ database is initialised, and is unique to that ManageIQ Region. If we export an Automate Datastore containing encrypted passwords and import it into a different ManageIQ Region, we won't be able to decrypt the password.
+The password value is encrypted using the _v2_key_ created when the CloudForms/ManageIQ database is initialised, and is unique to that database (and hence region). If we export an Automate Datastore containing encrypted passwords and import it into an appliance in a different CloudForms/ManageIQ region, we won't be able to decrypt the password.
 
 
 === Summary

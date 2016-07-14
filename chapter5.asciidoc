@@ -5,7 +5,7 @@ Our two Automate examples so far have been slightly abstract, but in this chapte
 
 === Custom Attributes
 
-ManageIQ naturally collects a large amount of data about each virtual machine or instance that it manages, and displays this in the WebUI. We can examine such attributes as IP address, operating system, CPU count, or disk configuration for example, but sometimes it is useful to be able to add our own comments or notes to the virtual machine. ManageIQ allows us to do this in the form of _custom attributes_, which have two parts: a name (sometimes called the _key_) and a text string value (see <<c5i17>>).
+CloudForms/ManageIQ naturally collects a large amount of data about each virtual machine or instance that it manages, and displays this in the WebUI. We can examine such attributes as IP address, operating system, CPU count, or disk configuration for example, but sometimes it is useful to be able to add our own comments or notes to the virtual machine. CloudForms/ManageIQ allows us to do this in the form of _custom attributes_, which have two parts: a name (sometimes called the _key_) and a text string value (see <<c5i17>>).
 
 [[c5i17]]
 .Example custom attributes
@@ -28,19 +28,19 @@ Navigate to **Automate -> Customization**, select *Service Dialogs* in the accor
 .Adding a new service dialog
 image::images/ch5_ss1.png[Screenshot,450,align="center"]
 
-Enter _Button_ for the dialog information *Label* and *Description*, check the *Submit* and *Cancel* options, and click *+ -> Add a new Tab to this Dialog* (don't click the *Add* button yet) (see <<c5i2>>).
+Enter _Button_ for the dialog information *Label* and *Description*, select the *Submit* and *Cancel* options, and click *+ Add a new Tab to this Dialog* (don't click the *Add* button yet) (see <<c5i2>>).
 
 [[c5i2]]
 .Adding a new tab to the dialog
 image::images/ch5_ss2.png[Screenshot,450,align="center"]
 
-Enter _Main_ for the tab information *Label* and *Description*, and click *+ -> Add a new Box to this Tab* (don't click the *Add* button yet). Notice how the shape of the dialog dynamically builds in the lefthand _accordion_ pane (see <<c5i3>>).
+Enter _Main_ for the tab information *Label* and *Description*, and click *+ Add a new Box to this Tab* (don't click the *Add* button yet). Notice how the shape of the dialog dynamically builds in the lefthand _accordion_ pane (see <<c5i3>>).
 
 [[c5i3]]
 .Adding a new box to the tab
 image::images/ch5_ss3.png[Screenshot,450,align="center"]
 
-Enter _Custom Attribute_ for the box information *Label* and *Description*, and click *+ -> Add a new Element to this Box* (don't click the *Add* button yet). The dialog continues to take shape in the accordion (see <<c5i4>>).
+Enter _Custom Attribute_ for the box information *Label* and *Description*, and click *+ Add a new Element to this Box* (don't click the *Add* button yet). The dialog continues to take shape in the accordion (see <<c5i4>>).
 
 [[c5i4]]
 .Adding a new element to the box
@@ -50,9 +50,9 @@ We'll give the first element the *Label* of _Key_, the *Name* of _key_, and a *T
 
 [[c5i5]]
 .Entering the element information
-image::images/ch5_ss5.png[Screenshot,450,align="center"]
+image::images/ch5_ss5.png[Screenshot,500,align="center"]
 
-Click *+ -> Add a new Element to this Box* to create a second element. We'll give the second element the *Label* of _Value_, the *Name* of _value_, and a *Type* of _Text Box_. Leave the other values as default, and now, finally click the *Add* button. The completed dialog is saved and displayed (see <<c5i16>>).
+Click *+ Add a new Element to this Box* to create a second element. We'll give the second element the *Label* of _Value_, the *Name* of _value_, and a *Type* of _Text Box_. Leave the other values as default, and now, finally click the *Add* button. The completed dialog is saved and displayed (see <<c5i16>>).
 
 [[c5i16]]
 .The completed dialog
@@ -60,7 +60,7 @@ image::images/ch5_ss16.png[Screenshot,350,align="center"]
 
 === Creating the Instance and Method
 
-We create a new instance in our _Methods_ class just as we did before, called __AddCustomAttribute__. We leave the **password**, *servername* and *username* schema fields blank, but add the value _add_custom_attribute_ in the *execute* field.
+We create a new instance in our _Methods_ class just as we did before, called __add_custom_attribute__. We leave the **password**, *servername* and *username* schema fields blank, but add the value _add_custom_attribute_ in the *execute* field.
 
 [TIP]
 As we see here, defining attributes in our class schema doesn't mean that we have to use them in every instance created from the class. We can create generic class schemas that contain a number of attributes that the instances may need to use. 
@@ -90,11 +90,11 @@ vm.custom_set(key, value)
 exit MIQ_OK
 ----
 
-We create a new method in our _Methods_ class as we did before, and call it _add_custom_attribute_. We paste the code into the *Data* box, click *Validate*, then *Save*.
+We create a new method in our _Methods_ class as we did before, and call it __add_custom_attribute__. We paste the code into the *Data* box, click *Validate*, then *Save*.
 
 ==== Create the /System Entry Point
 
-To illustrate an alternative way of calling an instance, we're going to be creating our own entry point directly in the _/System/_ namespace, rather than redirecting through _Call_Instance_ as before footnote:[Most automation operations enter the Automate Datastore at _/System/Request_. _Call_Instance_ is already there as a "convenience" instance that we can call with arguments to redirect straight to our own instance, which is why we've used that up to now. There are occasions however when we need to create our own entry point directly in _/System/Request_, so this example illustrates how we do that.].
+To illustrate an alternative way of calling an instance, we're going to be creating our own entry point directly in the _/System/_ namespace, rather than redirecting through __Call_Instance__ as before footnote:[Most automation operations enter the Automate Datastore at _/System/Request_. _Call_Instance_ is already there as a "convenience" instance that we can call with arguments to redirect straight to our own instance, which is why we've used that up to now. There are occasions however when we need to create our own entry point directly in _/System/Request_, so this example illustrates how we do that.].
 
 First we must copy the _ManageIQ/System/Request_ class into our own domain (see <<c5i7>>).
 
@@ -110,15 +110,15 @@ Now we have to create a new instance of the class (see <<c5i8>>).
 .Adding a new instance to the copied /System/Request class
 image::images/ch5_ss8.png[Screenshot,450,align="center"]
 
-Give the new instance the name _AddCustomAttribute_. Enter _/General/Methods/AddCustomAttribute_ into the *rel1* field (see <<c5i9>>).
+Give the new instance the name __add_custom_attribute__. Enter __/General/Methods/add_custom_attribute__ into the *rel1* field (see <<c5i9>>).
 
 [[c5i9]]
 .Setting the new instance name and rel1 field
-image::images/ch5_ss9.png[Screenshot,380,align="center"]
+image::images/ch5_ss9.png[Screenshot,350,align="center"]
 
 === Running Automation Scripts from a Button
 
-ManageIQ allows us to extend the WebUI functionality by adding our own custom buttons to selected object types in the user interface. Rather than using the simulation feature of Automate as we did before, we're going to be launching this automation script from a custom button that we'll add to the virtual machine display object.
+CloudForms/ManageIQ allows us to extend the WebUI functionality by adding our own custom buttons to selected object types in the user interface. Rather than using the simulation feature of Automate as we did before, we're going to be launching this automation script from a custom button that we'll add to the virtual machine display object.
 
 ==== Creating the Button Group
 
@@ -128,7 +128,7 @@ Navigate to **Automate -> Customization**, and select *Buttons* in the accordion
 
 [[c5i10]]
 .Adding a new button group
-image::images/ch5_ss10.png[Screenshot,430,align="center"]
+image::images/ch5_ss10.png[Screenshot,480,align="center"]
 
 Set the *Button Group Text* and *Button Group Hover Text* to _VM Operations_. Select a suitable *Button Group Image* from the available drop-down list, and click the *Add* button to create the Button Group.
 
@@ -142,11 +142,11 @@ Highlight the new _VM Operations_ Button Group in the accordion, and select **Co
 .Adding a new button to the button group
 image::images/ch5_ss11.png[Screenshot,430,align="center"]
 
-Set the *Button Text* and *Button Hover Text* to _Add Custom Attribute_. Select a suitable *Button Image* from the available drop-down list, and pick our new _Button_ Dialog from the *Dialog* drop-down list. In the *Object Details* section we'll select the new _/System/Request_ instance that we created called _AddCustomAttribute_ (see <<c5i12>>).
+Set the *Button Text* and *Button Hover Text* to _Add Custom Attribute_. Select a suitable *Button Image* from the available drop-down list, and pick our new _Button_ Dialog from the *Dialog* drop-down list. In the *Object Details* section we'll specify the new __add_custom_attribute__ instance that we created in _/System/Request_  (see <<c5i12>>).
 
 [[c5i12]]
 .Completing the button details
-image::images/ch5_ss12.png[Screenshot,500,align="center"]
+image::images/ch5_ss12.png[Screenshot,550,align="center"]
 
 ==== Running the Instance
 
