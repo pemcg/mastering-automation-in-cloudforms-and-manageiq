@@ -28,7 +28,7 @@ We will look at these methods in more detail in the next sections.
 
 [[c7i1]]
 .The object model
-image::part1/chapter7/images/object_model.png[Object Model,500,align="center"]
+image::images/ch7_object_model.png[Object Model,500,align="center"]
 
 +$evm.root+ contains a lot of useful information that we use programmatically to establish our running context - for example to see if we've been called by an API call or from a button (see also <<investigative-debugging>>)
 

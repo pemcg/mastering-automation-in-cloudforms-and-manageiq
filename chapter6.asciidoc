@@ -123,58 +123,35 @@ as:
 Many of the service model objects have several levels of superclass, for example:
 
 ....
-MiqAeServiceMiqProvisionRedhatViaPxe <
-              MiqAeServiceMiqProvisionRedhat <
-                            MiqAeServiceMiqProvision <
-                                          MiqAeServiceMiqRequestTask <
-                                                        MiqAeServiceModelBase
+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_ProvisionViaPxe <
+    MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Provision <
+        MiqAeServiceMiqProvision <
+            MiqAeServiceMiqRequestTask <
+                MiqAeServiceModelBase
 ....
 
-The following list shows the class definition for some of the CloudForms/ManageIQ _Botvinnik_ MiqAeService model classes, showing their immediate superclass:
+==== Service Model Names and Provider Namespacing
+
+The service model names for any provider-specific classes follow the provider namespacing scheme introduced in CloudForms 4.0/ManageIQ _Capablanca_. This splits the providers in several categories; in CloudForms 4.1/ManageIQ _Darga_ they are as follows:
+
+* CloudManager
+* ContainerManager
+* ConfigurationManager
+* InfraManager
+* NetworkManager
+
+The provider-specific service model objects are named in the following way:
 
 ....
- class MiqAeServiceAuthentication < MiqAeServiceModelBase
- class MiqAeServiceAuthPrivateKey < MiqAeServiceAuthentication
- class MiqAeServiceAuthKeyPairCloud < MiqAeServiceAuthPrivateKey
- class MiqAeServiceAuthKeyPairOpenstack < MiqAeServiceAuthKeyPairCloud
-...
- class MiqAeServiceAutomationRequest < MiqAeServiceMiqRequest
- class MiqAeServiceAutomationTask < MiqAeServiceMiqRequestTask
-...
- class MiqAeServiceAvailabilityZone < MiqAeServiceModelBase
- class MiqAeServiceAvailabilityZoneAmazon < MiqAeServiceAvailabilityZone
- class MiqAeServiceAvailabilityZoneOpenstack < MiqAeServiceAvailabilityZone
-...
- class MiqAeServiceHost < MiqAeServiceModelBase
- class MiqAeServiceHostMicrosoft < MiqAeServiceHost
- class MiqAeServiceHostOpenstackInfra < MiqAeServiceHost
- class MiqAeServiceHostRedhat < MiqAeServiceHost
- class MiqAeServiceHostVmware < MiqAeServiceHost
- class MiqAeServiceHostVmwareEsx < MiqAeServiceHostVmware
- ...
- class MiqAeServiceMiqProvision < MiqAeServiceMiqProvisionTask
- class MiqAeServiceMiqProvisionAmazon < MiqAeServiceMiqProvisionCloud
- class MiqAeServiceMiqProvisionCloud < MiqAeServiceMiqProvision
- class MiqAeServiceMiqProvisionConfiguredSystemRequest < MiqAeServiceMiqRequest
- class MiqAeServiceMiqProvisionMicrosoft < MiqAeServiceMiqProvision
- class MiqAeServiceMiqProvisionOpenstack < MiqAeServiceMiqProvisionCloud
- class MiqAeServiceMiqProvisionRedhat < MiqAeServiceMiqProvision
- class MiqAeServiceMiqProvisionRedhatViaIso < MiqAeServiceMiqProvisionRedhat
- class MiqAeServiceMiqProvisionRedhatViaPxe < MiqAeServiceMiqProvisionRedhat
- class MiqAeServiceMiqProvisionRequest < MiqAeServiceMiqRequest
- class MiqAeServiceMiqProvisionRequestTemplate < MiqAeServiceMiqProvisionRequest
- class MiqAeServiceMiqProvisionTask < MiqAeServiceMiqRequestTask
-...
- class MiqAeServiceServiceTemplateProvisionTask < MiqAeServiceMiqRequestTask
-...
- class MiqAeServiceVmOrTemplate < MiqAeServiceModelBase
- class MiqAeServiceVm < MiqAeServiceVmOrTemplate
- class MiqAeServiceVmCloud < MiqAeServiceVm
- class MiqAeServiceVmInfra < MiqAeServiceVm
- class MiqAeServiceVmMicrosoft < MiqAeServiceVmInfra
- class MiqAeServiceVmOpenstack < MiqAeServiceVmCloud
- class MiqAeServiceVmAmazon < MiqAeServiceVmCloud
- class MiqAeServiceVmRedhat < MiqAeServiceVmInfra
+MiqAeServiceManageIQ_Providers_<ProviderName>_<ProviderCategory>_<ProviderObject>
+....
+For example the service model object name for an OpenStack cloud subnet is:
+....
+MiqAeServiceManageIQ_Providers_Openstack_NetworkManager_CloudSubnet
+....
+The object name for a VMware ESX host is:
+....
+MiqAeServiceManageIQ_Providers_Vmware_InfraManager_HostEsx
 ....
 
 === Service Model Object Properties
@@ -185,7 +162,7 @@ The service model objects that the Automation Engine makes available to us have 
 
 Just like any other Ruby object, the service model objects that we work with have _attributes_ that we often use. A service model object represents a record in a database table, and the object's attributes correspond to the columns in the table for that record.
 
-For example, some attributes for a RHEV Host (i.e. Hypervisor) object (+MiqAeServiceHostRedhat+), with typical values, are:
+For example, some attributes for a RHEV Host (i.e. Hypervisor) object (+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Host+), with typical values, are:
 
 ....
 host.connection_state = connected
