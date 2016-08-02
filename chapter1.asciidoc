@@ -1,4 +1,4 @@
-[[introduction]]
+[[introduction]] 
 :numbered:
 == Introduction to CloudForms and ManageIQ
 
