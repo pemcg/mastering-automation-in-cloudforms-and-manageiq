@@ -94,14 +94,13 @@ We see that there is a `description` column, so if we wanted we could call:
 $evm.vmdb('service').find_by_description('My New Service')
 ----
 
-[TIP]
-====
-Don't try searching the CloudForms/ManageIQ sources for +def find_by_description+, these are not statically defined methods and so don't exist in the code. In a future version of CloudForms/ManageIQ they will be deprecated  in favour of a more current Rails-like syntax using +where+, for example:
+Earlier versions of Rails also had a +find_all_by_*+ helper method that returned all results matching a search. Rails 5 has removed this in favour of +where+, which is now also supported by service models. The syntax of using +where+ is as follows:
+
 [source,ruby]
 ----
-$evm.vmdb('service').where(:description =>'My New Service')+
+$evm.vmdb('service').where(:description =>'My New Service')
 ----
-====
+
 [[service-models]]
 === Service Models
 
