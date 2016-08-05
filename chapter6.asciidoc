@@ -65,7 +65,6 @@ Rails does a lot of things to make our lives easier, including dynamically creat
 
 [source,ruby]
 ----
-owner = $evm.vmdb('user').find_by_id(ownerid.to_i)
 vm = $evm.vmdb('vm').find_by_name(vm_name)
 ----
 
@@ -100,6 +99,9 @@ Earlier versions of Rails also had a +find_all_by_*+ helper method that returned
 ----
 $evm.vmdb('service').where(:description =>'My New Service')
 ----
+
+[NOTE]
++where+ returns a list, even if it only finds one item
 
 [[service-models]]
 === Service Models
