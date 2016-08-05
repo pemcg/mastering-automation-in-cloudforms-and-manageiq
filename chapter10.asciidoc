@@ -40,24 +40,16 @@ _object_walker_ footnote:[object_walker is available from https://github.com/pem
 
 ==== Black or Whitelisting Associations
 
-One of the features of object_walker is the ability to selectively choose which associations to "walk" to limit the output. We do so by setting a +@walk_association_policy+ to +:whitelist+ or +:blacklist+, and then defining a +@walk_association_whitelist+ or +@walk_association_blacklist+ to list the associations to be walked (whitelist), or not walked (blacklist).
+One of the features of object_walker is the ability to selectively choose which associations to "walk" to limit the output. We do so by setting a +walk_association_policy+ to +"whitelist"+ or +"blacklist"+, and then defining a +walk_association_whitelist+ or +walk_association_blacklist+ JSON hash in the instance schema to list the associations to be walked (whitelist), or not walked (blacklist).
 
-In practice a +@walk_association_policy+ of +:blacklist+ produces so much output that it's rarely used, and so a +:whitelist+ is more often defined, like so:
+In practice a +walk_association_policy+ of +"blacklist"+ produces so much output that it's rarely used, and so a +"whitelist"+ is more often defined, like so:
 
 [source,ruby]
 ----
-@walk_association_whitelist =
-  'MiqAeServiceVmRedhat'    => ['ems_cluster',
-                                'ems_folder',
-                                'resource_pool',
-                                'storage',
-                                'service',
-                                'hardware'
-                                ],
-  'MiqAeServiceUser'        => ['current_group'],
-  'MiqAeServiceGuestDevice' => ['hardware',
-                                'lan',
-                                'network']
+{ 'MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm': ['hardware', 'host', 'storage'],
+'MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Vm': ['hardware', 'host', 'storage'],
+'MiqAeServiceHardware': ['nics', 'guest_devices', 'ports', 'storage_adapters' ],
+'MiqAeServiceGuestDevice': ['hardware', 'lan', 'network'] }
 ----
 
 ==== object_walker_reader
@@ -65,61 +57,54 @@ In practice a +@walk_association_policy+ of +:blacklist+ produces so much output
 There is a companion script, _object_walker_reader_, that can be copied to the ManageIQ appliance to extract the object_walker outputs from _automation.log_. The reader can also list all outputs by timestamp, dump a particular output by timestamp, and even _diff_ two outputs - useful when running object_walker before and after a built-in method (for example in a State Machine) to see what the method has changed.
 
 ....
-Object Walker 1.7 Starting
+Object Walker 1.8 Starting
+     --- walk_association_policy details ---
+     walk_association_policy = whitelist
+     walk_association_whitelist = { 'MiqAeServiceMiqProvisionRequest': ['miq_request',...
      --- $evm.current_* details ---
-     $evm.current_namespace = Bit63/stuff   (type: String)
-     $evm.current_class = methods   (type: String)
-     $evm.current_instance = objectwalker   (type: String)
-     $evm.current_message = create   (type: String)
-     $evm.current_object = /Bit63/stuff/methods/objectwalker  (type: DRb::DRb...
-     $evm.current_object.current_field_name = Execute   (type: String)
-     $evm.current_object.current_field_type = method   (type: String)
+     $evm.current_namespace = Bit63/Stuff   (type: String)
+     $evm.current_class = ObjectWalker   (type: String)
+     $evm.current_instance = object_walker   (type: String)
      $evm.current_method = object_walker   (type: String)
+     $evm.current_message = create   (type: String)
+     $evm.current_object = /Bit63/Stuff/ObjectWalker/object_walker   (type: DRb::DRbObject ...
+     $evm.current_object.current_field_name = execute   (type: String)
+     $evm.current_object.current_field_type = method   (type: String)
      --- automation instance hierarchy ---
-     /ManageIQ/SYSTEM/PROCESS/Request  ($evm.root)
-     |    /ManageIQ/System/Request/call_instance  ($evm.parent)
-     |    |    /Bit63/stuff/methods/objectwalker  ($evm.object)
+     /ManageIQ/System/Process/AUTOMATION  ($evm.root)
+     |    /ManageIQ/infrastructure/VM/Lifecycle/Provisioning
+     |    |    /ManageIQ/Infrastructure/VM/Provisioning/Profile/EvmGroup-super_administrator
+     |    |    /Bit63/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template  ($evm.parent)
+     |    |    |    /ManageIQ/Infrastructure/VM/Provisioning/StateMachines/Methods/CustomizeRequest
+     |    |    |    /ManageIQ/Infrastructure/VM/Provisioning/Placement/default
+     |    |    |    /Bit63/Stuff/ObjectWalker/object_walker  ($evm.object)
      --- walking $evm.root ---
-     $evm.root = /ManageIQ/SYSTEM/PROCESS/Request   (type: DRb::DRbObject)
+     $evm.root = /ManageIQ/System/Process/AUTOMATION   
      |    --- attributes follow ---
+     |    $evm.root['ae_next_state'] =    (type: String)
      |    $evm.root['ae_provider_category'] = infrastructure   (type: String)
-     |    $evm.root.class = DRb::DRbObject   (type: Class)
-     |    $evm.root['dialog_walk_association_whitelist'] =    (type: String)
-     |    $evm.root['instance'] = objectwalker   (type: String)
-     |    $evm.root['miq_group'] => #<MiqAeMethodService::MiqAeServiceMiqGro...
+     |    $evm.root['ae_result'] = ok   (type: String)
+     |    $evm.root['ae_state'] = WalkObjects   (type: String)
+     |    $evm.root['ae_state_retries'] = 0   (type: Fixnum)
+     |    $evm.root['ae_state_started'] = 2016-08-01 09:55:59 UTC   (type: String)
+     |    $evm.root['ae_state_step'] = main   (type: String)
+     |    $evm.root['ae_status_state'] = on_exit   (type: String)
+     |    $evm.root['miq_group'] => #<MiqAeMethodService::MiqAeServiceMiqGroup:0x00...   
      |    |    --- attributes follow ---
-     |    |    $evm.root['miq_group'].created_on = 2015-09-23 12:39:48 UTC   
-     |    |    $evm.root['miq_group'].description = EvmGroup-super_administrator 
+     |    |    $evm.root['miq_group'].created_on = 2016-05-25 08:09:35 UTC   
+     |    |    $evm.root['miq_group'].description = EvmGroup-super_administrator   (type: String)
+     |    |    $evm.root['miq_group'].filters = nil
      |    |    $evm.root['miq_group'].group_type = system   (type: String)
-...
+     |    |    $evm.root['miq_group'].id = 2   (type: Fixnum)
+     |    |    $evm.root['miq_group'].sequence = 1   (type: Fixnum)
+     |    |    $evm.root['miq_group'].settings = nil
+     |    |    $evm.root['miq_group'].tenant_id = 1   (type: Fixnum)
+     |    |    $evm.root['miq_group'].updated_on = 2016-05-25 08:09:35 UTC  
      |    |    --- end of attributes ---
      |    |    --- virtual columns follow ---
-     |    |    $evm.root['miq_group'].allocated_memory = 59055800320   (type: ...
-     |    |    $evm.root['miq_group'].allocated_storage = 560493232128   (type: .
-     |    |    $evm.root['miq_group'].allocated_vcpu = 27   (type: Fixnum)
-...
-     |    $evm.root['vm'] => intraweb005   (type: DRb::DRbObject, URI: dru...
-     |    |    --- attributes follow ---
-     |    |    $evm.root['vm'].boot_time = 2016-04-06 14:51:52 UTC   (type: ...
-     |    |    $evm.root['vm'].cloud = false   (type: FalseClass)
-     |    |    $evm.root['vm'].connection_state = connected   (type: String)
-     |    |    $evm.root['vm'].cpu_limit = -1   (type: Fixnum)
-     |    |    $evm.root['vm'].cpu_reserve = 0   (type: Fixnum)
-...
-     |    |    ems_cluster = $evm.root['vm'].ems_cluster
-     |    |    (object type: MiqAeServiceEmsCluster, object ID: 1000000000001)
-     |    |    |    --- attributes follow ---
-     |    |    |    ems_cluster.created_on = 2015-09-23 13:21:59 UTC   
-     |    |    |    ems_cluster.drs_automation_level = fullyAutomated   (type: ..
-     |    |    |    ems_cluster.drs_enabled = true   (type: TrueClass)
-     |    |    |    ems_cluster.drs_migration_threshold = 3   (type: Fixnum)
-...
-     |    |    |    --- methods follow ---
-     |    |    |    ems_cluster.register_host
-     |    |    |    ems_cluster.tag_assign
-     |    |    |    ems_cluster.tag_unassign
-     |    |    |    ems_cluster.tagged_with?
-     |    |    |    ems_cluster.tags
+     |    |    $evm.root['miq_group'].allocated_memory = 1073741824   (type: Fixnum)
+     |    |    $evm.root['miq_group'].allocated_storage = 42949672960   (type: Fixnum)
+     |    |    $evm.root['miq_group'].allocated_vcpu = 1   (type: Fixnum)
 ....
 
 Here we see a partial output from _object_walker_reader_, showing the traversal of the associations between objects, and list of attributes, virtual columns, associations and methods for each object encountered.

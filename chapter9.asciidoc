@@ -1,7 +1,7 @@
 [[using-tags-from-automate]]
 == Using Tags from Automate
 
-Tags are a very powerful feature of ManageIQ. They allow us to add _Smart Management_ capabilities to the objects in the WebUI such as virtual machines, hosts, or clusters; to create tag-related filters; and to group, sort or categorise items by tag.
+Tags are a very powerful feature of CloudForms and ManageIQ. They allow us to add _Smart Management_ capabilities to the objects in the WebUI such as virtual machines, hosts, or clusters; to create tag-related filters; and to group, sort or categorise items by tag.
 
 For example we might assign a tag to a virtual machine to identify which department or cost centre owns the VM. We could then create a chargeback rate for billing purposes and assign the rate to all VMs tagged as being owned by a particular department or cost centre.
 
@@ -76,7 +76,7 @@ We can test whether an object (in this case a user group) is tagged with a parti
 [source,ruby]
 ----
 ci_owner = 'engineering'
-groups = $evm.vmdb(:miq_group).find(:all)
+groups = $evm.vmdb(:miq_group).all
 groups.each do |group|
   if group.tagged_with?("department", ci_owner)
     $evm.log("info", "Group #{group.description} is tagged")
@@ -110,7 +110,7 @@ We can search for objects tagged with a particular tag using the +find_tagged_wi
 
 [source,ruby]
 ----
-tag = "/managed/department/legal"
+tag = "/managed/department/syseng"
 hosts = $evm.vmdb(:host).find_tagged_with(:all => tag, :ns => "*")
 ----
 
@@ -170,8 +170,7 @@ On versions prior to ManageIQ _Capablanca_, getting the list of tag categories w
 
 [source,ruby]
 ----
-categories = $evm.vmdb('classification').find(:all,
-                                              :conditions => ["parent_id = 0"])
+categories = $evm.vmdb('classification').where(:parent_id => 0)
 categories.each do |category|
   $evm.log(:info, "Found category: #{category.name} (#{category.description})")
 end
@@ -194,7 +193,7 @@ We occasionally need to retrieve the list of tags in a particular category, and 
 ----
 classification = $evm.vmdb(:classification).find_by_name('cost_centre')
 cost_centre_tags = {}
-$evm.vmdb(:classification).find_all_by_parent_id(classification.id).each do |tag|
+$evm.vmdb(:classification).where(:parent_id => classification.id).each do |tag|
   cost_centre_tags[tag.name] = tag.description
 end
 ----
@@ -206,10 +205,8 @@ Sometimes we need to add a tag to an object, but we only have the tag's free-tex
 [source,ruby]
 ----
 department_classification = $evm.vmdb(:classification).find_by_name('department')
-tag = $evm.vmdb('classification').find(
-                            :first,
-                            :conditions => ["parent_id = ? AND description = ?",
-                            department_classification.id, 'Systems Engineering'])
+tag = $evm.vmdb('classification').where(["parent_id = ? AND description = ?",
+                            department_classification.id, 'Systems Engineering']).first
 tag_name = tag.name
 ----
 

@@ -11,7 +11,7 @@ So far we have launched automation scripts in two ways: from **Simulation** and 
 
 [[c11i1]]
 .Entry points into the Automate Datastore from Simulation
-image::part1/chapter11/images/screenshot4hd.png[Screenshot,450,align="center"]
+image::images/ch11_ss4.png[Screenshot,450,align="center"]
 
 In practice we only use _/System/Process/Request_ to launch our own automation requests from a button or simulation. Entries at _/System/Process/Request_ get redirected to the *Request* instance name that we specified with the call, which should be an instance in the _/System/Request_ namespace. In our examples so far we've used *Request* instances of _Call_Instance_, and _AddCustomAttribute_ (which we added to our _ACME_ domain).
 

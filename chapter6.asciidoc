@@ -31,7 +31,7 @@ on Rails/Getting Started/Model-View-Controller]]
 .An MVC application
 image::images/ch6_mvc.png[Screenshot,450,align="center"]
 
-The _model_ is a representation of the underlying, logical structure of data from the database (which in the case of CloudForms/ManageIQ is PostgreSQL). When writing automation scripts, we work with models extensively (although we may not necessarily realise it).
+The _model_ is a representation of the underlying, logical structure of data from the database (which in the case of CloudForms and ManageIQ is PostgreSQL). When writing automation scripts, we work with models extensively (although we may not necessarily realise it).
 
 Rails models are called _active records_. They always have a singular _CamelCase_ name (e.g. GuestApplication), and their corresponding database tables have a plural _snake_case_ name (e.g. guest_applications).
 
@@ -131,7 +131,7 @@ MiqAeServiceManageIQ_Providers_Redhat_InfraManager_ProvisionViaPxe <
 
 ==== Service Model Names and Provider Namespacing
 
-The service model names for any provider-specific classes follow the provider namespacing scheme introduced in CloudForms 4.0/ManageIQ _Capablanca_. This splits the providers in several categories; in CloudForms 4.1/ManageIQ _Darga_ they are as follows:
+The service model names for any provider-specific classes follow the provider namespacing scheme introduced in CloudForms 4.0 (ManageIQ _Capablanca_). This separates the providers in several categories and in the current versions of the tools these categories are as follows:
 
 * CloudManager
 * ContainerManager
@@ -153,6 +153,15 @@ The object name for a VMware ESX host is:
 MiqAeServiceManageIQ_Providers_Vmware_InfraManager_HostEsx
 ....
 
+[NOTE]
+====
+The pre-CloudForms 4.0 provider-specific service model names have been retained for backwards compatibility, so for now we can still use a command such as:
+
+....
+$evm.vmdb(:CloudSubnet).all
+....
+====
+
 === Service Model Object Properties
 
 The service model objects that the Automation Engine makes available to us have four properties that we frequently work with, _attributes_, _virtual columns_, _associations_ and _methods_.
@@ -161,7 +170,7 @@ The service model objects that the Automation Engine makes available to us have 
 
 Just like any other Ruby object, the service model objects that we work with have _attributes_ that we often use. A service model object represents a record in a database table, and the object's attributes correspond to the columns in the table for that record.
 
-For example, some attributes for a RHEV Host (i.e. Hypervisor) object (+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Host+), with typical values, are:
+For example, some attributes for a RHEV Host (i.e. Hypervisor) object (the +MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Host+ service model), with typical values, are:
 
 ....
 host.connection_state = connected
@@ -233,7 +242,7 @@ this_object.virtual_column_names.each do |virtual_column_name|
 
 We saw earlier that there are associations between many of the Active Records (and hence service models), and we use these extensively when scripting.
 
-For example we can discover more about the hardware of our virtual machine (VM) by following associations between the VM object (+MiqAeServiceVmRedhat+), and its Hardware and GuestDevice objects (+MiqAeServiceHardware+ and +MiqAeServiceGuestDevice+), as follows:
+For example we can discover more about the hardware of our virtual machine (VM) by following associations between the VM object (+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm+), and its Hardware and GuestDevice objects (+MiqAeServiceHardware+ and +MiqAeServiceGuestDevice+), as follows:
 
 [source,ruby]
 ----
@@ -247,7 +256,7 @@ end
 
 Fortunately we don't need to know anything about the Active Records or service models behind the scenes, we just magically follow the association. See <<investigative-debugging>> to find out what associations there are to follow.
 
-Continuing our exploration of our RHEV Host object (+MiqAeServiceHostRedhat+), the associations available to this object are:
+Continuing our exploration of our RHEV Host object, the associations available to this object are:
 
 ....
 host.datacenter
@@ -275,7 +284,7 @@ this_object.associations.each do |association|
 
 ==== Methods
 
-Most of the objects that we work with have useful methods defined that we can use, either in their own class or one of their parent superclasses. For example the methods available to call for our RHEV Host object (+MiqAeServiceHostRedhat+) are:
+Most of the objects that we work with have useful methods defined that we can use, either in their own class or one of their parent superclasses. For example the methods available to call for our RHEV Host object are:
 
 ....
 host.authentication_password
