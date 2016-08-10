@@ -40,8 +40,9 @@ The substituted values are taken from attributes of the EventStream object repre
 
 ===== Event stream mamespace
 
-The +${/#event_stream.event_namespace}+ part of the relationship translates to one of three _event stream namespaces_:
+The +${/#event_stream.event_namespace}+ part of the relationship translates to one of four _event stream namespaces_:
 
+* *CustomEvent* where we can define our own _management event_ alerts
 * *EmsEvent* if the event's origin was an _external management system_ (i.e. a provider). An EmsEvent instance contains all information about its virtual machine, host and provider related to the event
 * *MiqEvent* if the event's origin was an internal ManageIQ-initiated _Policy_ event
 * *RequestEvent* if the event is related to an automation request (e.g. **request_created**)
@@ -50,7 +51,7 @@ These can be seen in <<c15i2>>
 
 [[c15i2]]
 .Event Stream Namespaces
-image::images/ch15_ss2.png[Screenshot,300,align="center"]
+image::images/ch15_ss2.png[Screenshot,320,align="center"]
 
 ===== Event stream source
 
@@ -67,7 +68,7 @@ Under the appropriate event stream source classes are instances that define the 
 
 [[c15i4]]
 .Event Types for the Amazon Event Stream Source
-image::images/ch15_ss4.png[Screenshot,300,align="center"]
+image::images/ch15_ss4.png[Screenshot,320,align="center"]
 
 The event type instances contain one or more relationships to _event handlers_ in the _/System/event_handlers_ namespace that define what actions to take for that event. For example the _Amazon_ event _AWS_EC2_Instance_running_ will call the _event_action_policy_ handler to push a new *vm_start* policy event through the switchboard. It also calls the _event_action_refresh_ handler to trigger a provider refresh so that the current instance details can be retrieved (see <<c15i5>>).
 

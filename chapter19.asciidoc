@@ -3,13 +3,13 @@
 
 In the last chapter we saw how every virtual machine or instance provisioning request involves an approval process, and that requests for larger VMs would normally require administrative approval. Even with auto-approval thresholds set at their low defaults however, our users could still over time create a large number of small virtual machines, and consume our virtual infrastructure resources and increase cloud costs. 
 
-For this reason ManageIQ also allows us to establish quotas on tenants or user groups. Quotas can be set for number of virtual machines, number of CPUs, amount of memory, or quantity of storage 'owned' by the tenant or group. If a virtual machine provisioning request would result in the quota being exceeded, the request is rejected and the requesting user is emailed. 
+For this reason CloudForms and ManageIQ also allow us to establish quotas on tenants or user groups. Quotas can be set for number of virtual machines, number of CPUs, amount of memory, or quantity of storage 'owned' by the tenant or group. If a virtual machine provisioning request would result in the quota being exceeded, the request is rejected and the requesting user is emailed. 
 
-Quotas are not enabled by default with ManageIQ _Capablanca_, but they are simple to turn on and configure.
+Quotas are not enabled by default, but they are simple to turn on and configure.
 
-=== Quota in ManageIQ _Capablanca_
+=== Quota in CloudForms 4.0
 
-Quota management has been completely rewritten for ManageIQ _Capablanca_. Prior to this release, quota management for cloud instance, infrastructure virtual machine, and service provisioning was handled in different places under the respective _/Cloud_, _/Infrastructure_, and _/Service_ namespaces. In _Capablanca_ these have been consolidated these under _/System/CommonMethods_ in the Automate Datastore. (see <<c19i1>>).
+Quota management has been completely rewritten for CloudForms 4.0/ManageIQ _Capablanca_. Prior to this release, quota management for cloud instance, infrastructure virtual machine, and service provisioning was handled in different places under the respective _/Cloud_, _/Infrastructure_, and _/Service_ namespaces. In _Capablanca_ these have been consolidated these under _/System/CommonMethods_ in the Automate Datastore. (see <<c19i1>>).
 
 [[c19i1]]
 .Quota classes, instances and methods
@@ -49,16 +49,7 @@ $evm.root['tenant'].provisioned_storage = 546534588416   (type: Fixnum)
 
 ===== Alternative Quota Sources
 
-If we wish to use an alternative quota source, we can copy the _quota_source_ method to our own domain, and edit it to define +$evm.root['quota_source']+ and +$evm.root['quota_source_type']+ as required. This commented-out example shows how to define a group as the quota source, in which case quota handling is done in the pre-_Capablanca_ way:
-
-[source,ruby]
-----
-# Sample code to enable group as the default quota source.
-$evm.root['quota_source'] = @miq_request.requester.current_group
-$evm.root['quota_source_type'] = 'group’
-----
-
-When we use an alternative quota source, we can set quota in two ways.
+If we wish to use an alternative quota source, we can copy the _quota_ state machine instance to our own domain, and edit *quota_source_type* attribute. If we set this to be 'group', the provisioning user's group will be used as the quota source, and quota handling will be handled in the pre-CloudForms 4.0 way. We can set quota in two ways.
 
 ===== Defining Quota in the State Machine Schema (the model)
 
@@ -93,7 +84,7 @@ The quota checking process for a virtual machine or instance provision request i
 
 [[c19i4]]
 .Event-triggered provision request quota workflow
-image::images/quota_workflow.png[Screenshot,350,align="center"]
+image::images/ch19_quota_workflow.png[Screenshot,350,align="center"]
 
 This event policy is handled by the _/System/Policy/MiqProvisionRequest_starting_ policy instance, which has a single *rel5* relationship that calls the _/System/CommonMethods/QuotaStateMachine/quota_ state machine.
 
