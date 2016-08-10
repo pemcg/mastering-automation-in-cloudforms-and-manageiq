@@ -22,7 +22,7 @@ When we assemble several of these intelligent states together, it become an Auto
 
 [[c13i0]]
 .Simple automate state machine workflow
-image::part1/chapter13/images/state_machine_logic.png[State Machine Logic,700,align="center"]
+image::images/ch13_state_machine_logic.png[State Machine Logic,700,align="center"]
 
 === Building a State Machine
 
@@ -39,13 +39,19 @@ If we look at all of the attributes that we can add for a schema field, in addit
 
 [[c13i1]]
 .Schema field column headings
-image::part1/chapter13/images/screenshot1hd.png[]
+image::images/ch13_ss1.png[]
 
 The schema columns for a state machine are the same as in any other class schema, but we use more of them.
 
 ===== Value (Instance)/Default Value (Schema)
 
-As in any other class schema, this is a relationship to an _instance_ to be run to perform the main processing of the state. Surprising as it may seem, we don't necessarily need to specify a value here for a state machine (see *On Entry*, next), although it is good practice to do so.
+As in any other class schema, this is a relationship to an instance or method to be run to perform the main processing of the state. We can either specify the full URI to an instance, or from CloudForms 4.1/ManageIQ _Darga_ onwards, if the method is defined locally in the same state machine class we can reference it by preceeding the method name with "Method::" (see <<c13i2>>)
+
+[[c13i2]]
+.Specifying value fields as an instance URI or a locally defined method
+image::images/ch13_ss5.png[State Machine Logic,600,align="center"]
+
+Surprising as it may seem, we don't necessarily need to populate the *Value* field for a state machine (see *On Entry*, next), although it is good practice to do so.
 
 ===== On Entry
 
@@ -53,7 +59,7 @@ We can optionally define an *On Entry* _method_ to be run before the "main" meth
 
 The method name can be specified as a relative path to the local class (i.e. just the method name), or in Namespace/Class/Method syntax.
 
-Note - some older state machines such as _/Infrastructure/VM/Provisoning/StateMachines/ProvisionRequestApproval/_ use an *On Entry* _method_ instead of a *Value* _relationship_ to perform the main work of the state. This usage is deprecated, and we should always use a *Value* relationship in our state machines.
+Note - some older state machines such as _/Infrastructure/VM/Provisoning/StateMachines/ProvisionRequestApproval/_ use an *On Entry* _method_ instead of a *Value* _relationship_ to perform the main work of the state. With the advent of the "Method::" syntax described above, this usage is deprecated, and we should always use a *Value* relationship in our state machines.
 
 ===== On Exit
 
@@ -73,11 +79,11 @@ We can optionally define a maximum time (in seconds) that the state will be perm
 
 ==== State Machine Example
 
-We can look at the out-of-the-box _/Infrastructure/VM/Provisoning/StateMachines/ProvisionRequestApproval/Default_ state machine instance as an example, and see that it defines four attributes, and has just two states; *ValidateRequest* and **ApproveRequest** (see <<c13i2>>).
+We can look at the out-of-the-box _/Infrastructure/VM/Provisoning/StateMachines/ProvisionRequestApproval/Default_ state machine instance as an example, and see that it defines four attributes, and has just two states; *ValidateRequest* and **ApproveRequest** (see <<c13i3>>).
 
-[[c13i2]]
+[[c13i3]]
 .The /ProvisionRequestApproval/Default state machine
-image::part1/chapter13/images/screenshot2hd.png[]
+image::images/ch13_ss2.png[]
 
 Neither state has a *Value* relationship, but each runs a locally defined class method to perform the main processing of the state.
 
@@ -172,11 +178,11 @@ $evm.root['ae_next_state'] = 'state2'
 
 ==== Nested State Machines
 
-As has been mentioned, the *Value* field of a state machine should be a relationship to an instance. Prior to _Capablanca_ this could not be another state machine, but with _Capablanca_ this requirement has been lifted, and so we can call an entire state machine from a step in a 'parent' state machine (see <<c13i3>>).
+As has been mentioned, the *Value* field of a state machine should be a relationship to an instance. Prior to _Capablanca_ this could not be another state machine, but with _Capablanca_ this requirement has been lifted, and so we can call an entire state machine from a step in a 'parent' state machine (see <<c13i4>>).
 
-[[c13i3]]
+[[c13i4]]
 .Nested state machines
-image::part1/chapter13/images/screenshot3hd.png[Nested State Machines,450,align="center"]
+image::images/ch13_ss3.png[Nested State Machines,450,align="center"]
 
 === Saving Variables Between State Retries
 

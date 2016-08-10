@@ -69,7 +69,7 @@ Chapter 12, _Requests and Tasks_, illustrates how more advanced Automate operati
 
 Chapter 13, _State Machines_, introduces us to state machines, and how we can use them to intelligently sequence our workflows.
 
-Chapter 14, _More Advanced Schema Features_, discusses the more advanced but less frequently used schema features; Messages, Assertions and Collections.
+Chapter 14, _More Advanced Schema and Instance Features_, discusses the more advanced but less frequently used schema and instance features; Messages, Assertions, Collections, and the .missing instance.
 
 Chapter 15, _Event Processing_, describes the way that CloudForms and ManageIQ respond to external events such as a virtual machine shutting down, and traces the event handling sequence through the Automate Datastore. It also shows how Automate manages its own internal events such as +request_started+.
 

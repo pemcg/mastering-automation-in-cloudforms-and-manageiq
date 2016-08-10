@@ -21,7 +21,7 @@ Events enter Automate at the _/System/Process/Event_ instance, and this contains
 
 [[c15i1]]
 .Entry Relationship into the Event Switchboard
-image::part1/chapter15/images/screenshot1hd.png[Screenshot,900,align="center"]
+image::images/ch15_ss1.png[Screenshot,900,align="center"]
 
 ==== The Event Switchboard
 
@@ -50,7 +50,7 @@ These can be seen in <<c15i2>>
 
 [[c15i2]]
 .Event Stream Namespaces
-image::part1/chapter15/images/screenshot2hd.png[Screenshot,300,align="center"]
+image::images/ch15_ss2.png[Screenshot,300,align="center"]
 
 ===== Event stream source
 
@@ -58,7 +58,7 @@ Within each of the event stream namespaces, are classes that define the _event s
 
 [[c15i3]]
 .Event Stream Sources
-image::part1/chapter15/images/screenshot3hd.png[Screenshot,300,align="center"]
+image::images/ch15_ss3.png[Screenshot,300,align="center"]
 
 [[event-type]]
 ===== Event type
@@ -67,13 +67,13 @@ Under the appropriate event stream source classes are instances that define the 
 
 [[c15i4]]
 .Event Types for the Amazon Event Stream Source
-image::part1/chapter15/images/screenshot4hd.png[Screenshot,300,align="center"]
+image::images/ch15_ss4.png[Screenshot,300,align="center"]
 
 The event type instances contain one or more relationships to _event handlers_ in the _/System/event_handlers_ namespace that define what actions to take for that event. For example the _Amazon_ event _AWS_EC2_Instance_running_ will call the _event_action_policy_ handler to push a new *vm_start* policy event through the switchboard. It also calls the _event_action_refresh_ handler to trigger a provider refresh so that the current instance details can be retrieved (see <<c15i5>>).
 
 [[c15i5]]
 .The Actions Defined by the Event Type Instance
-image::part1/chapter15/images/screenshot5hd.png[Screenshot,700,align="center"]
+image::images/ch15_ss5.png[Screenshot,700,align="center"]
 
 ==== Event Handlers
 
@@ -81,7 +81,7 @@ Event handlers are instances and methods that perform the actual granular proces
 
 [[c15i6]]
 .Event Handler Instances
-image::part1/chapter15/images/screenshot6hd.png[Screenshot,300,align="center"]
+image::images/ch15_ss6.png[Screenshot,300,align="center"]
 
 === Catching and Handling External Events
 
@@ -184,7 +184,7 @@ In the case of our RHEV *USER_RUN_VM* event, the event switchboard directs the p
 
 [[c15i7]]
 .Relationships to _event_handler_ instances
-image::part1/chapter15/images/screenshot7hd.png[Screenshot,500,align="center"]
+image::images/ch15_ss7.png[Screenshot,500,align="center"]
 
 [[step5]]
 ===== Step 5
@@ -325,7 +325,7 @@ In our case we have a VM control policy that runs an *Invoke a Custom Automation
 
 [[c15i8]]
 .VM Control Policy that Links a *VM Power On* Event to *Run ObjectWalker*
-image::part1/chapter15/images/screenshot9hd.png[Screenshot,400,align="center"]
+image::images/ch15_ss9.png[Screenshot,400,align="center"]
 
 ===== Step 12
 
@@ -359,7 +359,7 @@ In our case we have an alert that sends a *Management Event* called _test_ when 
 
 [[c15i9]]
 .An Alert to Send a test Management Event
-image::part1/chapter15/images/screenshot10hd.png[Screenshot,400,align="center"]
+image::images/ch15_ss10.png[Screenshot,400,align="center"]
 
 ===== Step 14
 
@@ -434,7 +434,7 @@ We are now in the _/System/Policy_ namespace, which is where the event-specific 
 
 [[c15i10]]
 .The schema of the /System/Policy/request_created instance
-image::part1/chapter15/images/screenshot12hd.png[Screenshot,380,align="center"]
+image::images/ch15_ss12.png[Screenshot,380,align="center"]
 
 A *request_created* event is raised for all types of request, so before any event-specific policy can be implemented, the _type_ of request must be determined.
 
@@ -665,19 +665,19 @@ There is already a _ManageIQ/System/Event/EmsEvent/OpenStack/compute.instance.po
 
 [[c15i11]]
 .Event handlers called by the compute.instance.power_off.end instance
-image::part1/chapter15/images/screenshot13hd.png[Screenshot,600,align="center"]
+image::images/ch15_ss13.png[Screenshot,600,align="center"]
 
 We can copy this instance to our domain and rename it as _/System/Event/EmsEvent/OpenStack/compute.instance.power_on.end_ (see <<c15i12>>).
 
 [[c15i12]]
 .Creating a compute.instance.power_on.end instance
-image::part1/chapter15/images/screenshot14hd.png[Screenshot,350,align="center"]
+image::images/ch15_ss14.png[Screenshot,350,align="center"]
 
 We change the second event_handler line to trigger a *vm_start* policy event (see <<c15i13>>).
 
 [[c15i13]]
 .Editing the event handlers as required
-image::part1/chapter15/images/screenshot15hd.png[Screenshot,600,align="center"]
+image::images/ch15_ss15.png[Screenshot,600,align="center"]
 
 Now when we power on an OpenStack instance, we see the instance's tile quadrant change correctly, and we see the raising and processing of the *vm_start* event:
 

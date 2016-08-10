@@ -2,7 +2,7 @@
 :numbered:
 == Introduction to CloudForms and ManageIQ
 
-Welcome to this guide to mastering the Automate feature of both CloudForms and ManageIQ. Before we begin our journey through Automate, it's worth taking a general tour of CloudForms to establish a context for all that we'll be learning. As ManageIQ is the _upstream_ project the CloudForms (as we'll discuss later in the chapter), the description also applies to ManageIQ.
+Welcome to this guide to mastering the Automate feature of both CloudForms and ManageIQ. Before we begin our journey through Automate, it's worth taking a general tour of CloudForms to establish a context for all that we'll be learning. As ManageIQ is the _upstream_ project the CloudForms (we'll discuss this later in the chapter), the description also applies to ManageIQ.
 
 === What is CloudForms?
 

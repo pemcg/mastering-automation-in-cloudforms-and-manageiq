@@ -68,50 +68,56 @@ The values that we select or enter are added to the options hash in a newly crea
 |miq_provision
 |=======================================================================
 
+==== Request and Task Object Classes
+
+If a request is approved, one or more task objects will be created from information contained in the request object (a single request for three VMs will result in three task objects for example).
+
+The request objects derived from the base +MiqAeServiceMiqRequest+ class are as follows:
+
+....
+MiqAeServiceAutomationRequest
+MiqAeServiceMiqHostProvisionRequest
+MiqAeServiceMiqProvisionConfiguredSystemRequest
+MiqAeServiceMiqProvisionRequest
+MiqAeServiceMiqProvisionRequestTemplate
+MiqAeServiceServiceReconfigureRequest
+MiqAeServiceServiceTemplateProvisionRequest
+MiqAeServiceVmMigrateRequest
+MiqAeServiceVmReconfigureRequest
+....
+
+The task objects derived directly or indirectly from the base +MiqAeServiceMiqRequestTask+ class are as follows:
+
+....
+MiqAeServiceAutomationTask
+MiqAeServiceManageIQ_Providers_Amazon_CloudManager_Provision
+MiqAeServiceManageIQ_Providers_Azure_CloudManager_Provision
+MiqAeServiceManageIQ_Providers_Google_CloudManager_Provision
+MiqAeServiceManageIQ_Providers_Openstack_CloudManager_Provision
+MiqAeServiceManageIQ_Providers_CloudManager_Provision
+MiqAeServiceMiqProvision
+MiqAeServiceMiqProvisionTask
+MiqAeServiceManageIQ_Providers_Foreman_ConfigurationManager_ProvisionTask
+MiqAeServiceManageIQ_Providers_Microsoft_InfraManager_Provision
+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Provision
+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_ProvisionViaIso
+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_ProvisionViaPxe
+MiqAeServiceManageIQ_Providers_Vmware_InfraManager_Provision
+MiqAeServiceManageIQ_Providers_Vmware_InfraManager_ProvisionViaPxe
+MiqAeServiceMiqHostProvision
+MiqAeServiceServiceReconfigureTask
+MiqAeServiceServiceTemplateProvisionTask
+MiqAeServiceVmMigrateTask
+MiqAeServiceVmReconfigureTask
+....
+
+We see that there are many more types of task object. This is because a request to perform an action (e.g. provision a VM) can be converted into one of several types of workflow - for example to provision a VM into a Cloud or Infrastructure provider - and therefore task object.
+
 === Approval
 
 Automation requests must be approved before the task object is created that handles the automation workflow. Admin users can auto-approve their own requests, while standard users need their requests explicitly approved by anyone in an access control group with the roles EvmRole-super_administrator, EvmRole-administrator, or EvmRole-approver.
 
 Some automation workflows have an _approval_ stage that can auto-approve requests, even from standard users. The most common automation operation that standard users frequently perform is to provision a virtual machine, and for this there are approval thresholds in place (**max_vms**, **max_cpus**, **max_memory**, **max_retirement_days**). VM provision requests specifying numbers or sizes below these thresholds are auto-approved, whereas requests exceeding these thresholds are blocked, pending explicit approval.
-
-=== Object Class Ancestry
-
-If a request is approved, one or more task objects will be created from information contained in the request object (a single request for three VMs will result in three task objects for example).
-
-We can examine the class ancestry for the ManageIQ _Botvinnik_ request objects:
-
-....
-MiqAeServiceAutomationRequest < MiqAeServiceMiqRequest
-MiqAeServiceMiqHostProvisionRequest < MiqAeServiceMiqRequest
-MiqAeServiceMiqProvisionRequest < MiqAeServiceMiqRequest
-MiqAeServiceMiqProvisionRequestTemplate < MiqAeServiceMiqProvisionRequest
-MiqAeServiceMiqRequest < MiqAeServiceModelBase
-MiqAeServiceServiceTemplateProvisionRequest < MiqAeServiceMiqRequest
-MiqAeServiceVmMigrateRequest < MiqAeServiceMiqRequest
-MiqAeServiceVmReconfigureRequest < MiqAeServiceMiqRequest
-....
-
-and for the task objects:
-
-....
-MiqAeServiceAutomationTask < MiqAeServiceMiqRequestTask
-MiqAeServiceMiqHostProvision < MiqAeServiceMiqRequestTask
-MiqAeServiceMiqProvision < MiqAeServiceMiqRequestTask
-MiqAeServiceMiqProvisionAmazon < MiqAeServiceMiqProvisionCloud
-MiqAeServiceMiqProvisionCloud < MiqAeServiceMiqProvision
-MiqAeServiceMiqProvisionOpenstack < MiqAeServiceMiqProvisionCloud
-MiqAeServiceMiqProvisionRedhat < MiqAeServiceMiqProvision
-MiqAeServiceMiqProvisionRedhatViaIso < MiqAeServiceMiqProvisionRedhat
-MiqAeServiceMiqProvisionRedhatViaPxe < MiqAeServiceMiqProvisionRedhat
-MiqAeServiceMiqProvisionVmware < MiqAeServiceMiqProvision
-MiqAeServiceMiqProvisionVmwareViaNetAppRcu < MiqAeServiceMiqProvisionVmware
-MiqAeServiceMiqProvisionVmwareViaPxe < MiqAeServiceMiqProvisionVmware
-MiqAeServiceMiqRequestTask < MiqAeServiceModelBase
-MiqAeServiceServiceTemplateProvisionTask < MiqAeServiceMiqRequestTask
-MiqAeServiceVmReconfigureTask < MiqAeServiceMiqRequestTask
-....
-
-We see that there are twice as many types of task object. This is because a request to perform an action (e.g. provision a VM) can be converted into one of several types of workflow (for example to provision a VMware VM via PXE, or clone from Template).
 
 === Context
 
@@ -156,12 +162,11 @@ Much of the information in the request object is propagated to the task object, 
 
 ==== Dumping the Object Contents
 
-We can use +object_walker+ to show the difference between an automation request and task object, by setting the following +@walk_association_whitelist+:
+We can use +object_walker+ to show the difference between an automation request and task object, by setting the following +walk_association_whitelist+:
 
 [source,ruby]
 ----
-@walk_association_whitelist = \
-    { "MiqAeServiceAutomationTask" => ["automation_request", "miq_request"]}
+{"MiqAeServiceAutomationTask": ["automation_request", "miq_request"]}
 ----
 
 We can call the ObjectWalker instance from the RESTful API, using the _/api/automation_requests_ URI.
@@ -174,14 +179,14 @@ When the Automate instance (in this case ObjectWalker) runs, the request has alr
 automation_request = $evm.root['automation_task'].automation_request
 (object type: MiqAeServiceAutomationRequest, object ID: 2000000000003)
 |    automation_request.approval_state = approved   (type: String)
-|    automation_request.created_on = 2015-06-07 09:14:03 UTC  (type: ActiveSup...
+|    automation_request.created_on = 2016-06-07 09:14:03 UTC  (type: ActiveSup...
 |    automation_request.description = Automation Task   (type: String)
 |    automation_request.id = 2000000000003   (type: Fixnum)
 |    automation_request.message = Automation Request initiated   (type: String)
 |    automation_request.options[:attrs] = {:userid=>"admin"}   (type: Hash)
-|    automation_request.options[:class_name] = Methods   (type: String)
-|    automation_request.options[:delivered_on] = 2015-06-07 09:14:10 UTC  
-|    automation_request.options[:instance_name] = ObjectWalker   (type: String)
+|    automation_request.options[:class_name] = ObjectWalker   (type: String)
+|    automation_request.options[:delivered_on] = 2016-06-07 09:14:10 UTC  
+|    automation_request.options[:instance_name] = object_walker   (type: String)
 |    automation_request.options[:namespace] = Bit63/Discovery   (type: String)
 |    automation_request.options[:user_id] = 2000000000001   (type: Fixnum)
 |    automation_request.request_state = active   (type: String)
@@ -190,7 +195,7 @@ automation_request = $evm.root['automation_task'].automation_request
 |    automation_request.requester_name = Administrator   (type: String)
 |    automation_request.status = Ok   (type: String)
 |    automation_request.type = AutomationRequest   (type: String)
-|    automation_request.updated_on = 2015-06-07 09:14:13 UTC  (type: ActiveSup...
+|    automation_request.updated_on = 2016-06-07 09:14:13 UTC  (type: ActiveSup...
 |    automation_request.userid = admin   (type: String)
 |    --- virtual columns follow ---
 |    automation_request.reason = Auto-Approved   (type: String)
@@ -198,7 +203,7 @@ automation_request = $evm.root['automation_task'].automation_request
 |    automation_request.region_number = 2   (type: Fixnum)
 |    automation_request.request_type_display = Automation   (type: String)
 |    automation_request.resource_type = AutomationRequest   (type: String)
-|    automation_request.stamped_on = 2015-06-07 09:14:04 UTC  (type: ActiveSup...
+|    automation_request.stamped_on = 2016-06-07 09:14:04 UTC  (type: ActiveSup...
 |    automation_request.state = active   (type: String)
 |    automation_request.v_approved_by = Administrator   (type: String)
 |    automation_request.v_approved_by_email =    (type: String)
@@ -212,6 +217,7 @@ automation_request = $evm.root['automation_task'].automation_request
 |    automation_request.requester (type: Association)
 |    automation_request.resource (type: Association)
 |    automation_request.source (type: Association (empty))
+|    automation_request.tenant (type: Association)
 |    --- end of associations ---
 |    --- methods follow ---
 |    automation_request.add_tag
@@ -240,15 +246,15 @@ The task object is available directly from +$evm.root+:
 ....
 $evm.root['automation_task'] => #<MiqAeMethodService::MiqAeServiceAutomation \
     Task:0x0000000800a0c0>   (type: DRb::DRbObject, URI: druby://127.0.0.1:35216)
-|    $evm.root['automation_task'].created_on = 2015-06-07 09:14:10 UTC 
+|    $evm.root['automation_task'].created_on = 2016-06-07 09:14:10 UTC 
 |    $evm.root['automation_task'].description = Automation Task   (type: String)
 |    $evm.root['automation_task'].id = 2000000000003   (type: Fixnum)
 |    $evm.root['automation_task'].message = Automation Request initiated  
 |    $evm.root['automation_task'].miq_request_id = 2000000000003   (type: Fixnum)
 |    $evm.root['automation_task'].options[:attrs] = {:userid=>"admin"}  
-|    $evm.root['automation_task'].options[:class_name] = Methods   (type: String)
-|    $evm.root['automation_task'].options[:delivered_on] = 2015-06-07 09:14:10 
-|    $evm.root['automation_task'].options[:instance_name] = ObjectWalker  
+|    $evm.root['automation_task'].options[:class_name] = ObjectWalker   (type: String)
+|    $evm.root['automation_task'].options[:delivered_on] = 2016-06-07 09:14:10 
+|    $evm.root['automation_task'].options[:instance_name] = object_walker  
 |    $evm.root['automation_task'].options[:namespace] = Bit63/Discovery  
 |    $evm.root['automation_task'].options[:user_id] = 2000000000001  
 |    $evm.root['automation_task'].phase_context = {}   (type: Hash)
@@ -256,7 +262,7 @@ $evm.root['automation_task'] => #<MiqAeMethodService::MiqAeServiceAutomation \
 |    $evm.root['automation_task'].state = active   (type: String)
 |    $evm.root['automation_task'].status = retry   (type: String)
 |    $evm.root['automation_task'].type = AutomationTask   (type: String)
-|    $evm.root['automation_task'].updated_on = 2015-06-07 09:14:13 UTC 
+|    $evm.root['automation_task'].updated_on = 2016-06-07 09:14:13 UTC 
 |    $evm.root['automation_task'].userid = admin   (type: String)
 |    --- virtual columns follow ---
 |    $evm.root['automation_task'].region_description = Region 2   (type: String)
@@ -270,7 +276,7 @@ $evm.root['automation_task'] => #<MiqAeMethodService::MiqAeServiceAutomation \
 |    automation_request = $evm.root['automation_task'].automation_request
      (object type: MiqAeServiceAutomationRequest, object ID: 2000000000003)
      |    automation_request.approval_state = approved   (type: String)
-     |    automation_request.created_on = 2015-06-07 09:14:03 UTC  (type: Activ...
+     |    automation_request.created_on = 2016-06-07 09:14:03 UTC  (type: Activ...
      |    automation_request.description = Automation Task   (type: String)
      |    automation_request.id = 2000000000003   (type: Fixnum)
      |    automation_request.message = Automation Request initiated   
@@ -284,6 +290,7 @@ $evm.root['automation_task'] => #<MiqAeMethodService::MiqAeServiceAutomation \
 |    $evm.root['automation_task'].miq_request_task (type: Association (empty))
 |    $evm.root['automation_task'].miq_request_tasks (type: Association (empty))
 |    $evm.root['automation_task'].source (type: Association (empty))
+|    $evm.root['automation_task'].tenant (type: Association)
 |    --- end of associations ---
 |    --- methods follow ---
 |    $evm.root['automation_task'].add_tag
@@ -306,7 +313,7 @@ $evm.root['automation_task_id'] = 2000000000003   (type: String)
 
 ==== Comparing the Objects
 
-We can see some interesting things
+We can see some interesting things:
 
 * From the task object, the request object is available from either of two associations, its specific object type +$evm.root['automation_task'].automation_request+ and the more generic +$evm.root['automation_task'].miq_request+. These both link to the same request object, and this is the case with all of the more complex task objects - we can always follow an +miq_request+ association to get back to the request, regardless of request object type.
 * We see that the request object has several approval-specific methods that the task object doesn't have (or need):
