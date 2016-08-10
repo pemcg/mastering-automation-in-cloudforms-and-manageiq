@@ -58,7 +58,7 @@ Within each of the event stream namespaces, are classes that define the _event s
 
 [[c15i3]]
 .Event Stream Sources
-image::images/ch15_ss3.png[Screenshot,300,align="center"]
+image::images/ch15_ss3.png[Screenshot,350,align="center"]
 
 [[event-type]]
 ===== Event type
@@ -648,9 +648,9 @@ Method exited with rc=MIQ_OK
 
 The provider-specific event stream source classes and associated instances under _/System/Event/EmsEvent_ do not necessarily handle every possible event that can be raised by the provider. Sometimes we need to extend event handling to process a non-default event.
 
-We can extend the out-of-the-box event handling by creating our own instances under _/System/Event_ (ManageIQ _Botvinnik_) or _/System/Event/EmsEvent/{Provider}_ (ManageIQ _Capablanca_) to handle these non-default events caught by the EventCatcher workers.
+We can extend the out-of-the-box event handling by creating our own instances under _/System/Event/EmsEvent/{Provider}_  to handle these non-default events caught by the EventCatcher workers.
 
-As an example the *compute.instance.power_on.end* OpenStack event is not handled by default with ManageIQ _Capablanca_. If we look in _evm.log_ we see:
+As an example the *compute.instance.power_on.end* OpenStack event is not handled by default with CloudForms 4.0/ManageIQ _Capablanca_. If we look in _evm.log_ we see:
 
 ....
 Instance [/ManageIQ/System/Event/EmsEvent/OPENSTACK/ \
@@ -705,7 +705,7 @@ This will ensure that any control policies that are triggered by a *VM Power On*
 
 Phew! This has been a long theoretical chapter that has taken us on a detailed tour of how the Automation Engine handles events.
 
-We have familiarised ourselves with the component parts of the new event handling mechanism in ManageIQ _Capablanca_. We have seen how external provider events are detected ("caught"), and handled, and we have followed the event processing workflow from the detection of an RHEV provider event through the raising of the corresponding internal event and seen how related control policies and alerts are processed. 
+We have familiarised ourselves with the component parts of the new event handling mechanism in CloudForms 4.0/ManageIQ _Capablanca_. We have seen how external provider events are detected ("caught"), and handled, and we have followed the event processing workflow from the detection of an RHEV provider event through the raising of the corresponding internal event and seen how related control policies and alerts are processed. 
 
 We have seen that Automate actions involving separated requests and tasks also use event-initiated workflows, and we have seen how to extend event handling to handle additional events.
 

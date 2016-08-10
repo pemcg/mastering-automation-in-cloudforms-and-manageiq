@@ -17,6 +17,8 @@
   * [Requests and Tasks](chapter12.asciidoc)
   * [State Machines](chapter13.asciidoc)
   * [More Advanced Schema and Instance Features](chapter14.asciidoc)
+  * [Tenancy and Automate](chapter15a.asciidoc.wip)
+  * [Event Processing](chapter15.asciidoc)
 * [Part 2](part2.asciidoc)
 * [Part 3](part3.asciidoc)
 * [Part 4](part4.asciidoc)

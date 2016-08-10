@@ -101,11 +101,11 @@ This Provisioning Profile has several schema attributes defined, such as **dialo
 
 === Calling a Non-Existent Instance
 
-We can optionally add a _.missing_ instance to a class which will be executed if the actual instance name referenced in the calling URI doesn't exist. This is used in several places in the Automate Datastore, and an example can be seen in the provisioning profile class (see <<c14i6>>). Group name-specific profiles can be created to handle VM provisioning options on a per-group basis, and a profile for the EvmGroup-super_administrator group is provided out-of-the-box (see <<the-provisioning-profile>> for more details). The .missing instance in this class acts as a catch-all profile for those use groups that don't have specifically-defined profiles.
+We can optionally add a _.missing_ instance to a class which will be executed if the actual instance name referenced in a calling URI doesn't exist. This is used in several places in the Automate Datastore, and an example can be seen in the provisioning profile class (see <<c14i6>>). Group name-specific profiles can be created to handle VM provisioning options on a per-group basis, and a profile for the EvmGroup-super_administrator group is provided out-of-the-box (see <<the-provisioning-profile>> for more details). The .missing instance in this class acts as a catch-all profile for those user groups that don't have specifically-defined profiles. 
 
 
 [[c14i6]]
-.a .missing instance defining a catch-all provisioning profile
+.A .missing instance defining a catch-all provisioning profile
 image::images/ch14_ss6.png[Screenshot,350,align="center"]
 
 To support the requirements of the new Ansible Tower provider, CloudForms 4.1/ManageIQ _Darga_ extended the .missing functionality to allow the missing instance name to be caught in a variable called +_missing_instance+. This allows us to use the variable in a substitution string as the value of a schema attribute (see <<c14i7>>).
@@ -114,11 +114,11 @@ To support the requirements of the new Ansible Tower provider, CloudForms 4.1/Ma
 .Catching the missing instance name in the _missing_instance variable
 image::images/ch14_ss5.png[Screenshot,650,align="center"]
 
-If the non-existant URI __/ConfigurationManagement/AnsibleTower/Operations/JobTemplate/configure_database_server__ was called, the _.missing_ instance would be run with the *job_template_name* attribute given the value of *configure_database_server*.
+For example if we were to call the non-existant URI __/ConfigurationManagement/AnsibleTower/Operations/JobTemplate/configure_database_server__, the _.missing_ instance would be run with the *job_template_name* attribute given the run-time value of *configure_database_server*.
 
 === Summary
 
-This chapter completes our coverage of the objects that we work with in the Automate Datastore. The schema and instance features that we've learnt about here are used less frequently, but are still very useful tools to have in our scripting toolbag.
+This chapter completes our coverage of the objects and techniques that we work with in the Automate Datastore. The schema and instance features that we've learnt about here are used less frequently, but are still very useful tools to have in our scripting toolbag.
 
 
 
