@@ -169,11 +169,11 @@ We can use +object_walker+ to show the difference between an automation request 
 {"MiqAeServiceAutomationTask": ["automation_request", "miq_request"]}
 ----
 
-We can call the ObjectWalker instance from the RESTful API, using the _/api/automation_requests_ URI.
+We can call the object_walker instance from the RESTful API, using the _/api/automation_requests_ URI.
 
 ===== The Request Object
 
-When the Automate instance (in this case ObjectWalker) runs, the request has already been approved and so our +$evm.root+ only has a direct link to the task object. The request object is still reachable via an association from the task object however:
+When the Automate instance (in this case object_walker) runs, the request has already been approved and so our +$evm.root+ only has a direct link to the task object. The request object is still reachable via an association from the task object however:
 
 ....
 automation_request = $evm.root['automation_task'].automation_request

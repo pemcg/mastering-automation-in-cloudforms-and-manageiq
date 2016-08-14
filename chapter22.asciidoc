@@ -29,7 +29,7 @@ Now we edit the schema of the copied class (see <<c22i2>>).
 
 [[c22i2]]
 .Editing the schema of the copied class
-image::part2/chapter22/images/screenshot2hd.png[Screenshot,700,align="center"]
+image::images/ch22_ss2.png[ch22_ss,700,align="center"]
 
 ===== Add the new states
 
@@ -37,7 +37,7 @@ We add two more steps, *AddDisk* and *StartVM* to the bottom of the schema (see 
 
 [[c22i3]]
 .Adding two further states
-image::part2/chapter22/images/screenshot3hd.png[Screenshot,550,align="center"]
+image::images/ch22_ss3.png[ch22_ss,550,align="center"]
 
 ===== Adjust the sequence
 
@@ -45,7 +45,7 @@ Now we adjust the class schema sequence so that our new states come after **Post
 
 [[c22i4]]
 .Adjusting the class schema sequence
-image::part2/chapter22/images/screenshot4hd.png[Screenshot,450,align="center"]
+image::images/ch22_ss4.png[ch22_ss,450,align="center"]
 
 ==== Step 2. Disable Auto-Power-On
 
@@ -57,7 +57,7 @@ We copy the _/Infrastructure/VM/Provisioning/StateMachines/Methods/redhat_Custom
 
 [[c22i5]]
 .Copying the redhat_CustomizeRequest method into our own domain
-image::part2/chapter22/images/screenshot5hd.png[Screenshot,350,align="center"]
+image::images/ch22_ss5.png[ch22_ss,350,align="center"]
 
 ===== Edit the method
 
@@ -78,7 +78,7 @@ prov = $evm.root["miq_provision"]
 ####  Add the following lines
 # Set the autostart parameter to false so that RHEV won't start the VM directly
 $evm.log(:info, "Setting vm_auto_start to false")
-prov.set_option(:vm_auto_start, [false, 0])
+prov.set_option(:vm_auto_start, false)
 ####  End of additional lines
 
 ----
@@ -89,7 +89,7 @@ We'll create a new namespace _Integration/RedHat_ in our own domain, and create 
 
 [[c22i6]]
 .Adding two new instances and methods
-image::part2/chapter22/images/screenshot6hd.png[Screenshot,320,align="center"]
+image::images/ch22_ss6.png[ch22_ss,320,align="center"]
 
 Next we'll examine the interesting parts of the code in each of the methods.
 
@@ -298,7 +298,7 @@ Now we edit our copied _Provision VM from Template_ state machine instance to ad
 
 [[c22i7]]
 .Adding the instance URIs to the provisioning state machine
-image::part2/chapter22/images/screenshot7hd.png[screenshot]
+image::images/ch22_ss7.png[ch22_ss]
 
 ==== Step 5. Provision a Virtual Machine
 
@@ -319,7 +319,7 @@ We can take a look at the number of disks in the virtual machine Details page in
 
 [[c22i8]]
 .VM details pane showing additional disk
-image::part2/chapter22/images/screenshot8hd.png[screenshot]
+image::images/ch22_ss8.png[ch22_ss]
 
 Here we see the second disk attached to the virtual machine. Our modified VM provisioning workflow has been successful.
 

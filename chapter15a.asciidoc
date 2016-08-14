@@ -1,3 +1,4 @@
 [[tenancy_and_automate]]
 == Tenancy and Automate
 
+Since CloudForms 4.0/ManageIQ _Capablanca_, all Automate operations have been performed within the context of a Tenant for role-based access control.

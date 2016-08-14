@@ -24,6 +24,8 @@
   * [The Provisioning Profile](chapter17.asciidoc)
   * [Approval](chapter18.asciidoc)
   * [Quota Management](chapter19.asciidoc)
+  * [The Options Hash](chapter20.asciidoc)
+  * [The Provisioning State Machine](chapter21.asciidoc)
 * [Part 3](part3.asciidoc)
 * [Part 4](part4.asciidoc)
 * [Part 5](part5.asciidoc)
