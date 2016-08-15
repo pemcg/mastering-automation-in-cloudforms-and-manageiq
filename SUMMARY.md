@@ -32,7 +32,7 @@
   * [The Provisioning Dialog](chapter25.asciidoc)
   * [Virtual Machine Provisioning Objects](chapter26.asciidoc)
   * [Creating Provisioning Requests Programmatically](chapter27.asciidoc)
-  * [(placeholder) Integrating with Satellite 6 During Provisioning](chapter28.asciidoc)
+  * [(placeholder) Integrating with Satellite 6 During Provisioning](chapter28.asciidoc.wip)
 * [Part 3](part3.asciidoc)
   * [(placeholder) Automation Using Ansible](chapter15a.asciidoc.wip)
   * [(placeholder) Running Ansible Tower Jobs from Automate](chapter15a.asciidoc.wip)
