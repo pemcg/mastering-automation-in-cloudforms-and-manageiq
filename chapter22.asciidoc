@@ -53,7 +53,10 @@ We're going to override the default behaviour of the VM provisioning workflow wh
 
 ===== Copy the method
 
-We copy the _/Infrastructure/VM/Provisioning/StateMachines/Methods/redhat_CustomizeRequest_ method from the _ManageIQ_ domain into ours (see <<c22i5>>).
+We copy the _/Infrastructure/VM/Provisioning/StateMachines/Methods/redhat_CustomizeRequest_ method from the _ManageIQ_ domain (if we're using ManageIQ) or from the _RedHat_ domain (if we're using CloudForms) into ours (see <<c22i5>>).
+
+[NOTE]
+The _RedHat_ domain contains an enhanced version of _redhat_CustomizeRequest_. We must ensure that we copy and extend the correct version for our product.
 
 [[c22i5]]
 .Copying the redhat_CustomizeRequest method into our own domain
@@ -327,7 +330,7 @@ Here we see the second disk attached to the virtual machine. Our modified VM pro
 
 This chapter has shown how we can extend the provisioning state machine to add our own workflow stages. Although this has been a simple example, some kind of provisioning workflow extension is very common in practice. We see another example in <<integrating-with-satellite-6-during-provisioning>> where we extend the workflow to register our newly provisioned virtual machine with a Satellite 6 server.
 
-The example has also shown the _Integration_ functionality of ManageIQ, and how we can use API calls - in this case using the REST client - to extend our workflows into the wider enterprise. 
+The example has also shown the _Integration_ functionality of CloudForms/ManageIQ, and how we can use API calls - in this case using the REST client - to extend our workflows into the wider enterprise. 
 
 ==== Further Reading
 

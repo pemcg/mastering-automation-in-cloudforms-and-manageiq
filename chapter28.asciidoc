@@ -52,7 +52,7 @@ We'll create two host groups in Satellite 6, *Generic_RHEL6_Servers* and *Generi
 
 [[c28i1]]
 .Preparation of two Satellite 6 host groups
-image::part2/chapter28/images/screenshot1hd.png[Screenshot,370,align="center"]
+image::images/ch28_ss1.png[Screenshot,370,align="center"]
 
 These host groups will define defaults for:
 
@@ -74,7 +74,7 @@ We'll create two activation keys in Satellite 6, *RHEL6-Generic* and *RHEL7-Gene
 
 [[c28i2]]
 .Preparation of two Satellite 6 activation keys
-image::part2/chapter28/images/screenshot2hd.png[Screenshot,325,align="center"]
+image::images/ch28_ss2.png[Screenshot,325,align="center"]
 
 These activation keys will define defaults for:
 
@@ -161,7 +161,7 @@ Both of these states must be added at some point _after_ the VM has been provisi
 
 [[c28i3]]
 .RegisterSatellite and ActivateSatellite states added to the VM provision state machine
-image::part2/chapter28/images/screenshot3hd.png["RegisterSatellite and ActivateSatellite States Added to the VM Provision State Machine"]
+image::images/ch28_ss3.png["RegisterSatellite and ActivateSatellite States Added to the VM Provision State Machine"]
 
 ==== RegisterSatellite
 
@@ -169,7 +169,7 @@ Our new _RegisterSatellite_ instance schema can store some more defaults. In thi
 
 [[c28i4]]
 .RegisterSatellite instance schema
-image::part2/chapter28/images/screenshot4hd.png[Screenshot,300,align="center"]
+image::images/ch28_ss4.png[Screenshot,300,align="center"]
 
 The _register_satellite_ method can access these in the usual way, from +$evm.object+:
 
@@ -285,7 +285,7 @@ Our new *ActivateSatellite* instance schema can also store some defaults. In thi
 
 [[c28i5]]
 .ActivateSatellite instance schema
-image::part2/chapter28/images/screenshot5hd.png[Screenshot,300,align="center"]
+image::images/ch28_ss5.png[Screenshot,300,align="center"]
 
 Once again we check that the system being provisioned is running Linux, and select the activation key based on the operating system version:
 
@@ -426,13 +426,13 @@ First we check that we have no hosts with _test_ in their name in our Satellite 
 
 [[c28i6]]
 .The number of "test" hosts in Satellite before provisioning
-image::part2/chapter28/images/screenshot6hd.png[screenshot]
+image::images/ch28_ss6.png[screenshot]
 
 We'll provision a RHEL 6 virtual machine and call it _rhel6test_ (see <<c28i7>>).
 
 [[c28i7]]
 .Provisioning a new virtual machine called "rhel6test"
-image::part2/chapter28/images/screenshot7hd.png["Provisioning a new Virtual Machine"]
+image::images/ch28_ss7.png["Provisioning a new Virtual Machine"]
 
 Once the VM has finished cloning, we see the output from _register_satellite_ in _automation.log_:
 
@@ -455,7 +455,7 @@ In Satellite we see the new _host_ entry, but the 'N' icon indicates that no rep
 
 [[c28i8]]
 .Newly Added host Record
-image::part2/chapter28/images/screenshot8hd.png["Newly Added host Record"]
+image::images/ch28_ss8.png["Newly Added host Record"]
 
 Soon afterwards we see the output from _activate_satellite_ in _automation.log_:
 
@@ -517,13 +517,13 @@ In Satellite we now see the new _content host_ entry, showing that all packages 
 
 [[c28i9]]
 .Newly added content host Record
-image::part2/chapter28/images/screenshot9hd.png["Newly Added content host Record"]
+image::images/ch28_ss9.png["Newly Added content host Record"]
 
 We also see that the new _host_ record is shown as _Active_, showing that the Puppet agent is connecting to the Puppet Master (see <<c28i10>>).
 
 [[c28i10]]
 .Host record activated
-image::part2/chapter28/images/screenshot10hd.png["host Record Activated"]
+image::images/ch28_ss10.png["host Record Activated"]
 
 === Summary
 

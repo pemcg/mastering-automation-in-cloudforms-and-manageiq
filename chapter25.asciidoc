@@ -13,7 +13,7 @@ The provisioning dialog contains a number of tabs (**Request**, **Purpose**, **C
 
 [[c25i1]]
 .The hardware tab of the VM provisioning dialog
-image::part2/chapter25/images/screenshot1hd.png[screenshot]
+image::images/ch25_ss1.png[screenshot]
 
 The provisioning dialog is context-sensitive, so a different set of input field options will be displayed when provisioning into VMware or OpenStack, for example.
 
@@ -72,13 +72,19 @@ Dialog tabs and fields have four useful attributes that can be set:
 
 === Selection of VM Provisioning Dialog
 
-There are a number of VM provisioning dialogs supplied out-of-the-box with ManageIQ, each of which provides the context sensitivity for the particular provisioning operation. They are found under the
+There are a number of VM provisioning dialogs supplied out-of-the-box with CloudForms and ManageIQ, each of which provides the context sensitivity for the particular provisioning operation. They are found under the
 *Automate -> Customization* menu, in the *Provisioning Dialogs* accordion.
 
 [options="header",]
 |=======================================================================
 |Name |Description
 |miq_provision_amazon_dialogs_template |Sample Amazon Instance
+Provisioning Dialog
+
+|miq_provision_azure_dialogs_template |Sample Azure Instance
+Provisioning Dialog
+
+|miq_provision_google_dialogs_template |Sample Google Instance
 Provisioning Dialog
 
 |miq_provision_microsoft_dialogs_template |Sample Microsoft VM
@@ -93,22 +99,20 @@ Dialog
 |miq_provision_redhat_dialogs_template |Sample RedHat VM Provisioning
 Dialog
 
-|miq_provision_dialogs_clone_to_template |Sample VM Clone to Template
+|miq_provision_vmware_dialogs_clone_to_template |Sample VM Clone to Template
 Dialog
 
-|miq_provision_dialogs_clone_to_vm |Sample VM Clone to VM Dialog
+|miq_provision_vmware_dialogs_clone_to_vm |Sample VM Clone to VM Dialog
 
 |miq_provision_dialogs_pre_sample |Sample VM Pre-Provisioning Dialog
 
 |miq_provision_dialogs |Sample VM Provisioning Dialog
 
-|miq_provision_dialogs_template |Sample VM Provisioning Dialog
+|miq_provision_vmware_dialogs_template |Sample VM Provisioning Dialog
 (Template)
-
-|miq_provision_dialogs-user |Sample VM Provisioning Dialog for User
 |=======================================================================
 
-The various dialogs contain values that are relevant to their target provider type (Amazon, OpenStack, Microsoft, VMware or RedHat), and also to the operation type (clone from template, clone to template, or clone to vm).
+The various dialogs contain values that are relevant to their target provider type (Amazon, Azure, Google, OpenStack, Microsoft, VMware or RedHat), and also to the operation type (clone from template, clone to template, or clone to vm).
 
 The selection of VM provisioning dialog to display to a user depends on the *dialog_name* attribute in the provisioning group profile. The default *dialog_name* value for the _.missing_ and _EvmGroup-super_administrator_ profiles is:
 
@@ -116,12 +120,25 @@ The selection of VM provisioning dialog to display to a user depends on the *dia
 ${#dialog_name_prefix}_${/#dialog_input_request_type}
 ....
 
-The two variables are substituted at runtime, and provide the context sensitivity. The *dialog_name_prefix* value is determined by the _vm_dialog_name_prefix_ method, which contains the lines:
+The two variables are substituted at runtime, and provide the context sensitivity. The *dialog_name_prefix* value is determined by the _vm_dialog_name_prefix_ method, which contains the following code:
 
 [source,ruby]
 ----
+platform  = $evm.root['platform']
+$evm.log("info", "Detected Platform:<#{platform}>")
+
+if platform.nil?
+  source_id = $evm.root['dialog_input_src_vm_id']
+  source    = $evm.vmdb('vm_or_template', source_id) unless source_id.nil?
+  if source
+    platform = source.model_suffix.downcase
+  else
+    platform = "vmware"
+  end
+end
+
 dialog_name_prefix = "miq_provision_#{platform}_dialogs"
-dialog_name_prefix = "miq_provision_dialogs" if platform == "vmware"
+$evm.object['dialog_name_prefix'] = dialog_name_prefix
 ----
 
 The *dialog_input_request_type* value is translated by a Rails class _MiqRequestWorkflow_ to be the instance name of the VM provisioning state machine that we are using - that is, _template_, _clone_to_vm_ or _clone_to_template_.
@@ -156,7 +173,7 @@ In some cases it's useful to be able to expand the range of options presented by
 
 [[c25i2]]
 .Default memory size options
-image::part2/chapter25/images/screenshot2hd.png[Screenshot,380,align="center"]
+image::images/ch25_ss2.png[Screenshot,380,align="center"]
 
 These options come from the +:vm_memory+ dialog section:
 
@@ -202,13 +219,13 @@ Now we copy the _/Infrastructure/VM/Provisioning/Profile_ class into our own dom
 
 [[c25i3]]
 .Creating a new profile instance
-image::part2/chapter25/images/screenshot3hd.png[Screenshot,350,align="center"]
+image::images/ch25_ss3.png[Screenshot,350,align="center"]
 
 The *dialog_name* field in the new profile should contain the name of our new dialog (see <<c25i4>>).
 
 [[c25i4]]
 .The dialog_name schema field value changed to the new profile name
-image::part2/chapter25/images/screenshot4hd.png[Screenshot,500,align="center"]
+image::images/ch25_ss4.png[Screenshot,500,align="center"]
 
 ===== Testing the provisioning dialog
 
@@ -216,7 +233,7 @@ To test this we login as a user who is a member of the *Bit63Group-user* group, 
 
 [[c25i5]]
 .Expanded range of memory sizes
-image::part2/chapter25/images/screenshot5hd.png[Screenshot,380,align="center"]
+image::images/ch25_ss5.png[Screenshot,380,align="center"]
 
 === Summary
 
