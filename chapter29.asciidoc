@@ -6,7 +6,7 @@ When we design our services in ManageIQ, we try to simplify the ordering process
 
 [[c29i1]]
 .Ordering VMs in 'T-shirt' sizes
-image::part3/chapter29/images/screenshot1hd.png[Screenshot,450,align="center"]
+image::images/ch29_ss1.png[Screenshot,450,align="center"]
 
 We have already seen how to create a simple service dialog in <<working-with-virtual-machines>>. This chapter will discuss service dialogs in more detail, and show how we can create _dynamic elements_ that are populated at runtime when the user orders the catalog item.
 
@@ -16,7 +16,7 @@ The service dialog that we created in <<working-with-virtual-machines>> used two
 
 [[c29i2]]
 .The available dialog element types
-image::part3/chapter29/images/screenshot2hd.png[Screenshot,300,align="center"]
+image::images/ch29_ss2.png[Screenshot,300,align="center"]
 
 Service dialog elements gained several useful new features with recent versions of ManageIQ, as we'll see in this chapter.
 
@@ -28,7 +28,7 @@ Dynamic elements are populated from a method, called either when the service dia
 
 ==== Populating the Dynamic Fields
 
-The dynamic element has its own +$evm.object+. We need to populate some predefined hash key/value pairs in this object to define the dialog field settings, and to load the data to be displayed. Here is an example of how we do this:
+The dynamic element has its own `$evm.object`. We need to populate some predefined hash key/value pairs in this object to define the dialog field settings, and to load the data to be displayed. Here is an example of how we do this:
 
 [source,ruby]
 ----
@@ -50,7 +50,7 @@ dialog_field["values"] = {2 => "2GB", 4 => "4GB", 16 => "16GB"}
 dialog_field["default_value"] = 2
 ----
 
-If the dynamic element type is a drop-down list, the +values+ key of this hash is also a hash of key/value pairs. Each key/value pair in this hash represents a value to be displayed in the element, and the corresponding 'data_type' value to be returned to Automate as the **dialog_*** option if that choice is selected.
+If the dynamic element type is a drop-down list, the `values` key of this hash is also a hash of key/value pairs. Each key/value pair in this hash represents a value to be displayed in the element, and the corresponding 'data_type' value to be returned to Automate as the **dialog_*** option if that choice is selected.
 
 Here is another, more real-world example of the versatility of dynamic elements:
 
@@ -89,7 +89,7 @@ ManageIQ _Anand_ added the ability to mark a text box as protected, which result
 
 [[c29i3]]
 .Dialog that prompts for a password in a protected element
-image::part3/chapter29/images/screenshot3hd.png[Screenshot,480,align="center"]
+image::images/ch29_ss3.png[Screenshot,480,align="center"]
 
 ManageIQ _Botvinnik_ introduced the concept of read-only elements for service dialogs, that cannot be changed once displayed. Having a text box dynamically populated, but read-only, makes it ideal for displaying messages.
 
@@ -121,11 +121,11 @@ ManageIQ _Botvinnik_ introduced the ability to add input field validation to dia
 
 [[c29i4]]
 .Validator rule for an IP address element
-image::part3/chapter29/images/screenshot4hd.png[Screenshot,480,align="center"]
+image::images/ch29_ss4.png[Screenshot,480,align="center"]
 
 === Using the Input from One Element in Another Element's Dynamic Method
 
-We can link elements in such a way that a user's input in one element can be used by subsequent dynamic elements that are _refreshable_. The subsequent dynamic method, when refreshed, can access the first element's input value using +$evm.root['dialog_elementname']+ or +$evm.object['dialog_elementname']+. Elements can be refreshed with a *Refresh* button, but ManageIQ _Capablanca_ added the ability to mark dynamic elements with the *Auto refresh* characteristic. There is a corresponding characteristic *Auto Refresh other fields when modified* that we can apply to the initial element at the start of this refresh chain.
+We can link elements in such a way that a user's input in one element can be used by subsequent dynamic elements that are _refreshable_. The subsequent dynamic method, when refreshed, can access the first element's input value using `$evm.root['dialog_elementname']` or `$evm.object['dialog_elementname']`. Elements can be refreshed with a *Refresh* button, but ManageIQ _Capablanca_ added the ability to mark dynamic elements with the *Auto refresh* characteristic. There is a corresponding characteristic *Auto Refresh other fields when modified* that we can apply to the initial element at the start of this refresh chain.
 
 We can use this in several useful ways, such as to populate a dynamic list based on a value input previously, or to create a validation method.
 
@@ -181,11 +181,11 @@ exit MIQ_OK
 
 This chapter shows the flexibility we have when we build our service dialogs. We can use dynamic methods to pre-load appropriate options into dialog elements, thereby customising the dialog options on a per-user basis. We can also create confirmation text boxes that allow users to validate their inputs, and thus allow changes if necessary before clicking *Submit*.
 
-It is worth noting that dynamic dialog methods always run on the WebUI appliance that we are logged into, whether or not this appliance has the _Automation Engine_ server role set. This can have unexpected consequences. Our real-world ManageIQ installations may comprise several appliances distributed between multiple _zones_, often with firewalls between (see <<c29i5>>). 
+It is worth noting that dynamic dialog methods always run on the WebUI appliance that we are logged into, whether or not this appliance has the _Automation Engine_ server role set. This can have unexpected consequences. Our real-world CloudForms or ManageIQ installations may comprise several appliances distributed between multiple _zones_, often with firewalls between (see <<c29i5>>). 
 
 [[c29i5]]
-.Typical real-world ManageIQ installation with multiple appliances and zones
-image::part3/chapter29/images/separated_zones.png[Screenshot,500,align="center"]
+.Typical real-world CloudForms installation with multiple appliances and zones
+image::images/ch29_separated_zones.png[Screenshot,500,align="center"]
 
 If we write a dynamic dialog method to retrieve any information from an external system, we might expect the method to run on any of our provider zone 'worker' appliances, but it doesn't. We must ensure that the WebUI zone firewalls allow our WebUI appliances to directly connect to any external systems that our dialog methods need access to.
 

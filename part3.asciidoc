@@ -1,14 +1,8 @@
 [[part3]]
 [part]
 :numbered!:
-== Working with Services
+== Configuring Virtual Machines
 
-We saw in Part II how we can provision virtual machines from the WebUI. This process involves entering values for the many provisioning dialog options, such as our name and email address, and the desired configuration of the virtual machine; the number of CPUs, amount of memory, disk format, and vLAN for example.
+We saw in Part II how we can provision virtual machines from the WebUI. CloudForms 4.1 and ManageIQ _Darga_ have added the ability to be able to launch configuration jobs via Ansible Tower. This enables us to both provision and configure virtual machines from Automate.
 
-CloudForms and ManageIQ also enable us to create service catalogs that enable us to provision pre-configured virtual machines from a single *Order* button (see <<p3i1>>).
-
-[[p3i1]]
-.Simple Service Catalog
-image::images/pt3_ss1.png["Simple Service Catalog"]
-
-In Part III we'll learn about creating and using services.
+In Part III we'll learn about configuring virtual machines using Ansible and Ansible Tower.

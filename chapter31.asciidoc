@@ -18,7 +18,7 @@ The schema for the _CatalogItemInitialization_ instance is shown in <<c31i1>>.
 
 [[c31i1]]
 .The schema of the CatalogItemInitialization state machine instance
-image::part3/chapter31/images/screenshot1hd.png[Screenshot,550,align="center"]
+image::images/ch31_ss1.png[Screenshot,600,align="center"]
 
 We can see that the schema uses the *pre1* state to add a dialog parser (common between the _CatalogItemInitialization_ and _CatalogBundleInitialization_ state machines). It also uses the *pre2* state to specify the _CatalogItemInitialization_ method, which sets the child object +options_hash+ values and/or tags accordingly.
 
@@ -42,7 +42,7 @@ For example we can create a service dialog element as shown in <<c31i2>>.
 
 [[c31i2]]
 .Service dialog element to prompt for an options hash key
-image::part3/chapter31/images/screenshot2hd.png[Screenshot,380,align="center"]
+image::images/ch31_ss2.png[Screenshot,380,align="center"]
 
 The resulting value input from this dialog at runtime will be propagated to the child task's options hash as:
 
@@ -75,7 +75,7 @@ For example we can prompt for a tag in the *department* category by naming the s
 
 [[c31i3]]
 .Service dialog element to prompt for a tag value
-image::part3/chapter31/images/screenshot3hd.png[Screenshot,380,align="center"]
+image::images/ch31_ss3.png[Screenshot,380,align="center"]
 
 The value input into the service dialog element at runtime should be a tag within this tag category. When an element of this type is processed by the _CatalogItemInitialization_ method, if either the category or tag doesn't currently exist, it will be created.
 
