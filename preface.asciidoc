@@ -37,13 +37,13 @@ Both CloudForms and ManageIQ are web applications, so interaction is predominant
 
 The descriptions and screenshots in this book are taken from the CloudForms 4.1 or ManageIQ _Darga_ releases.
 
-=== Navigating This Book
+=== Navigating This Book (to be completed as the book progresses - pemcg)
 
-The book is divided into six parts. 
+The book is divided into seven parts. 
 
 ==== Part I "Working With Automate"
 
-Chapter 1, _Introduction to CloudForms and ManageIQ_, sets the scene and describes the capabilities of CloudForms and ManageIQ as a cloud management platforms.
+Chapter 1, _Introduction to CloudForms and ManageIQ_, sets the scene and describes the capabilities of CloudForms and ManageIQ as cloud management platforms.
 
 Chapter 2, _Introduction to the Automate Datastore_, takes us on a tour of the objects that we work with when we use the Automate capabilities of CloudForms and ManageIQ.
 
@@ -71,37 +71,45 @@ Chapter 13, _State Machines_, introduces us to state machines, and how we can us
 
 Chapter 14, _More Advanced Schema and Instance Features_, discusses the more advanced but less frequently used schema and instance features; Messages, Assertions, Collections, and the .missing instance.
 
-Chapter 15, _Event Processing_, describes the way that CloudForms and ManageIQ respond to external events such as a virtual machine shutting down, and traces the event handling sequence through the Automate Datastore. It also shows how Automate manages its own internal events such as +request_started+.
+Chapter 15, _Tenancy and Automate_, 
+
+Chapter 16, _Event Processing_, describes the way that CloudForms and ManageIQ respond to external events such as a virtual machine shutting down, and traces the event handling sequence through the Automate Datastore. It also shows how Automate manages its own internal events such as +request_started+.
 
 ==== Part II "Provisioning Virtual Machines"
 
-Chapter 16, _Provisioning a Virtual Machine_, introduces concept of virtual machine provisioning, the most complex out-of-the-box Automate operation that is performed by CloudForms and ManageIQ.
+Chapter 17, _Provisioning a Virtual Machine_, introduces concept of virtual machine provisioning, the most complex out-of-the-box Automate operation that is performed by CloudForms and ManageIQ.
 
-Chapter 17, _The Provisioning Profile_, describes how the provisioning profile is referenced to determine the initial group-specific processing that is performed at the start of a virtual machine provisioning operation.
+Chapter 18, _The Provisioning Profile_, describes how the provisioning profile is referenced to determine the initial group-specific processing that is performed at the start of a virtual machine provisioning operation.
 
-Chapter 18, _Approval_, shows how the approval workflow operates, and how we can adjust the auto-approval criteria such as the number of virtual machines to be provisioned, or the amount of storage, to suit our needs.
+Chapter 19, _Approval_, shows how the approval workflow operates, and how we can adjust the auto-approval criteria such as the number of virtual machines to be provisioned, or the amount of storage, to suit our needs.
 
-Chapter 19, _Quota Management_, gives details of the CloudForms and ManageIQ quota handling mechanism, and how it enables us to establish quotas for tenants or groups.
+Chapter 20, _Quota Management_, gives details of the CloudForms and ManageIQ quota handling mechanism, and how it enables us to establish quotas for tenants or groups.
 
-Chapter 20, _The Options Hash_, explains the importance of a data structure called the _options hash_, and how we can use it to retrieve and store variables to customise the virtual machine provisioning operation.
+Chapter 21, _The Options Hash_, explains the importance of a data structure called the _options hash_, and how we can use it to retrieve and store variables to customise the virtual machine provisioning operation.
 
-Chapter 21, _The Provisioning State Machine_, discusses the stages in the state machine that governs the sequence of operations involved in provisioning a virtual machine.
+Chapter 22, _The Provisioning State Machine_, discusses the stages in the state machine that governs the sequence of operations involved in provisioning a virtual machine.
 
-Chapter 22, _Customising Virtual Machine Provisioning_, is a practical example showing how we can customise the state machine and include our own Methods to add a second hard disk during the virtual machine provisioning operation.
+Chapter 23, _Customising Virtual Machine Provisioning_, is a practical example showing how we can customise the state machine and include our own Methods to add a second hard disk during the virtual machine provisioning operation.
 
-Chapter 23, _Virtual Machine Naming During Provisioning_, explains how we can customise the _naming_ logic that determines the name given to the newly provisioned virtual machine.
+Chapter 24, _Virtual Machine Naming During Provisioning_, explains how we can customise the _naming_ logic that determines the name given to the newly provisioned virtual machine.
 
-Chapter 24, _Virtual Machine Placement During Provisioning_, explains how we can customise the _placement_ logic that determines the host, cluster and datastore locations for our newly provisioned virtual machine.
+Chapter 25, _Virtual Machine Placement During Provisioning_, explains how we can customise the _placement_ logic that determines the host, cluster and datastore locations for our newly provisioned virtual machine.
 
-Chapter 25, _The Provisioning Dialog_, describes the WebUI dialogs that prompt for the parameters that are required before a new virtual machine can be provisioned. The chapter also explains how the dialogs can be customised to expand optional ranges for items like size of memory, or to present a cut down bespoke dialog to certain user groups.
+Chapter 26, _The Provisioning Dialog_, describes the WebUI dialogs that prompt for the parameters that are required before a new virtual machine can be provisioned. The chapter also explains how the dialogs can be customised to expand optional ranges for items like size of memory, or to present a cut down bespoke dialog to certain user groups.
 
-Chapter 26, _Virtual Machine Provisioning Objects_, details the four main objects that we work with when we write Ruby scripts to interact with the virtual machine provisioning process.
+Chapter 27, _Virtual Machine Provisioning Objects_, details the four main objects that we work with when we write Ruby scripts to interact with the virtual machine provisioning process.
 
-Chapter 27, _Creating Provisioning Requests Programmatically_, shows how we can initiate a virtual machine provisioning operation from an automation script, instead of the Web User Interface.
+Chapter 28, _Creating Provisioning Requests Programmatically_, shows how we can initiate a virtual machine provisioning operation from an automation script, instead of the Web User Interface.
 
-Chapter 28, _Integrating with Satellite 6 During Provisioning_, is a practical example showing how to automate the registration of a newly created virtual machine with Red Hat Satellte 6, both as a _host_ and _content host_.
+==== Part III "Automation using Ansible Tower"
 
-==== Part III "Working with Services"
+Chapter 29, _Automation using Ansible_
+
+Chapter 30, _Running Ansible Tower Jobs from Automate_
+
+Chapter 31, _Integrating with Satellite 6 During Provisioning_, is a practical example showing how to automate the registration of a newly created virtual machine with Red Hat Satellte 6, both as a _host_ and _content host_.
+
+==== Part IV "Working with Services"
 
 Chapter 29, _Service Dialogs_, introduces the components that make up a _service dialog_, including elements that can be dynamically populated by Ruby methods.
 
@@ -125,13 +133,13 @@ Chapter 38, _Service Reconfiguration_, describes how we can create reconfigurabl
 
 Chapter 39, _Service Tips and Tricks_, mentions some useful tips to remember when developing services.
 
-==== Part IV "Retirement"
+==== Part V "Retirement"
 
 Chapter 40, _Virtual Machine and Instance Retirement_, discusses the retirement process for virtual machines and instances.
 
 Chapter 41, _Service Retirement_, discusses the retirement process for services.
 
-==== Part V "Integration"
+==== Part VI "Integration"
 
 Chapter 42, _Calling Automate from the RESTful API_, shows how we can make external calls _into_ CloudForms or ManageIQ to run Automate Instances via the RESTful API. We can also return results to our caller in this way, enabling us to create our own pseudo-API endpoints within the two platforms.
 
@@ -139,7 +147,7 @@ Chapter 43, _Automation Request Approval_, explains how to customise the default
 
 Chapter 44, _Calling External Services_, shows the various ways that we can call _out_ from Automate to integrate with our wider enterprise. This includes making outbound REST and SOAP calls, connecting to MySQL databases, and interacting with OpenStack using the _fog_ gem.
 
-==== Part VI "Miscellaneous" 
+==== Part VII "Miscellaneous" 
 
 Chapter 45, _Distributed Automation Processing_, describes how Automate has been designed to be horizontally scalable. The chapter describes the mechanism by which automation requests are distributed between multiple appliances in a Region.
 

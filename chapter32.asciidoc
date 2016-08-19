@@ -27,18 +27,11 @@ The schema for the _ServiceProvisionRequestApproval/Default_ state machine is sh
 .ServiceProvisionRequestApproval/Default state machine schema
 image::images/ch32_ss1.png[Screenshot,550,align="center"]
 
-The methods _pending_request_ and _approve_request_ are the same as their counterparts for virtual machine provisioning approval. The default value of _validate_request_ does nothing, so this state machine Instance will auto-approve all service provisioning requests. We can
-
-|====
-| approval_type = $evm.object['approval_type'].downcase
-|  | $evm.log("info", "approval_type: [#{approval_type}]")
-|  | 
-|  | $evm.root['ae_result'] = 'error' if approval_type != 'auto'
-|====
+The methods _pending_request_ and _approve_request_ are the same as their counterparts for virtual machine provisioning approval. The default value of _validate_request_ does nothing, so this state machine instance will auto-approve all service provisioning requests. 
 
 ==== Customising Approval
 
-If universal auto-approval is not the required behaviour, we can copy the _ServiceProvisionRequestApproval/Default_ state machine methods to our own domain and edit them as necessary.
+If universal auto-approval is not the required behaviour, we can copy the _ServiceProvisionRequestApproval/Default_ state machine methods to our own domain and edit them as necessary. footnote:[Nick Catling from Red Hat has written a nice example of how we can customise service provisioning approval on a per-group basis if we wish. The code is available on his github repository:  https://github.com/supernoodz/CloudForms/tree/master/Approval]
 
 === Quota
 
@@ -48,7 +41,10 @@ The quota checking process for a service provision request starts with the _/Sys
 
 ==== Email
 
-There are no email instances that handle the sending of service approval denied/pending and quota exceeded emails. We would have to implement this functionality ourselves if we wish to receive such emails.
+In ManageIQ there are no email instances that handle the sending of service "approval denied/pending" and "quota exceeded" emails. We would have to implement this functionality ourselves if we wish to send such emails. 
+
+CloudForms does provide suitable email instances in the RedHat domain, but by default they are not wired in to any policy instances. If we wish to use them we can add a policy instance called __/System/Policy/ServiceTemplateProvisionRequest_denied__ to our own domain. This should contain a relationship to the __/Service/Provisioning/Email/ServiceTemplateProvisionRequest_Denied__ email
+instance in the RedHat domain.
 
 === Summary
 

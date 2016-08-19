@@ -72,7 +72,7 @@ Dialog tabs and fields have four useful attributes that can be set:
 
 === Selection of VM Provisioning Dialog
 
-There are a number of VM provisioning dialogs supplied out-of-the-box with CloudForms and ManageIQ, each of which provides the context sensitivity for the particular provisioning operation. They are found under the
+Several VM provisioning dialogs are supplied out-of-the-box with CloudForms and ManageIQ, each of which provides the context sensitivity for the particular provisioning operation. They are found under the
 *Automate -> Customization* menu, in the *Provisioning Dialogs* accordion.
 
 [options="header",]

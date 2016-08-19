@@ -155,13 +155,14 @@ _CloudForms Management Engine_ is the name of the CloudForms virtual appliance t
 .Summary of the relative project and product versions
 [options="header"]
 |=======
-|ManageIQ project release|CloudForms Management Engine version|CloudForms version
-||5.1|2.0
-||5.2|3.0
-|Anand|5.3|3.1
-|Botvinnik|5.4|3.2
-|Capablanca|5.5|4.0
-|Darga|5.6|4.1
+|ManageIQ project release|ManageIQ sprints|CloudForms Management Engine version|CloudForms version
+|||5.1|2.0
+|||5.2|3.0
+|Anand|1 - 12|5.3|3.1
+|Botvinnik|13 - 22|5.4|3.2
+|Capablanca|23 - 33|5.5|4.0
+|Darga|34 - 42| 5.6|4.1
+|Euwe| 43 -||
 |=======
 
 === Summary

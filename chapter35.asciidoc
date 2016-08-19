@@ -9,41 +9,39 @@ In this chapter we will look at some of the objects involved in provisioning a s
 
 For this example:
 
-* We are using ManageIQ _Botvinnik_
-* The provider is VMware
-* The service catalog item name that we've ordered from is called "Web Server"
-* The service catalog item was created to clone from a VMware template called "rhel65-template"
+* We are using CloudForms 4.1
+* The provider is RHEV
+* The service catalog item name that we've ordered from is called "RHEL 7.2 Server (RHEV)"
+* The service catalog item was created to clone from a RHEV template called "rhel72-generic"
 * The new service name is "My New Service"
 * The resulting service contains a VM called test05.
 
-We can use _object_walker_ with the following +@walk_association_whitelist+ to dump the objects:
+We can use _object_walker_ with the following +walk_association_whitelist+ to dump the objects:
 
 [source,ruby]
 ----
 
-{ 'MiqAeServiceServiceTemplateProvisionTask'  => ['source',
-                                                 'destination',
-                                                 'miq_request',
-                                                 'miq_request_tasks',
-                                                 'service_resource'],
-'MiqAeServiceServiceTemplateProvisionRequest' => ['miq_request',
-                                                  'miq_request_tasks',
-                                                  'requester',
-                                                  'resource',
-                                                  'source'],
-'MiqAeServiceServiceTemplate'                 => ['service_resources'],
-'MiqAeServiceServiceResource'                 => ['resource',
-                                                  'service_template'],
-'MiqAeServiceMiqProvisionVmware'              => ['source',
-                                                  'destination',
-                                                  'miq_request'],
-'MiqAeServiceMiqProvisionRequestTemplate'     => ['source',
-                                                  'destination'],
-'MiqAeServiceVmVmware'                        => ['service'] }
+{ 'MiqAeServiceServiceTemplateProvisionTask': ['source',
+                                               'destination',
+                                               'miq_request',
+                                               'miq_request_tasks',
+                                               'service_resource'],
+'MiqAeServiceServiceTemplateProvisionRequest': ['miq_request',
+                                                'miq_request_tasks',
+                                                'requester',
+                                                'resource',
+                                                'source'],
+'MiqAeServiceServiceTemplate': ['service_resources'],
+'MiqAeServiceServiceResource': ['resource', 'service_template'],
+'MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Provision': ['source',
+                                                                 'destination',
+                                                                 'miq_request'],
+'MiqAeServiceMiqProvisionRequestTemplate': ['source', 'destination'],
+'MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm': ['service'] }
 
 ----
 
-We'll call the ObjectWalker instance from the *post5* state/stage of the CatalogItemInitialization state machine.
+We'll call the object_walker instance from the *post5* state/stage of the CatalogItemInitialization state machine.
 
 === Object Structure
 
@@ -51,7 +49,7 @@ We can illustrate the main object structure in <<c35i1>> (some objects and links
 
 [[c35i1]]
 .Service Object Relationship
-image::part3/chapter35/images/service_objects_detailed.png[Service Objects,700,align="center"]
+image::images/ch35_service_objects.png[Service Objects,750,align="center"]
 
 ==== Service Template Provision Task
 
@@ -122,7 +120,7 @@ These are generally zero or _nil_ for a single-item service, but represent the v
 
 [[c35i1]]
 .Start and stop actions and delays in a multi-item bundle
-image::part3/chapter35/images/screenshot1hd.png[Screenshot,500,align="center"]
+image::images/ch35_ss1.png[Screenshot,500,align="center"]
 
 The service resource has a relationship to the _ServiceTemplate_ object via +child_task.service_resource.service_template+.
 
@@ -156,7 +154,7 @@ accessed from:
 ....
 child_task.miq_request_tasks.each do |grandchild_task|
 ....
-This is an _MiqProvisionVmware_ miq_request_task object (renamed to __ManageIQ_Providers_Vmware_InfraManager_Provision__ in ManageIQ _Capablanca_), and is the task object that represents the creation of the VM. This is exactly the same as the task object described in <<vm-provisioning-objects>>.
+This is an _ManageIQ_Providers_Redhat_InfraManager_Provision_ miq_request_task object, and is the task object that represents the creation of the VM. This is exactly the same as the task object described in <<vm-provisioning-objects>>.
 
 It is the grandchild miq_request_task that contains the options hash for the VM to be provisioned; this being cloned from the options hash in the _MiqProvisionRequestTemplate_ object. If we have a service dialog that prompts for properties affecting the provisioned VM (such as VM name, number of CPUs, memory, etc.), we must pass these dialog values to the grandchild task options hash.
 
@@ -167,7 +165,7 @@ accessed from:
 ....
 grandchild_task.source
 ....
-This is the _TemplateVmware_ object (renamed to __ManageIQ_Providers_Vmware_InfraManager_Template__ in ManageIQ _Capablanca_) that represents the VMware template that the new VM will be cloned from.
+This is the _ManageIQ_Providers_Redhat_InfraManager_Template_ object that represents the RHEV template that the new VM will be cloned from.
 
 ===== Destination
 
@@ -181,7 +179,7 @@ or
 ....
 grandchild_task.vm
 ....
-This is the _VmVmware_ object (renamed to __ManageIQ_Providers_Vmware_InfraManager_Vm__ in ManageIQ _Capablanca_) that represents the newly created VM. This VM object has an association +service+ that links to the newly created service object.
+This is the _ManageIQ_Providers_Redhat_InfraManager_Vm_ object that represents the newly created VM. This VM object has an association `service` that links to the newly created service object.
 
 === Summary
 
