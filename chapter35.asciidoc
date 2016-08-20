@@ -20,25 +20,15 @@ We can use _object_walker_ with the following +walk_association_whitelist+ to du
 
 [source,ruby]
 ----
-
 { 'MiqAeServiceServiceTemplateProvisionTask': ['source',
                                                'destination',
                                                'miq_request',
                                                'miq_request_tasks',
                                                'service_resource'],
-'MiqAeServiceServiceTemplateProvisionRequest': ['miq_request',
-                                                'miq_request_tasks',
-                                                'requester',
-                                                'resource',
-                                                'source'],
-'MiqAeServiceServiceTemplate': ['service_resources'],
-'MiqAeServiceServiceResource': ['resource', 'service_template'],
-'MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Provision': ['source',
-                                                                 'destination',
-                                                                 'miq_request'],
-'MiqAeServiceMiqProvisionRequestTemplate': ['source', 'destination'],
+'MiqAeServiceServiceResource': ['resource','service_template'],
+'MiqAeServiceMiqProvisionRequestTemplate': ['source','destination'],
+'MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Provision': ['source','destination'],
 'MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm': ['service'] }
-
 ----
 
 We'll call the object_walker instance from the *post5* state/stage of the CatalogItemInitialization state machine.

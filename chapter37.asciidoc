@@ -9,31 +9,31 @@ In line with this organisational use, we can arrange services in hierarchies for
 
 [[c37i1]]
 .A service hierarchy
-image::part3/chapter37/images/screenshot1hd.png[Screenshot,370,align="center"]
+image::images/ch37_ss1.png[Screenshot,370,align="center"]
 
 In this example we have three child services, representing the three tiers of our simple intranet platform. <<c37i2>> shows the single server making up the database tier of our architecture.
 
 [[c37i2]]
 .The database tier
-image::part3/chapter37/images/screenshot2hd.png[Screenshot,700,align="center"]
+image::images/ch37_ss2.png[Screenshot,700,align="center"]
 
 <<c37i3>> shows the two servers making up the middleware tier of our architecture.
 
 [[c37i3]]
 .The middleware tier
-image::part3/chapter37/images/screenshot3hd.png[Screenshot,700,align="center"]
+image::images/ch37_ss3.png[Screenshot,700,align="center"]
 
 <<c37i4>> shows the four servers making up the web tier of our architecture.
 
 [[c37i4]]
 .The web tier
-image::part3/chapter37/images/screenshot4hd.png[Screenshot,700,align="center"]
+image::images/ch37_ss4.png[Screenshot,700,align="center"]
 
 When we view the parent service, we see that it contains details of all child services, including the cumulative CPU, memory and disk counts (see <<c37i5>>).
 
 [[c37i5]]
 .Parent service view 
-image::part3/chapter37/images/screenshot5hd.png[Screenshot,700,align="center"]
+image::images/ch37_ss5.png[Screenshot,700,align="center"]
 
 === Organising Our Services
 
@@ -57,7 +57,7 @@ First we'll copy _ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_T
 
 [[c37i6]]
 .Schema of the EmptyService state machine
-image::part3/chapter37/images/screenshot6hd.png[Screenshot,600,align="center"]
+image::images/ch37_ss6.png[Screenshot,600,align="center"]
 
 ===== Method
 
@@ -92,7 +92,7 @@ We create a simple service dialog called "New Service" with element names *servi
 
 [[c37i7]]
 .Service dialog
-image::part3/chapter37/images/screenshot7hd.png[Screenshot,300,align="center"]
+image::images/ch37_ss7.png[Screenshot,300,align="center"]
 
 ===== Putting it all together
 
@@ -100,7 +100,7 @@ Finally we assemble all of these parts by creating a new service catalog called 
 
 [[c37i8]]
 .The completed "Empty Service" service catalog item
-image::part3/chapter37/images/screenshot8hd.png[Screenshot,500,align="center"]
+image::images/ch37_ss8.png[Screenshot,500,align="center"]
 
 We can order from this service catalog item to create our new empty services.
 
@@ -110,7 +110,7 @@ We'll provide the ability to move both services and virtual machines into existi
 
 [[c37i9]]
 .Listing available services in a dynamic drop-down
-image::part3/chapter37/images/screenshot9hd.png[Screenshot,450,align="center"]
+image::images/ch37_ss9.png[Screenshot,450,align="center"]
 
 ==== Adding the Button
 
@@ -122,7 +122,7 @@ We create a simple button dialog with a dynamic drop-down element named **servic
 
 [[c37i10]]
 .Button Dialog
-image::part3/chapter37/images/screenshot10hd.png[Screenshot,500,align="center"]
+image::images/ch37_ss10.png[Screenshot,500,align="center"]
 
 ===== Dialog element method
 

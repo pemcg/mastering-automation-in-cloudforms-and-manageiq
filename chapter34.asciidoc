@@ -69,7 +69,7 @@ As we will be handling dialog input when the bundle is ordered, we need to edit 
 
 [[c34i8]]
 .Preparing the existing service catalog items
-image::images/ch34_ss8.png[Screenshot,600,align="center"]
+image::images/ch34_ss8.png[Screenshot,700,align="center"]
 
 Once we've done this, the items will appear as **Unassigned** (see <<c34i9>>).
 
@@ -83,7 +83,7 @@ Now we can go ahead and create our catalog bundle. Highlight a catalog name, and
 
 [[c34i10]]
 .Adding a new catalog bundle
-image::images/ch34_ss10.png[Screenshot,600,align="center"]
+image::images/ch34_ss10.png[Screenshot,500,align="center"]
 
 Enter a name and description for the bundle, then select the *Display in Catalog* checkbox. Select an appropriate catalog, and the newly created bundle dialog, from the appropriate drop-downs.
 
@@ -97,9 +97,9 @@ Click on the *Details* tab, and enter some HTML-formatted text to describe the c
 
 [source,html]
 ----
-<h1>Three Tier Web Server Bundle</h1>  
+<h1>Three Tier Intranet Server Bundle</h1>  
 <hr>  
-<p>Deploy a <strong>Web, Middleware</strong> and <strong>Database</strong> \
+<p>Deploy a <strong>Web, Middleware</strong> and <strong>Database</strong> 
                  server together as a single service</p>
 ----
 
@@ -121,11 +121,11 @@ Select a suitable sized icon for a custom image, and save.
 
 === Ordering the Catalog Bundle
 
-Navigate to the *Service Catalogs* section in the accordion, expand the *VMware Services* catalog, and highlight the *Three Tier Web Server Bundle* catalog item (see <<c34i16>>).
+Navigate to the *Service Catalogs* section in the accordion, expand the *Intranet Services* catalog, and highlight the *Three Tier Intranet Server Bundle* catalog item (see <<c34i16>>).
 
 [[c34i16]]
 .Ordering the catalog bundle
-image::images/ch34_ss14.png[Screenshot,700,align="center"]
+image::images/ch34_ss14.png[Screenshot,900,align="center"]
 
 Click **Order**, and fill out the service dialog values (see <<c34i17>>).
 
