@@ -10,7 +10,7 @@ For this example we've grepped for the "Following..Followed" message pairs in _a
 === Initial Request and Profile Lookup
 
 We see the initial service request being created, and a _service_ provisioning profile lookup to get the auto-approval state machine
-....
+```
 Following [/System/Policy/request_created#create]
   Following [/System/Process/parse_provider_category#create]
   Followed [/System/Process/parse_provider_category#create]
@@ -22,13 +22,13 @@ Following [/System/Policy/request_created#create]
   Followed [/System/Policy/ServiceTemplateProvisionRequest_created#create]
 Followed [/System/Policy/request_created#create]
 Followed [/System/Event/RequestEvent/Request/request_created#create]
-....
+```
 
 === Request Processing and Approval
 
 We see the request starting, and some operations performed in the context of the service template provisioning _request_ (service_template_provision_request_59), including the quota checking workflow:
 
-....
+```
 (stp_request_59) Following [/System/Event/RequestEvent/Request/request_starting#create]
   (stp_request_59) Following [/System/Policy/request_starting#create]
     (stp_request_59) Following [/System/Process/parse_provider_category#create]
@@ -63,7 +63,7 @@ We see the request starting, and some operations performed in the context of the
     Followed [/System/Policy/ServiceTemplateProvisionRequest_Approved#create]
   Followed [/System/Policy/request_approved#create]
 Followed [/System/Event/RequestEvent/Request/request_approved#create]
-....
+```
 
 Notice that this _request_ processing runs the naming method, which is therefore processed *before* _CatalogItemInitialization_ (which is processed in _task_ context).
 
@@ -80,7 +80,7 @@ Task _service_template_provision_task_117_ is running through _/Service/Provisio
 Task _service_template_provision_task_118_ is running through _/Service/Provisioning/StateMachines/ServiceProvision_Template/clone_to_service_.
 ====
 
-....
+```
 (stp_task_117) Following [/Service/Provisioning/StateMachines/Methods/DialogParser#create]
 (stp_task_117) Followed [/Service/Provisioning/StateMachines/Methods/DialogParser#create]
 (stp_task_117) Following [/Service/Provisioning/StateMachines/Methods/CatalogItemInitialization#create]
@@ -96,13 +96,13 @@ Task _service_template_provision_task_118_ is running through _/Service/Provisio
 (stp_task_118) Followed [/Service/Provisioning/StateMachines/Methods/Provision#create]
 (stp_task_118) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
 (stp_task_118) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
-....
+```
 
 === VM Provisioning Task
 
 We see our grandchild miq_provision task object created(miq_provision_119), and processing the _/Infra.../VM/Provisioning/StateMachines_ methods in the state machine defined in our user profile:
 
-....
+```
 (miq_provision_119) Following [/Infra.../VM/Lifecycle/Provisioning#create]
   (miq_provision_119) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
@@ -123,32 +123,32 @@ We see our grandchild miq_provision task object created(miq_provision_119), and 
   (miq_provision_119) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_placement]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_placement]
 (miq_provision_119) Followed [/System/Request/UI_PROVISION_INFO#create]
-....
+```
 
 === Events
 
 We see some events being triggered:
-....
+```
 Following [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_STARTED#create]
 Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_STARTED#create]
-....
+```
 
 === Service State Machine _CheckProvisioned_ States
 
 We see both top-level and child service template provisioning tasks running their _CheckProvisioned_ methods:
 
-....
+```
 ([stp_task_117]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
 ([stp_task_117]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
 ([stp_task_118]) Following /Service/Provisioning/StateMachines/Methods/CheckProvisioned
 ([stp_task_118]) Followed /Service/Provisioning/StateMachines/Methods/CheckProvisioned
-....
+```
 
 === VM State Machine _CheckProvisioned_ State
 
 We see the VM provision state machine running its _CheckProvisioned_ method. We can see the entire _/Infra.../VM/Provisioning/StateMachines_ state machine being re-instantiated for each call of its _CheckProvisioned_ method, including the profile lookup:
 
-....
+```
 (miq_provision_119) Following [/Infra.../VM/Lifecycle/Provisioning#create]
   (miq_provision_119) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
@@ -157,14 +157,14 @@ We see the VM provision state machine running its _CheckProvisioned_ method. We 
     (miq_provision_119) Followed [/Infra.../VM/Provisioning/StateMachines/Methods/CheckProvisioned#create]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/StateMachines/VMProvision_vm/template#create]
 (miq_provision_119) Followed [/Infra.../VM/Lifecycle/Provisioning#create]
-....        
+```        
 
 [NOTE]
 Recall that if a state exits with +$evm.root['ae_result'] = 'retry'+, the entire state machine is re-launched after the retry interval, starting at the state to be retried.
 
 We see the service and VM provisioning state machines both running their _CheckProvisioned_ methods for several minutes while the VM provision is progressing:
 
-....
+```
 (stp_task_117) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
 (stp_task_117) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
 (miq_provision_119) Following [/Infra.../VM/Lifecycle/Provisioning#create]
@@ -189,10 +189,10 @@ We see the service and VM provisioning state machines both running their _CheckP
 (miq_provision_119) Followed [/Infra.../VM/Lifecycle/Provisioning#create]
 (stp_task_118) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
 (stp_task_118) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
-....
+```
 
 Once the VM creation has completed we see some more event activity, including policy processing events. On our system we have a control policy that requests a SmartState Analysis for every new VM that is created:
-.... 
+``` 
 Following [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_FINISHED_SUCCESS#create]
 Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_FINISHED_SUCCESS#create]
 Following [/System/Event/MiqEvent/POLICY/vm_snapshot_complete#create]
@@ -203,7 +203,7 @@ Following [/System/Event/MiqEvent/POLICY/vm_provisioned#create]
 Followed [/System/Event/MiqEvent/POLICY/vm_provisioned#create]
 Following [/System/Event/MiqEvent/POLICY/request_vm_scan#create]
 Followed [/System/Event/MiqEvent/POLICY/request_vm_scan#create]
-....
+```
 
 === Virtual Machine Provision State Machine Continuing
 
@@ -211,7 +211,7 @@ We see the _Infrastructure/VM_ provisioning state machine _CheckProvisioned_ met
 
 There is considerable event-related activity during a VM provision operation, as we see:
 
-....
+```
 (miq_provision_119) Following [/Infra.../VM/Lifecycle/Provisioning#create]
   (miq_provision_119) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
@@ -277,13 +277,13 @@ Following [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
 Followed [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
 Following [/System/Event/MiqEvent/POLICY/vm_start#create]
 Followed [/System/Event/MiqEvent/POLICY/vm_start#create]
-....
+```
 
 === Virtual Machine Provision Complete
 
 Eventually we see the VM provision state machine complete:
 
-....
+```
 (miq_provision_119) Following [/Infra.../VM/Lifecycle/Provisioning#create]
   (miq_provision_119) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
@@ -296,13 +296,13 @@ Eventually we see the VM provision state machine complete:
     (miq_provision_119) Followed [/System/CommonMethods/StateMachineMethods/vm_provision_finished#create]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/StateMachines/VMProvision_vm/template#create]
 (miq_provision_119) Followed [/Infra.../VM/Lifecycle/Provisioning#create]
-....
+```
 
 === Service Provision Complete
 
 Finally we see both of the _Service_ provisioning state machine _CheckProvisioned_ methods return success, and continue with the remainder of their state machines:
 
-....
+```
 (stp_task_118) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
 (stp_task_118) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
 (stp_task_118) Following [/Service/Provisioning/Email/ServiceProvision_complete?event=service_provisioned#create]
@@ -322,7 +322,7 @@ Followed [/System/Event/MiqEvent/POLICY/service_provisioned#create]
  
 Following [/System/Event/MiqEvent/POLICY/service_provisioned#create]
 Followed [/System/Event/MiqEvent/POLICY/service_provisioned#create]
-....
+```
 
 === Summary
 
