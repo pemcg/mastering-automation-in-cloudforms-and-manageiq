@@ -7,7 +7,7 @@ The attributes, relationships and method names that are used to determine these 
 
 === Location
 
-The provisioning profiles are stored under _/{Cloud,Infrastructure}/VM/Provisioning/Profile_. There is one out-of-the-box group-specific profile for the *EvmGroup-super_administrator* group, but we can create new profiles for any user groups that we wish to provision from. If a user who is not a member of a listed Group profile provisions a VM, the +.missing+ profile will be used (see <<c17i1>>).
+The provisioning profiles are stored under _/{Cloud,Infrastructure}/VM/Provisioning/Profile_. There is one out-of-the-box group-specific profile for the *EvmGroup-super_administrator* group, but we can create new profiles for any user groups that we wish to provision from. If a user who is not a member of a listed Group profile provisions a VM, the `.missing` profile will be used (see <<c17i1>>).
 
 [[c17i1]]
 .Provisioning profiles
@@ -21,7 +21,7 @@ The provisioning profile schema contains a number of attributes, relationships a
 .The name and value fields in the profile schema
 image::images/ch17_ss2.png[Screenshot,500,align="center"]
 
-Each of these is selected using a message, and the attributes are propagated up to +$evm.root+ in the provisioning operation using _collect_  (see <<c17i3>>).
+Each of these is selected using a message, and the attributes are propagated up to `$evm.root` in the provisioning operation using _collect_  (see <<c17i3>>).
 
 [[c17i3]]
 .The collect and message fields in the profile schema
@@ -29,7 +29,7 @@ image::images/ch17_ss3.png[Screenshot,650,align="center"]
 
 === Customising the Profile
 
-The profile is designed to be user-customisable, and in fact we frequently add profiles for specific user groups, or edit the +.missing+ profile to cater for updated VM naming methods, or modified provisioning dialogs.
+The profile is designed to be user-customisable, and in fact we frequently add profiles for specific user groups, or edit the `.missing` profile to cater for updated VM naming methods, or modified provisioning dialogs.
 
 === Profile Processing in Detail
 
@@ -67,7 +67,7 @@ We can see the output in _evm.log_:
 
 The profile is queried using the message *get_vmname* to retrieve the instance URI to be used to formulate the name of the VM to be provisioned. The VM name is saved as the collect variable _vmname_.
 
-This VM name is then inserted into the text string that will form the request object's +description+ attribute (+miq_provision_request.description+), for example "Provision from [rhel7-generic] to [rhel7srv004]".
+This VM name is then inserted into the text string that will form the request object's `description` attribute (`miq_provision_request.description`), for example "Provision from [rhel7-generic] to [rhel7srv004]".
 
 If we are provisioning two or more VMs in a single request and letting Automate handle the VM auto number incrementing (e.g. rhel7srv005, rhel7srv006... etc) then the request object description is more generic, for example "Provision from [rhel7-generic] to [rhel7srvxxx]".
 
@@ -97,7 +97,7 @@ Once quota has been checked and passed, the request continues processing, and th
 
 The profile is again queried using the message *get_vmname* to retrieve the instance URI to be used to formulate the name of the VM to be provisioned. This second call is made while processing the provisioning request as part of the creation of the _tasks_ that will handle the provisioning of each VM in the request. The VM name is saved as the collect variable _vmname_.
 
-The derived VM name is added to the task object's options hash as +miq_provision.options[:vm_target_name]+ and +miq_provision.options[:vm_target_hostname]+. This is performed once per task object (there may be several task objects created for a single request object). 
+The derived VM name is added to the task object's options hash as `miq_provision.options[:vm_target_name]` and `miq_provision.options[:vm_target_hostname]`. This is performed once per task object (there may be several task objects created for a single request object). 
 
 ==== VM Provisioning State Machine
 
@@ -105,7 +105,7 @@ Finally the profile is used by the provisioning task to determine the state mach
 
 This instance contains two relationships, the first is _/Infrastructure/VM/Provisioning/Profile/${/#user.normalized_ldap_group}#get_state_machine_. This queries the profile using the message *get_state_machine* to retrieve the state machine class name to be used to handle the provisioning of the VM. The state machine class name is saved as the collect variable _state_machine_.
 
-The second relationship is _/Infrastructure/VM/Provisioning/StateMachines/${/#state_machine}/${/#miq_provision.provision_type}_. This uses the _state_machine_ variable retrieved from collect in the previous relationship, and runs the instance of this state machine whose name corresponds to a variable substitution for +miq_provision.provision_type+. When performing a VM clone from template (the most common VM provision operation), this will be "template".
+The second relationship is _/Infrastructure/VM/Provisioning/StateMachines/${/#state_machine}/${/#miq_provision.provision_type}_. This uses the _state_machine_ variable retrieved from collect in the previous relationship, and runs the instance of this state machine whose name corresponds to a variable substitution for `miq_provision.provision_type`. When performing a VM clone from template (the most common VM provision operation), this will be "template".
 
 === Summary
 

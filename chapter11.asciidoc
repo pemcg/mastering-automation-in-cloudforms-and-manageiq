@@ -68,11 +68,11 @@ We can launch an Automate instance anywhere in the Automate Datastore from a dyn
 
 === Finding Out How Our Method Has Been Called
 
-Our entry point into Automate governs the content of +$evm.root+ - this is the object whose instantiation took us into Automate. If we write a generically useful method such as one that adds a disk to a virtual machine, it might be useful to be able to call it in several ways, without necessarily knowing what +$evm.root+ might contain.
+Our entry point into Automate governs the content of `$evm.root` - this is the object whose instantiation took us into Automate. If we write a generically useful method such as one that adds a disk to a virtual machine, it might be useful to be able to call it in several ways, without necessarily knowing what `$evm.root` might contain.
 
-For example we might wish to add a disk during the provisioning workflow for the VM; from a button on an existing VM object in the WebUI, or even from an external RESTful call into the Automate Engine, passing the VM ID as an argument. The content of +$evm.root+ is different in each of these cases.
+For example we might wish to add a disk during the provisioning workflow for the VM; from a button on an existing VM object in the WebUI, or even from an external RESTful call into the Automate Engine, passing the VM ID as an argument. The content of `$evm.root` is different in each of these cases.
 
-For each of these cases we need to access the target VM object in a different way, but we can use the +$evm.root['vmdb_object_type']+ key to help us establish context:
+For each of these cases we need to access the target VM object in a different way, but we can use the `$evm.root['vmdb_object_type']` key to help us establish context:
 
 [source,ruby]
 ----
@@ -93,9 +93,9 @@ end
 
 === Summary
 
-In this chapter we've learned the various ways that we can enter Automate and start running our scripts. We've also learned how to create generically useful methods that can be called in several ways, and how to establish their running context using +$evm.root['vmdb_object_type']+.
+In this chapter we've learned the various ways that we can enter Automate and start running our scripts. We've also learned how to create generically useful methods that can be called in several ways, and how to establish their running context using `$evm.root['vmdb_object_type']`.
 
-Many of the Automate methods that we write are usable in several different contexts; as part of a virtual machine provisioning workflow, or from a button for example. They may be run from the first instance called when we enter Automate, or via a relationship in another instance already running in the Automation Engine. This instance might even be a state machine (we discuss state machines in <<state-machines>>), in which case we might need to signal an exit condition using +$evm.root['ae_result']+:
+Many of the Automate methods that we write are usable in several different contexts; as part of a virtual machine provisioning workflow, or from a button for example. They may be run from the first instance called when we enter Automate, or via a relationship in another instance already running in the Automation Engine. This instance might even be a state machine (we discuss state machines in <<state-machines>>), in which case we might need to signal an exit condition using `$evm.root['ae_result']`:
 
 [source,ruby]
 ----

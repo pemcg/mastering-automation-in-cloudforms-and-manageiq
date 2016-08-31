@@ -134,7 +134,7 @@ _miqCustomAttributes_ are custom attributes applied to the virtual machine and s
 
 === Setting Placement Options
 
-The Rails code that implements the `create_provision_request` call makes the assumption that any noninteractive provision request will be using automatic placement, and it sets `options[:placement_auto] = [true, 1]` as a request option. This also means however that it disregards any vmFields options that we may set that are normally found under the +Environment+ tab of an interactive provision request, such as `cloud_tenant` or `cloud_network` (these are hidden in the WebUI if we select *Choose Automatically*).
+The Rails code that implements the `create_provision_request` call makes the assumption that any noninteractive provision request will be using automatic placement, and it sets `options[:placement_auto] = [true, 1]` as a request option. This also means however that it disregards any vmFields options that we may set that are normally found under the *Environment* tab of an interactive provision request, such as `cloud_tenant` or `cloud_network` (these are hidden in the WebUI if we select *Choose Automatically*).
 
 .Setting the environment placement options for a cloud instance
 image::images/ch27_ss1.png[Screenshot,450,align="center"]
@@ -160,7 +160,7 @@ Note that we must specify the object IDs as the values for these placement-relat
 
 Being able to create provisioning requests programmatically gives us complete control over the process, and has many uses. For example when managing a scalable cloud application, we can configure a CloudForms or ManageIQ alert to detect high CPU utilisation on any of the existing cloud instances making up the workload. We could use the alert to send a management event that runs an Automate method to scale out the workload by provisioning additional instances (see <<ways-of-entering-automate>>).
 
-We can also use +create_provision_request+ to create custom service catalog items, when the out-of-the-box service provisioning state machines do not provide the functionality that we need (see <<service-tips-and-tricks>>).
+We can also use `create_provision_request` to create custom service catalog items, when the out-of-the-box service provisioning state machines do not provide the functionality that we need (see <<service-tips-and-tricks>>).
 
 ==== Further Reading
 

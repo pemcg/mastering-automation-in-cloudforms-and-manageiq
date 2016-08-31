@@ -86,7 +86,7 @@ end
 
 === Retrieving an Object's Tags
 
-We can retrieve the list of all tags assigned to an object using the +tags+ method:
+We can retrieve the list of all tags assigned to an object using the `tags` method:
 
 [source,ruby]
 ----
@@ -102,11 +102,11 @@ first_department_tag = group.tags(:department).first
 ----
 
 [TIP]
-When called with no argument the +tags+ method returns the tags as "category/tag" strings. When called with an argument of tag category, the method returns the tag name as the string.
+When called with no argument the `tags` method returns the tags as "category/tag" strings. When called with an argument of tag category, the method returns the tag name as the string.
 
 === Searching for Specifically Tagged Objects
 
-We can search for objects tagged with a particular tag using the +find_tagged_with+ method:
+We can search for objects tagged with a particular tag using the `find_tagged_with` method:
 
 [source,ruby]
 ----
@@ -117,7 +117,7 @@ hosts = $evm.vmdb(:host).find_tagged_with(:all => tag, :ns => "*")
 This example shows that categories themselves are organised into namespaces behind the scenes. In practice the only namespace that seems to be in use is _/managed_ and we rarely need to specify this.
 
 [NOTE]
-The +find_tagged_with+ method has a slightly ambiguous past. It was present in ManageIQ _Anand_, but returned Active Records rather than MiqAeService objects. It disappeared as an Automate method in ManageIQ _Botvinnik_, but is thankfully back with ManageIQ _Capablanca_, and now returns service model objects as expected.
+The `find_tagged_with` method has a slightly ambiguous past. It was present in ManageIQ _Anand_, but returned Active Records rather than MiqAeService objects. It disappeared as an Automate method in ManageIQ _Botvinnik_, but is thankfully back with ManageIQ _Capablanca_, and now returns service model objects as expected.
 
 ==== Practical example
 
@@ -157,11 +157,11 @@ these_objects.each do |this_object|
 end
 ----
 
-Normally this is transparent to us and we can refer to the object methods such as +name+, and all works as expected.
+Normally this is transparent to us and we can refer to the object methods such as `name`, and all works as expected.
 
 Behind the scenes however our automation script is accessing all of these objects remotely  via its dRuby client object. We must bear this in mind if we also wish to find the class name of the remote object.
 
-If we call _this_object.class_ we get the string "DRb::DRbObject", which is the correct class name for a dRuby client object. We have to tell dRuby to forward the _class_ method call on to the dRuby server, and we do this by calling _this_object.method_missing(:class)_. Now we get returned the full module::class name of the remote dRuby object (such as +MiqAeMethodService::MiqAeServiceStorage+), but we can call the +demodulize+ method on the string to strip the +MiqAeMethodService::+ module path from the name, leaving us with +MiqAeServiceStorage+.
+If we call _this_object.class_ we get the string "DRb::DRbObject", which is the correct class name for a dRuby client object. We have to tell dRuby to forward the _class_ method call on to the dRuby server, and we do this by calling _this_object.method_missing(:class)_. Now we get returned the full module::class name of the remote dRuby object (such as `MiqAeMethodService::MiqAeServiceStorage`), but we can call the `demodulize` method on the string to strip the `MiqAeMethodService::` module path from the name, leaving us with `MiqAeServiceStorage`.
 ====
 
 === Getting the List of Tag Categories
@@ -176,7 +176,7 @@ categories.each do |category|
 end
 ----
 
-With ManageIQ _Capablanca_ we now have a +categories+ association directly from an +MiqAeServiceClassification+ object, so we can say:
+With ManageIQ _Capablanca_ we now have a `categories` association directly from an `MiqAeServiceClassification` object, so we can say:
 
 [source,ruby]
 ----
@@ -187,7 +187,7 @@ end
 
 === Getting the List of Tags in a Category
 
-We occasionally need to retrieve the list of tags in a particular category, and for this we have to perform a double lookup - once to get the classification ID, and again to find +MiqAeServiceClassification+ objects with that parent_id:
+We occasionally need to retrieve the list of tags in a particular category, and for this we have to perform a double lookup - once to get the classification ID, and again to find `MiqAeServiceClassification` objects with that parent_id:
 
 [source,ruby]
 ----
@@ -200,7 +200,7 @@ end
 
 === Finding a Tag's Name, Given its Description
 
-Sometimes we need to add a tag to an object, but we only have the tag's free-text description (perhaps this matches a value read from an external source). We need to find the tag's snake_case name to use with the +tag_apply+ method, but we can use more Rails syntax in our +find+ call to lookup two fields at once:
+Sometimes we need to add a tag to an object, but we only have the tag's free-text description (perhaps this matches a value read from an external source). We need to find the tag's snake_case name to use with the `tag_apply` method, but we can use more Rails syntax in our `find` call to lookup two fields at once:
 
 [source,ruby]
 ----
@@ -210,7 +210,7 @@ tag = $evm.vmdb('classification').where(["parent_id = ? AND description = ?",
 tag_name = tag.name
 ----
 
-The tag names aren't in the _classifications_ table (just the tag description). When we call +tag.name+, Rails runs an implicit search of the _tags_ table for us, based on the tag.id:
+The tag names aren't in the _classifications_ table (just the tag description). When we call `tag.name`, Rails runs an implicit search of the _tags_ table for us, based on the tag.id:
 
 ....
 irb(main):051:0> tag.name
@@ -229,11 +229,11 @@ tag = $evm.vmdb(:classification).find_by_name('department/hr')
 ----
 
 [TIP]
-Anything returned from +$evm.vmdb(:classification)+ is an +MiqAeServiceClassification+ object, not a text string.
+Anything returned from `$evm.vmdb(:classification)` is an `MiqAeServiceClassification` object, not a text string.
 
-=== Deleting a Tag Category
+=== Deleting a Tag or Tag Category
 
-With ManageIQ _Capablanca_ we can now delete a tag category using the RESTful API:
+We can now delete a tag or category using the RESTful API:
 
 [source,ruby]
 ----
@@ -265,9 +265,19 @@ begin
   @passwd      = $evm.object.decrypt('password')
 
   uri_base = "https://#{servername}/api/"
-  
+  #
+  # Delete a tag category
+  #
   category = $evm.vmdb(:classification).find_by_name('network_location')
-  rest_return = rest_action("#{uri_base}/categories/#{category.id}", :delete)
+  rest_action("#{uri_base}/categories/#{category.id}", :delete)
+  #
+  # Delete a tag
+  #
+  tag = "/managed/department/sales"
+  reply = rest_action("#{uri_base}/tags?filter[]=name=#{tag}", :get)
+  tag_href = reply['resources'][0]['href']
+  rest_action(tag_href, :delete)
+
   exit MIQ_OK
   
 rescue RestClient::Exception => err
@@ -282,7 +292,7 @@ rescue => err
 end
 ----
 
-In this example we define a generic method called +rest_action+ that uses the Ruby _++rest-client++_  gem to handle the RESTful connection. We extract the ManageIQ server's credentials from the instance schema just as we did in <<using-schema-variables>>, and we retrieve the service model of the tag category that we wish to delete, to get its ID.
+In this example we define a generic method called `rest_action` that uses the Ruby _++rest-client++_  gem to handle the RESTful connection. We extract the ManageIQ server's credentials from the instance schema just as we did in <<using-schema-variables>>, and we retrieve the service model of the tag category that we wish to delete, to get its ID.
 
 Finally we make a RESTful _DELETE_ call to the /api/categories URI, specifying the tag category ID to be deleted.
 

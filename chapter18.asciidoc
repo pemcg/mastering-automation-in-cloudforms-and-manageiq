@@ -39,11 +39,11 @@ The ProvisionRequestApproval state machine uses three methods to perform the val
 
 ===== validate_request
 
-The _validate_request_ method is run from *On Entry* field of the *ValidateRequest* state. It checks the provisioning request against the schema *max_* attributes, and if the request doesn't exceed these maxima, the method exits cleanly. If the request does exceed the maxima, the method sets +$evm.root['ae_result'] = 'error'+ and a reason message before exiting.
+The _validate_request_ method is run from *On Entry* field of the *ValidateRequest* state. It checks the provisioning request against the schema *max_* attributes, and if the request doesn't exceed these maxima, the method exits cleanly. If the request does exceed the maxima, the method sets `$evm.root['ae_result'] = 'error'` and a reason message before exiting.
 
 ===== pending_request
 
-The _pending_request_ method is run from the *On Error* field of the *ValidateRequest* state. This will be run if _validate_request_ exits with +$evm.root['ae_result'] = 'error'+. The method is simple, and merely raises a *request_pending* event to trigger the _MiqProvisionRequest_pending_ policy instance:
+The _pending_request_ method is run from the *On Error* field of the *ValidateRequest* state. This will be run if _validate_request_ exits with `$evm.root['ae_result'] = 'error'`. The method is simple, and merely raises a *request_pending* event to trigger the _MiqProvisionRequest_pending_ policy instance:
 
 [source,ruby]
 ----
@@ -62,7 +62,7 @@ $evm.root["miq_request"].approve("admin", "Auto-Approved")
 ----
 ==== Request Pending Event
 
-If the _ProvisionRequestApproval_ state machine doesn't approve the request, it calls +$evm.root["miq_request"].pending+, which triggers a *request_pending* event. This is the trigger point into the second workflow through the _MiqProvisionRequest_pending_ policy instance. This instance sends the emails to the requester and approver, notifying that the provisioning request has not been auto-approved, and needs manual approval.
+If the _ProvisionRequestApproval_ state machine doesn't approve the request, it calls `$evm.root["miq_request"].pending`, which triggers a *request_pending* event. This is the trigger point into the second workflow through the _MiqProvisionRequest_pending_ policy instance. This instance sends the emails to the requester and approver, notifying that the provisioning request has not been auto-approved, and needs manual approval.
 
 === Overriding the Defaults
 

@@ -5,7 +5,7 @@ So far in Part II we have studied the access control group-specific processing r
 
 The common workflow for provisioning virtual machines is handled by the _VM provision state machine_.  
 
-The virtual machine and instance provisoning workflows are each controlled by a VM provision state machine in their respective _Infrastructure_ and _Cloud_ namespaces. These state machines define the steps in the virtual machine provisioning workflow, and contain flexible preprovision and postprovision processing options. Instances run as part of this state machine have access to the provisioning task object via +$evm.root['miq_provision']+.
+The virtual machine and instance provisoning workflows are each controlled by a VM provision state machine in their respective _Infrastructure_ and _Cloud_ namespaces. These state machines define the steps in the virtual machine provisioning workflow, and contain flexible preprovision and postprovision processing options. Instances run as part of this state machine have access to the provisioning task object via `$evm.root['miq_provision']`.
 
 === State Machine Schema
 
@@ -23,11 +23,11 @@ Some states (such as *PreProvision*) have values that include an appended messag
 ...StateMachines/Methods/PreProvision#${/#miq_provision.source.vendor}
 ....
 
-The message is selected at runtime from a variable substitution for +#${/#miq_provision.source.vendor}+, and allows for the dynamic selection of provider-specific processing options (in this case allowing for alternative preprovisioning options for VMware, RedHat, Microsoft, Amazon or OpenStack).
+The message is selected at runtime from a variable substitution for `#${/#miq_provision.source.vendor}`, and allows for the dynamic selection of provider-specific processing options (in this case allowing for alternative preprovisioning options for VMware, RedHat, Microsoft, Amazon or OpenStack).
 
 === Filling the Blanks
 
-We can copy the VM provision state machine into our own domain, and add instance URIs to any of the blank states as required, or extend the state machine by inserting new states. A common addition is to add a method at the *AcquireIPAddress* step to retrieve an IP address from a corporate IPAM solution such as an Infoblox appliance. Once retrieved, the IP address is inserted into the _task's_ options hash using the +set_option+ method, like so:
+We can copy the VM provision state machine into our own domain, and add instance URIs to any of the blank states as required, or extend the state machine by inserting new states. A common addition is to add a method at the *AcquireIPAddress* step to retrieve an IP address from a corporate IPAM solution such as an Infoblox appliance. Once retrieved, the IP address is inserted into the _task's_ options hash using the `set_option` method, like so:
 
 [source,ruby]
 ----

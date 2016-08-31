@@ -7,7 +7,7 @@ Fortunately there are several ways of exploring the object structure in the Auto
 
 === InspectMe
 
-_InspectMe_ is an instance/method combination supplied out-of-the-box that we can call to dump some attributes of +$evm.root+ and its associated objects. As an example we can call InspectMe from a button on a _VM and Instance_ object as we did when running our AddCustomAttribute Instance in <<working-with-virtual-machines>>. As both the instance and method are in the +ManageIQ/System/Request+ namespace, we can call InspectMe directly rather than calling +Call_Instance+ as an intermediary.
+_InspectMe_ is an instance/method combination supplied out-of-the-box that we can call to dump some attributes of `$evm.root` and its associated objects. As an example we can call InspectMe from a button on a _VM and Instance_ object as we did when running our AddCustomAttribute Instance in <<working-with-virtual-machines>>. As both the instance and method are in the `ManageIQ/System/Request` namespace, we can call InspectMe directly rather than calling `Call_Instance` as an intermediary.
 
 We can view the InspectMe output in _automation.log_:
 
@@ -29,20 +29,20 @@ Root:<$evm.root> Attributes - End
 ...
 ----
 
-This log snippet shows the section of a typical InspectMe output that dumps the attributes of +$evm.root+.
+This log snippet shows the section of a typical InspectMe output that dumps the attributes of `$evm.root`.
 
 [TIP]
 Kevin Morey from Red Hat has written an improved version of InspectMe, available from https://github.com/ramrexx/CloudForms_Essentials. His InspectMe provides a very clear output of the attributes, virtual columns, associations and tags that are available for the object on which it was launched. For example if called from a button on a virtual machine, InspectMe will list all of that VM's properties including hardware, operating system, and also the provisioning request and task details.
 
 === object_walker
 
-_object_walker_ footnote:[object_walker is available from https://github.com/pemcg/object_walker, along with instructions for use]is a slightly more exploratory tool that walks and dumps the objects, attributes and virtual columns of +$evm.root+ and its immediate objects. It also recursively traverses associations to walk and dump any objects that it finds, much like a web crawler would explore a web site. It prints the output in a Ruby-like syntax that can be copied and pasted directly into an Automation script to access or walk the same path.
+_object_walker_ footnote:[object_walker is available from https://github.com/pemcg/object_walker, along with instructions for use]is a slightly more exploratory tool that walks and dumps the objects, attributes and virtual columns of `$evm.root` and its immediate objects. It also recursively traverses associations to walk and dump any objects that it finds, much like a web crawler would explore a web site. It prints the output in a Ruby-like syntax that can be copied and pasted directly into an Automation script to access or walk the same path.
 
 ==== Black or Whitelisting Associations
 
-One of the features of object_walker is the ability to selectively choose which associations to "walk" to limit the output. We do so by setting a +walk_association_policy+ to +"whitelist"+ or +"blacklist"+, and then defining a +walk_association_whitelist+ or +walk_association_blacklist+ JSON hash in the instance schema to list the associations to be walked (whitelist), or not walked (blacklist).
+One of the features of object_walker is the ability to selectively choose which associations to "walk" to limit the output. We do so by setting a `walk_association_policy` to `"whitelist"` or `"blacklist"`, and then defining a `walk_association_whitelist` or `walk_association_blacklist` JSON hash in the instance schema to list the associations to be walked (whitelist), or not walked (blacklist).
 
-In practice a +walk_association_policy+ of +"blacklist"+ produces so much output that it's rarely used, and so a +"whitelist"+ is more often defined, like so:
+In practice a `walk_association_policy` of `"blacklist"` produces so much output that it's rarely used, and so a `"whitelist"` is more often defined, like so:
 
 [source,ruby]
 ----
@@ -141,14 +141,14 @@ irb(main):002:0> Host.all
 irb(main):003:0>
 ....
 
-We can even generate our own +$evm+ variable that matches the Automation Engine default:
+We can even generate our own `$evm` variable that matches the Automation Engine default:
 
 [source,ruby]
 ----
 $evm=MiqAeMethodService::MiqAeService.new(MiqAeEngine::MiqAeWorkspaceRuntime.new)
 ----
 
-With our +$evm+ variable we can emulate actions that we perform from an automation script:
+With our `$evm` variable we can emulate actions that we perform from an automation script:
 
 ....
 irb(main):002:0> $evm.log(:info, "test from the Rails console")
@@ -176,7 +176,7 @@ Type "help" for help.
 vmdb_production=#
 ----
 
-Once in the Rails db session we can freely examine the VMDB database. For example we could look at the columns in the +guest_devices+ table:
+Once in the Rails db session we can freely examine the VMDB database. For example we could look at the columns in the `guest_devices` table:
 
 ----
 vmdb_production=# \d guest_devices
@@ -200,7 +200,7 @@ vmdb_production=# \d guest_devices
 ...
 ----
 
-We could list all templates on our appliance (templates are in the +vms+ column, but have a boolean +template+ attribute that is true):
+We could list all templates on our appliance (templates are in the `vms` column, but have a boolean `template` attribute that is true):
 
 ----
 vmdb_production=# select id,name from vms where template = 't';
@@ -217,7 +217,7 @@ vmdb_production=# select id,name from vms where template = 't';
 
 === Summary
 
-In this chapter we've learned four very useful ways of investigating the object model. We can use +InspectMe+, or +object_walker+ to print the structure to _automation.log_, or we can interactively use the Rails command line.
+In this chapter we've learned four very useful ways of investigating the object model. We can use `InspectMe`, or `object_walker` to print the structure to _automation.log_, or we can interactively use the Rails command line.
 
 We use these tools and techniques extensively when developing our scripts, both to find out the available objects that we might use, and also to debug our scripts when things are not working as expected.
 

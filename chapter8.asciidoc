@@ -11,11 +11,11 @@ The Automate method should be run from a button visible on the VM details page. 
 
 === Solution
 
-We can achieve the task in the following way (the entire script is also available https://github.com/pemcg/cloudforms-automation-howto-guide/blob/master/chapter8/scripts/enforce_anti_affinity.rb[here]). We'll define two methods internally within our Ruby script, +relocate_vm+ and +send_email+. Our main code will be a simple iteration loop.
+We can achieve the task in the following way (the entire script is also available https://github.com/pemcg/cloudforms-automation-howto-guide/blob/master/chapter8/scripts/enforce_anti_affinity.rb[here]). We'll define two methods internally within our Ruby script, `relocate_vm` and `send_email`. Our main code will be a simple iteration loop.
 
 ==== relocate_vm
 
-The first method +relocate_vm+ makes use of a virtual column (+vm.host_name+), and several associations to find a suitable host (hypervisor) to migrate the virtual machine to. These associations are +vm.ems_cluster+ to find the cluster that our VM is running on, +ems_cluster.hosts+ to find the other hypervisors in the cluster, and +host.vms+ to get the list of VMs running on a hypervisor. Finally it calls a method (+vm.migrate+) to perform the VM migration.
+The first method `relocate_vm` makes use of a virtual column (`vm.host_name`), and several associations to find a suitable host (hypervisor) to migrate the virtual machine to. These associations are `vm.ems_cluster` to find the cluster that our VM is running on, `ems_cluster.hosts` to find the other hypervisors in the cluster, and `host.vms` to get the list of VMs running on a hypervisor. Finally it calls a method (`vm.migrate`) to perform the VM migration.
 
 [source,ruby]
 ----
@@ -60,7 +60,7 @@ end
 
 ==== send_email
 
-The second method, +send_email+, sends an email to all members of a user group. It makes use of an association +group.users+ to find all users in a particular group, an attribute +user.email+ to find a user's email address, and calls +$evm.execute+ to run the internal +:send_email+ method.
+The second method, `send_email`, sends an email to all members of a user group. It makes use of an association `group.users` to find all users in a particular group, an attribute `user.email` to find a user's email address, and calls `$evm.execute` to run the internal `:send_email` method.
 
 [source,ruby]
 ----
@@ -93,7 +93,7 @@ end
 
 ==== Main Code
 
-We'll wrap our main section of code in a +begin+ -> +rescue+ block so that we can catch and handle any exceptions. 
+We'll wrap our main section of code in a `begin` -> `rescue` block so that we can catch and handle any exceptions. 
 
 [source,ruby]
 ----
@@ -131,11 +131,11 @@ rescue => err
 end
 ----
 
-The main code determines the virtual machine service model object from +$evm.root['vm']+, and retrieves the first 'server_role' tag applied to the VM (see <<using-tags-from-automate>> for more details on using tags from Automate). It then chains two associations together (+vm.host+ and +host.vms+) to determine the other VMs running on the same hypervisor as our VM. If any of these VMs has the same 'server_role' tag as our VM, we call the +relocate_vm+ method, and email the 'EvmGroup-administrator' group that the VM has been relocated.
+The main code determines the virtual machine service model object from `$evm.root['vm']`, and retrieves the first 'server_role' tag applied to the VM (see <<using-tags-from-automate>> for more details on using tags from Automate). It then chains two associations together (`vm.host` and `host.vms`) to determine the other VMs running on the same hypervisor as our VM. If any of these VMs has the same 'server_role' tag as our VM, we call the `relocate_vm` method, and email the 'EvmGroup-administrator' group that the VM has been relocated.
 
 === Summary
 
-Here we've shown how we can achieve a realistic task with a relatively simple Ruby script, using many of the concepts that we've learned so far in the book. We've worked with service model objects representing a user, a group, a virtual machine, a cluster and a hypervisor, and we've traversed the associations between some of them. We've read from an object's attribute and virtual column, and called an object's method to perform the migrate operation. Finally, we've explored working with tags, and we've used +$evm.execute+ to send an email.
+Here we've shown how we can achieve a realistic task with a relatively simple Ruby script, using many of the concepts that we've learned so far in the book. We've worked with service model objects representing a user, a group, a virtual machine, a cluster and a hypervisor, and we've traversed the associations between some of them. We've read from an object's attribute and virtual column, and called an object's method to perform the migrate operation. Finally, we've explored working with tags, and we've used `$evm.execute` to send an email.
 
 Although most modern virtualisation platforms have an anti-affinity capability built in, this is still a useful example of how we can achieve selected workload placement based on tags. When we implement this kind of tag-based placement, we need to ensure that our VM workloads aren't tagged multiple times with possibly conflicting results, for example one tag implying affinity, and another anti-affinity.
 

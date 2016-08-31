@@ -67,7 +67,7 @@ As we see here, defining attributes in our class schema doesn't mean that we hav
 
 ==== The Code
 
-Values entered into a dialog box are available to our method through +$evm.root+. The Automation Engine prefixes the dialog element names with "dialog_", so the values that we want to read are +$evm.root['dialog_key']+ and +$evm.root['dialog_value']+.
+Values entered into a dialog box are available to our method through `$evm.root`. The Automation Engine prefixes the dialog element names with "dialog_", so the values that we want to read are `$evm.root['dialog_key']` and `$evm.root['dialog_value']`.
 
 Our code for this example will be as follows:
 

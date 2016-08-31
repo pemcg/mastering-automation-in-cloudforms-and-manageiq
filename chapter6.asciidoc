@@ -18,9 +18,9 @@ It can, however, be useful to have an appreciation of Rails __models__, and how 
 The Ruby scripts that we write are just plain Ruby 2.x, although the Active Support core extensions to Ruby are available if we wish to use them.
 
 [NOTE]
-The Active Support extensions can make our lives easier. For example rather than adding math to our automation script to work out the number of seconds in a two-month time span (perhaps to specify a VM retirement period), we can just specify +2.months+.
+The Active Support extensions can make our lives easier. For example rather than adding math to our automation script to work out the number of seconds in a two-month time span (perhaps to specify a VM retirement period), we can just specify `2.months`.
 
-Our automation scripts access Ruby objects, made available to us by the Automation Engine via the +$evm+ variable (+$evm+ is described in more detail in <<evm-and-the-workspace>>). Behind the scenes these are Rails objects, which is why having some understanding of Rails can help our investigation into how we can use these objects to our maximum benefit.
+Our automation scripts access Ruby objects, made available to us by the Automation Engine via the `$evm` variable (`$evm` is described in more detail in <<evm-and-the-workspace>>). Behind the scenes these are Rails objects, which is why having some understanding of Rails can help our investigation into how we can use these objects to our maximum benefit.
 
 ==== Model-View-Controller
 
@@ -68,7 +68,7 @@ Rails does a lot of things to make our lives easier, including dynamically creat
 vm = $evm.vmdb('vm').find_by_name(vm_name)
 ----
 
-We can +.find_by_+ any column name in a database table. For example in PostgreSQL we can look at the _services_ table that represents services created via a service catalog.
+We can `.find_by_` any column name in a database table. For example in PostgreSQL we can look at the _services_ table that represents services created via a service catalog.
 
 ....
 vmdb_production=# \d services
@@ -93,7 +93,7 @@ We see that there is a `description` column, so if we wanted we could call:
 $evm.vmdb('service').find_by_description('My New Service')
 ----
 
-Earlier versions of Rails also had a +find_all_by_*+ helper method that returned all results matching a search. Rails 5 has removed this in favour of +where+, which is now also supported by service models. The syntax of using +where+ is as follows:
+Earlier versions of Rails also had a `find_all_by_*` helper method that returned all results matching a search. Rails 5 has removed this in favour of `where`, which is now also supported by service models. The syntax of using `where` is as follows:
 
 [source,ruby]
 ----
@@ -101,7 +101,7 @@ $evm.vmdb('service').where(:description =>'My New Service')
 ----
 
 [NOTE]
-+where+ returns a list, even if it only finds one item
+`where` returns a list, even if it only finds one item
 
 [[service-models]]
 === Service Models
@@ -110,7 +110,7 @@ We saw earlier that Rails data models are called _active records_. We can't acce
 
 The objects that we work with in the Automation Engine are all service models; instances of an _MiqAeService_ class that abstract and make available to us their corresponding Rails active record.
 
-For example if we're working with a _User_ object (representing a person, such as the owner of a virtual machine), we might access that object in our script via +$evm.root['user']+. This is actually an instance of an _MiqAeServiceUser_ class, which represents the corresponding Rails _User_ Active Record. There are service model objects representing all of the things that we need to work with when we write automation scripts. These include the traditional components in our infrastructure such as virtual machines, hypervisor clusters, operating systems or ethernet adapters, but also the intangible objects such as provisioning requests or automation tasks.
+For example if we're working with a _User_ object (representing a person, such as the owner of a virtual machine), we might access that object in our script via `$evm.root['user']`. This is actually an instance of an _MiqAeServiceUser_ class, which represents the corresponding Rails _User_ Active Record. There are service model objects representing all of the things that we need to work with when we write automation scripts. These include the traditional components in our infrastructure such as virtual machines, hypervisor clusters, operating systems or ethernet adapters, but also the intangible objects such as provisioning requests or automation tasks.
 
 All of the MiqAeService* objects extend a common _MiqAeServiceModelBase_ class that contains some common methods available to all objects, such
 as:
@@ -172,7 +172,7 @@ The service model objects that the Automation Engine makes available to us have 
 
 Just like any other Ruby object, the service model objects that we work with have _attributes_ that we often use. A service model object represents a record in a database table, and the object's attributes correspond to the columns in the table for that record.
 
-For example, some attributes for a RHEV Host (i.e. Hypervisor) object (the +MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Host+ service model), with typical values, are:
+For example, some attributes for a RHEV Host (i.e. Hypervisor) object (the `MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Host` service model), with typical values, are:
 
 ....
 host.connection_state = connected
@@ -232,7 +232,7 @@ host.v_total_storages = 3
 host.v_total_vms = 7
 ....
 
-We access theses virtual columns just as we would access attributes, using "object.virtual_column_name" syntax. If we want to enumerate through all of an object's virtual columns getting the corresponding values, we must use +.send+, specifying the virtual column name, like so:
+We access theses virtual columns just as we would access attributes, using "object.virtual_column_name" syntax. If we want to enumerate through all of an object's virtual columns getting the corresponding values, we must use `.send`, specifying the virtual column name, like so:
 
 [source,ruby]
 ----
@@ -244,7 +244,7 @@ this_object.virtual_column_names.each do |virtual_column_name|
 
 We saw earlier that there are associations between many of the Active Records (and hence service models), and we use these extensively when scripting.
 
-For example we can discover more about the hardware of our virtual machine (VM) by following associations between the VM object (+MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm+), and its Hardware and GuestDevice objects (+MiqAeServiceHardware+ and +MiqAeServiceGuestDevice+), as follows:
+For example we can discover more about the hardware of our virtual machine (VM) by following associations between the VM object (`MiqAeServiceManageIQ_Providers_Redhat_InfraManager_Vm`), and its Hardware and GuestDevice objects (`MiqAeServiceHardware` and `MiqAeServiceGuestDevice`), as follows:
 
 [source,ruby]
 ----
@@ -311,7 +311,7 @@ host.tags
 host.tag_assign
 ....
 
-Enumerating a service model object's methods is more challenging, because the actual object that we want to enumerate is running in the Automation Engine on the remote side of a dRuby call (see below), and all we have is the local DRb::DRbObject accessible from `$evm`. We can use +method_missing+, but we get returned the entire method list, which includes attribute names, virtual column names, association names, superclass methods, and so on.
+Enumerating a service model object's methods is more challenging, because the actual object that we want to enumerate is running in the Automation Engine on the remote side of a dRuby call (see below), and all we have is the local DRb::DRbObject accessible from `$evm`. We can use `method_missing`, but we get returned the entire method list, which includes attribute names, virtual column names, association names, superclass methods, and so on.
 
 [source,ruby]
 ----
@@ -320,7 +320,7 @@ this_object.method_missing(:class).instance_methods
 
 === Distributed Ruby
 
-The Automation Engine runs in a CloudForms/ManageIQ _worker_ thread, and it launches one of our automation scripts by spawning it as a child Ruby process. We can see this from the command line using *+ps+* to check the PID of the worker processes and its children:
+The Automation Engine runs in a CloudForms/ManageIQ _worker_ thread, and it launches one of our automation scripts by spawning it as a child Ruby process. We can see this from the command line using *`ps`* to check the PID of the worker processes and its children:
 
 
 ----
@@ -332,7 +332,7 @@ An automation script runs in its own process space, but it must somehow access t
 
 .Examining CloudForms/ManageIQ Workers
 ****
-We can use +rake evm:status+ to see which workers are running on a CloudForms/ManageIQ appliance:
+We can use `rake evm:status` to see which workers are running on a CloudForms/ManageIQ appliance:
 
 ----
 vmdb
@@ -364,18 +364,18 @@ bin/rake evm:status
 
 Distributed Ruby (dRuby) is a distributed client-server object system that allows a client Ruby process to call methods on a Ruby object located in another (server) Ruby process. This can even be on another machine.
 
-The object in the remote dRuby server process is locally represented in the dRuby client by an instance of a _DRb::DRbObject_ object. In the case of an automation script, this object is our +$evm+ variable.
+The object in the remote dRuby server process is locally represented in the dRuby client by an instance of a _DRb::DRbObject_ object. In the case of an automation script, this object is our `$evm` variable.
 
-The Automation Engine cleverly handles everything for us. When it runs our automation script, the Engine sets up the dRuby session automatically, and we access all of the service model objects seamlesssly via +$evm+ in our script. Behind the scenes the dRuby library handles the TCP/IP socket communication with the dRuby server in the worker running the Automation Engine.
+The Automation Engine cleverly handles everything for us. When it runs our automation script, the Engine sets up the dRuby session automatically, and we access all of the service model objects seamlesssly via `$evm` in our script. Behind the scenes the dRuby library handles the TCP/IP socket communication with the dRuby server in the worker running the Automation Engine.
 
-We gain insight into this if we examine some of these +$evm+ objects using +object_walker+, for example:
+We gain insight into this if we examine some of these `$evm` objects using `object_walker`, for example:
 
 ....
 $evm.root['user'] => #<MiqAeMethodService::MiqAeServiceUser:0x0000000c5431c8>   \
                             (type: DRb::DRbObject, URI: druby://127.0.0.1:38842)
 ....
 
-Although the use of dRuby mostly transparent to us, it can occasionally produce unexpected results. Perhaps we are hoping to find some useful user-related method that we can call on our user object, which we know we can access as +$evm.root['user']+. We might try to call a standard Ruby method such as:
+Although the use of dRuby mostly transparent to us, it can occasionally produce unexpected results. Perhaps we are hoping to find some useful user-related method that we can call on our user object, which we know we can access as `$evm.root['user']`. We might try to call a standard Ruby method such as:
 
 [source,ruby]
 ----

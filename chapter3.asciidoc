@@ -123,7 +123,7 @@ Get into the habit of using the *Validate* button, it can save a lot of time cat
 
 === Running the Instance
 
-We'll run our new instance using the _Simulation_ functionality of Automate, but before we do that, login to CloudForms/ManageIQ again from another browser or a private browsing tab, and navigate to *Automate -> Log* in the WebUI footnote:[Alternatively ssh into the appliance as _root_, and +tail -f /var/www/miq/vmdb/log/automation.log+]
+We'll run our new instance using the _Simulation_ functionality of Automate, but before we do that, login to CloudForms/ManageIQ again from another browser or a private browsing tab, and navigate to *Automate -> Log* in the WebUI footnote:[Alternatively ssh into the appliance as _root_, and `tail -f /var/www/miq/vmdb/log/automation.log`]
 
 [NOTE]
 The CloudForms/ManageIQ WebUI uses browser session cookies, so if we want two or more concurrent login sessions (particularly as different users), it helps to use different web browsers or private/incognito windows.

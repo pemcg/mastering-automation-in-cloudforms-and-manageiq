@@ -16,7 +16,7 @@ naming logic.
 
 ===== vm_name
 
-+vm_name+is given the value from the *VM Name* box in *Provision Virtual Machines -> Catalog* (see <<c23i1>>).
+`vm_name` is given the value from the *VM Name* box in *Provision Virtual Machines -> Catalog* (see <<c23i1>>).
 
 [[c23i1]]
 .Prompting for the VM name during provisioning
@@ -31,7 +31,7 @@ miq_provision_request.options[:vm_name]
 
 ===== vm_prefix
 
-+vm_prefix+ can be used to build a custom VM name, and is read from the *vm_prefix* variable in the naming instance schema (the default is "cfme", but we can define our own if required) (see <<c23i2>>).
+`vm_prefix` can be used to build a custom VM name, and is read from the *vm_prefix* variable in the naming instance schema (the default is "cfme", but we can define our own if required) (see <<c23i2>>).
 
 [[c23i2]]
 .Defining the vm_prefix value in the default naming instance
@@ -46,7 +46,7 @@ miq_provision_request.options[:vm_prefix]
 
 ===== hostname
 
-+hostname+ is given the value of the *Host Name* box in *Provision Virtual Machines -> Customize* (see <<c23i3>>).
+`hostname` is given the value of the *Host Name* box in *Provision Virtual Machines -> Customize* (see <<c23i3>>).
 
 [[c23i3]]
 .Prompting for the VM hostname during provisioning
@@ -61,7 +61,7 @@ miq_provision_request.options[:hostname]
 
 ===== linux_host_name
 
-If a VMware Customization Specification for Linux is used, +linux_host_name+ is the _specific name_ extracted from the template. The naming logic uses this to set the operating system hostname.
+If a VMware Customization Specification for Linux is used, `linux_host_name` is the _specific name_ extracted from the template. The naming logic uses this to set the operating system hostname.
 
 The symbol is added to the _request_ options hash as:
 
@@ -72,7 +72,7 @@ miq_provision_request.options[:linux_host_name]
 
 ===== sysprep_computer_name
 
-If a VMware Customization Specification for Windows is used, +sysprep_computer_name+ is the _specific name_ extracted from the template. ManageIQ naming uses this as input to the sysprep process to set the NetBIOS name.
+If a VMware Customization Specification for Windows is used, `sysprep_computer_name` is the _specific name_ extracted from the template. ManageIQ naming uses this as input to the sysprep process to set the NetBIOS name.
 
 The symbol is added to the _request_ options hash as:
 
@@ -83,7 +83,7 @@ miq_provision_request.options[:sysprep_computer_name]
 
 ===== miq_force_unique_name
 
-+miq_force_unique_name+ is used internally when provisioning VMs from a service catalog. When the miq_provision _task_ is created for the catalog item VM provision, its options hash key is set as:
+`miq_force_unique_name` is used internally when provisioning VMs from a service catalog. When the miq_provision _task_ is created for the catalog item VM provision, its options hash key is set as:
 
 [source,ruby]
 ----
@@ -97,7 +97,7 @@ method and added to the _task_ options hash.
 
 ===== vm_target_name 
 
-+vm_target_name+ represents the new VM name. It is added to the _task_ options hash as:
+`vm_target_name` represents the new VM name. It is added to the _task_ options hash as:
 
 [source,ruby]
 ----
@@ -106,7 +106,7 @@ miq_provision.options[:vm_target_name]
 
 ===== vm_target_hostname
 
-+vm_target_hostname+ is the VM $(hostname) assigned from the output of the VM naming logic (15 characters for Windows, 63 characters for Linux). It is added to the _task_ options hash as:
+`vm_target_hostname` is the VM $(hostname) assigned from the output of the VM naming logic (15 characters for Windows, 63 characters for Linux). It is added to the _task_ options hash as:
 
 [source,ruby]
 ----
@@ -115,9 +115,9 @@ miq_provision.options[:vm_target_hostname]
 
 === Name Processing
 
-Much of the VM naming logic happens in the Rails code that is not exposed to the Automation Engine. This code does however call the naming instance/method defined in the provisioning group profile (the *vmname* field), and we can use this to add our own customisations. The profile-defined naming method writes its suggested name into +$evm.object['vmname']+, which is propagated back to the internal Rails method via a collect. 
+Much of the VM naming logic happens in the Rails code that is not exposed to the Automation Engine. This code does however call the naming instance/method defined in the provisioning group profile (the *vmname* field), and we can use this to add our own customisations. The profile-defined naming method writes its suggested name into `$evm.object['vmname']`, which is propagated back to the internal Rails method via a collect. 
 
-If the profile-defined naming method suggests a name that should be numerically suffixed (e.g. +#{vm_name}$n{3}+), then the back-end Rails code will allocate the next free number in the sequence and form the VM name accordingly.
+If the profile-defined naming method suggests a name that should be numerically suffixed (e.g. `#{vm_name}$n{3}`), then the back-end Rails code will allocate the next free number in the sequence and form the VM name accordingly.
 
 The default profile-defined naming method for Infrastructure VMs in ManageIQ _Capablanca_ is _/Infrastructure/VM/Provisioning/Naming/vmname_. It is a relatively simple method, as follows:
 
@@ -191,17 +191,17 @@ If we examine this code we can start to see the logic that the virtual machine n
 
 ==== Provisioning a Single VM or Instance
 
-Provisioning a single VM from either *Infrastructure -> Virtual Machines -> Lifecycle -> Provision VMs* or from a service catalog will result in the VM being given the value of +:vm_name+, unless +:vm_name+ is blank or has the value "changeme". If +:vm_name+ is blank or "changeme" then we loop through the logic in the Automation Engine naming method, which assembles a VM name by combining the value of +:vm_prefix+ with the first 3 characters of the +:environment+ tag (if it exists), and appending three zero-padded digits.
+Provisioning a single VM from either *Infrastructure -> Virtual Machines -> Lifecycle -> Provision VMs* or from a service catalog will result in the VM being given the value of `:vm_name`, unless `:vm_name` is blank or has the value "changeme". If `:vm_name` is blank or "changeme" then we loop through the logic in the Automation Engine naming method, which assembles a VM name by combining the value of `:vm_prefix` with the first 3 characters of the `:environment` tag (if it exists), and appending three zero-padded digits.
 
 ==== Provisioning Multiple VMs or Instances in a Single Request
 
-Provisioning multiple servers from a service catalog will result in the symbol +:miq_force_unique_name+ being set to true for each _task_. If +:vm_name+ is not blank or "changeme", then the servers will be named as +:vm_name+ with "_n\{4}" appended, e.g. server_0001, server_0002, etc. according to the logic in the internal Rails class +MiqProvision::Naming+. In this scenario the profile-defined naming method is not used.
+Provisioning multiple servers from a service catalog will result in the symbol `:miq_force_unique_name` being set to true for each _task_. If `:vm_name` is not blank or "changeme", then the servers will be named as `:vm_name` with "_n\{4}" appended, e.g. server_0001, server_0002, etc. according to the logic in the internal Rails class `MiqProvision::Naming`. In this scenario the profile-defined naming method is not used.
 
-Provisioning multiple servers from *Infrastructure -> Virtual Machines -> Lifecycle -> Provision VMs* will not result in +:miq_force_unique_name+ being set to true, and the VM naming logic in the profile-defined naming method will apply. The servers will be given the value of +:vm_name+, appended by three zero-padded digits, for example server001, server002, etc.
+Provisioning multiple servers from *Infrastructure -> Virtual Machines -> Lifecycle -> Provision VMs* will not result in `:miq_force_unique_name` being set to true, and the VM naming logic in the profile-defined naming method will apply. The servers will be given the value of `:vm_name`, appended by three zero-padded digits, for example server001, server002, etc.
 
 === Customising the Naming Process
 
-We often wish to customise the naming process to our own requirements. For example we might wish to name all servers using a fixed prefix (+:vm_prefix+), followed by the value of the *server_role* tag, followed by a zero-padded digit extension. We can do this using a slight modification of the profile-defined naming method, in conjunction with tagging the servers that we wish to special-case:
+We often wish to customise the naming process to our own requirements. For example we might wish to name all servers using a fixed prefix (`:vm_prefix`), followed by the value of the *server_role* tag, followed by a zero-padded digit extension. We can do this using a slight modification of the profile-defined naming method, in conjunction with tagging the servers that we wish to special-case:
 
 [source,ruby]
 ----

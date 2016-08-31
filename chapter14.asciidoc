@@ -15,7 +15,7 @@ The default message is __create__, and if we look at the schema that we created 
 .The schema of the /ACME/General/Methods class, showing the message
 image::images/ch14_ss1.png[Screenshot,500,align="center"]
 
-We specify the message when we create a relationship to an instance, by appending +#message+ after the URI to the instance. If we don't explicitly specify a message then +#create+ is implicitly used.
+We specify the message when we create a relationship to an instance, by appending `#message` after the URI to the instance. If we don't explicitly specify a message then `#create` is implicitly used.
 
 For example we could create a relationship to run our first _HelloWorld_ instance, using a URI of either:
 
@@ -51,7 +51,7 @@ In this way we are able to create a generic class and instance definition that c
 
 One of the schema field types that we can use is an _assertion_. This is a boolean check that we can put anywhere in our class schema (assertions are always processed first in an instance). If the assertion evaluates to _true_ the remaining instance schema fields are processed. If the assertion evaluates to _false_ the remainder of the instance fields are not processed.
 
-We can see an example of an assertion (called *placement*) at the start of the schema for the _Placement_ class (see <<c14i2>>). Placement methods are relevant only if the *Automatic* check box has been selected at provisioning time, and this check box sets a boolean value +miq_provision.placement_auto+. The *placement* assertion checks that this value is true, and prevents the remainder of the instance from running if automatic placement has not been selected.
+We can see an example of an assertion (called *placement*) at the start of the schema for the _Placement_ class (see <<c14i2>>). Placement methods are relevant only if the *Automatic* check box has been selected at provisioning time, and this check box sets a boolean value `miq_provision.placement_auto`. The *placement* assertion checks that this value is true, and prevents the remainder of the instance from running if automatic placement has not been selected.
 
 Another use for assertions is to put a "guard" field in an instance whose methods are applicable only to a single provider. For example we might have an instance that configures VMware NSX software defined networking during the provisioning of a virtual machine. The methods would fail if called during an OpenStack provisioning operation, but we can add an assertion field to the instance, as follows:
 
@@ -59,13 +59,13 @@ Another use for assertions is to put a "guard" field in an instance whose method
 '${/#miq_provision.source.vendor}' == 'VMware'
 ----
 
-This will return +true+ if the provisioning operation is to a VMware provider, but +false+ otherwise, so preventing the methods from running in a non-VMware context.
+This will return `true` if the provisioning operation is to a VMware provider, but `false` otherwise, so preventing the methods from running in a non-VMware context.
 
 === Collections
 
-As we have seen, there is a parent-child relationship between the +$evm.root+ object (the one whose instantiation took us into the Automation Engine), and subsequent objects created as a result of following schema relationships or by calling +$evm.instantiate+.
+As we have seen, there is a parent-child relationship between the `$evm.root` object (the one whose instantiation took us into the Automation Engine), and subsequent objects created as a result of following schema relationships or by calling `$evm.instantiate`.
 
-If a child object has schema attribute values, it can read or write to them by using its own +$evm.object+ hash (e.g. we saw the use of +$evm.object['username']+ in <<using-schema-variables>>). Sometimes we need to propagate these values back up a parent or +$evm.root+ object, and we do this using _collections_.
+If a child object has schema attribute values, it can read or write to them by using its own `$evm.object` hash (e.g. we saw the use of `$evm.object['username']` in <<using-schema-variables>>). Sometimes we need to propagate these values back up a parent or `$evm.root` object, and we do this using _collections_.
 
 We define a value to collect _from_ our instance in the *Collect* schema column, using this syntax:
 
@@ -79,13 +79,13 @@ If the first variable specified has a leading '/', the value will be propagated 
 /variable_name = schema_variable_name
 ----
 
-This will then be available to other methods in the workspace as +$evm.root['variable_name']+. If the first variable does not have a leading '/', i.e.
+This will then be available to other methods in the workspace as `$evm.root['variable_name']`. If the first variable does not have a leading '/', i.e.
 
 ----
 variable_name = schema_variable_name
 ----
 
-This will then be available to a parent instance that called us as +$evm.object['variable_name']+. This second form is most typically used after a method has called another using +$evm.instantiate+. Any variables set by the instantiated instance will be available to the calling method in +$evm.object+.
+This will then be available to a parent instance that called us as `$evm.object['variable_name']`. This second form is most typically used after a method has called another using `$evm.instantiate`. Any variables set by the instantiated instance will be available to the calling method in `$evm.object`.
 
 We can also specify more than one value to collect, by separating values as a semi-colon delimited list, i.e.
 
@@ -97,7 +97,7 @@ var1 = schema_var1; var2 = schema_var2
 .Collections defined in the schema of a provisioning profile
 image::images/ch14_ss4.png[Screenshot,750,align="center"]
 
-This Provisioning Profile has several schema attributes defined, such as **dialog_name** and **auto_approval_state_machine**. The *Collect* value makes these attribute values available to any other method in the workspace as +$evm.root['dialog_name']+ and +$evm.root['state_machine']+.
+This Provisioning Profile has several schema attributes defined, such as **dialog_name** and **auto_approval_state_machine**. The *Collect* value makes these attribute values available to any other method in the workspace as `$evm.root['dialog_name']` and `$evm.root['state_machine']`.
 
 === Calling a Non-Existent Instance
 
@@ -108,7 +108,7 @@ We can optionally add a _.missing_ instance to a class which will be executed if
 .A .missing instance defining a catch-all provisioning profile
 image::images/ch14_ss6.png[Screenshot,350,align="center"]
 
-To support the requirements of the new Ansible Tower provider, CloudForms 4.1/ManageIQ _Darga_ extended the .missing functionality to allow the missing instance name to be caught in a variable called +_missing_instance+. This allows us to use the variable in a substitution string as the value of a schema attribute (see <<c14i7>>).
+To support the requirements of the new Ansible Tower provider, CloudForms 4.1/ManageIQ _Darga_ extended the .missing functionality to allow the missing instance name to be caught in a variable called `_missing_instance`. This allows us to use the variable in a substitution string as the value of a schema attribute (see <<c14i7>>).
 
 [[c14i7]]
 .Catching the missing instance name in the _missing_instance variable

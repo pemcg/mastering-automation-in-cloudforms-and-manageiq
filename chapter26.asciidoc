@@ -75,11 +75,11 @@ miq_provision_request.src_vm_id
 miq_provision_request.target_type
 ----
 
-In particular, notice the various +set+ methods that are available to define values for some options hash keys (see <<the-options-hash>> for more details on these methods).
+In particular, notice the various `set` methods that are available to define values for some options hash keys (see <<the-options-hash>> for more details on these methods).
 
 ==== Task Context
 
-When working at the provision task stage we have a different workspace (+$evm+), and here +$evm.root+ does not link directly to +miq_provision_request+. We can however still get to the provision request object via an association from the +miq_provision+ task object:
+When working at the provision task stage we have a different workspace (`$evm`), and here `$evm.root` does not link directly to `miq_provision_request`. We can however still get to the provision request object via an association from the `miq_provision` task object:
 
 [source,ruby]
 ----
@@ -141,7 +141,7 @@ miq_provision.target_type
 miq_provision.user_message=
 ----
 
-The most important of these is +execute+ which launches the _internal_ virtual machine provisioning state machine. footnote:[This _internal_ state machine performs the granular provider-specific steps to create the new virtual machine. It is implemented in the Rails +MiqProvision::StateMachine+ module and is not customisable from Automate.]
+The most important of these is `execute` which launches the _internal_ virtual machine provisioning state machine. footnote:[This _internal_ state machine performs the granular provider-specific steps to create the new virtual machine. It is implemented in the Rails `MiqProvision::StateMachine` module and is not customisable from Automate.]
 
 === The Source Object
 
@@ -185,7 +185,7 @@ source.platform
 
 This has the value of either "linux" or "windows", and we can similarly use it to make provisioning workflow decisions. We would typically use it to decide whether or not to register a new virtual machine in Foreman/Satellite 6 as part of the provisioning process, for example.
 
-All of the source object classes extend from +MiqAeServiceVmOrTemplate+, and so have the same methods as a generic virtual machine. In practice we rarely need to run a source method.
+All of the source object classes extend from `MiqAeServiceVmOrTemplate`, and so have the same methods as a generic virtual machine. In practice we rarely need to run a source method.
 
 === The Destination Object
 
@@ -200,7 +200,7 @@ $evm.root['miq_provision'].destination
 
 If we wish to make any customisations to the virtual machine as part of the provisioning workflow - such as add a disk or NIC, change VLAN, and so on - we make the changes to the destination object.
 
-The destination object is a subclass of +MiqAeServiceVmOrTemplate+ so has the standard set of VM-related methods:
+The destination object is a subclass of `MiqAeServiceVmOrTemplate` so has the standard set of VM-related methods:
 
 [source,ruby]
 ----
@@ -252,7 +252,7 @@ destination.unlink_storage
 destination.unregister
 ----
 
-In the case of provisioning a virtual machine, the same destination object is also available via the +vm+ association, i.e.
+In the case of provisioning a virtual machine, the same destination object is also available via the `vm` association, i.e.
 
 [source,ruby]
 ----
@@ -267,5 +267,5 @@ This chapter has discussed the four main service model objects that we work with
 
 The virtual machine provisioning workflow is the same for all VMs that we provision into the same provider category; _Infrastructure_ or _Cloud_. Our provisioning state machine is used to provision virtual machines into all providers within that category (both VMware and RHEV for example), all provisioning methods (such as PXE boot or clone from 'fat' template), and regardless of operating system being provisioned. We must frequently make choices within our workflow based on some of these criteria, particularly the destination provider vendor and the operating system being provisioned. Using the various properties of the source and request objects, we can ascertain exactly the flavour of virtual machine being provisioned, the provisioning type being used, and the provider being targeted.
 
-We also have several options to fine-tune the characteristics of the final virtual machine by calling methods on the destination object. We might want to explictly set the owning group, and perhaps set a custom attribute. We could call +destination.group=+ and +destination.custom_set+ toward the end of the provisioning workflow to achieve this.
+We also have several options to fine-tune the characteristics of the final virtual machine by calling methods on the destination object. We might want to explictly set the owning group, and perhaps set a custom attribute. We could call `destination.group=` and `destination.custom_set` toward the end of the provisioning workflow to achieve this.
 

@@ -63,11 +63,11 @@ Note - some older state machines such as _/Infrastructure/VM/Provisoning/StateMa
 
 ===== On Exit
 
-We can optionally define an *On Exit* _method_ to be run if the "main" method (the *Value* relationship/instance or *On Entry* method) returns +$evm.root['ae_result'] = 'ok'+
+We can optionally define an *On Exit* _method_ to be run if the "main" method (the *Value* relationship/instance or *On Entry* method) returns `$evm.root['ae_result'] = 'ok'`
 
 ===== On Error
 
-We can optionally define an *On Error* _method_ to be run if the "main" method (the *Value* relationship/instance or *On Entry* method) returns +$evm.root['ae_result'] = 'error'+
+We can optionally define an *On Error* _method_ to be run if the "main" method (the *Value* relationship/instance or *On Entry* method) returns `$evm.root['ae_result'] = 'error'`
 
 ===== Max Retries
 
@@ -99,7 +99,7 @@ There are several state variables that can be read or set by state methods to co
 
 We can run a method within the context of a state machine to return a completion status to the Automation Engine, which then decides which next action to perform (such as whether to advance to the next state).
 
-We do this by setting one of three values in the +ae_result+ hash key:
+We do this by setting one of three values in the `ae_result` hash key:
 
 [source,ruby]
 ----
@@ -117,7 +117,7 @@ $evm.root['ae_result'] = 'ok'
 
 ==== State Retries
 
-We can find out whether we're in a step that's being retried by querying the +ae_state_retries+ key:
+We can find out whether we're in a step that's being retried by querying the `ae_state_retries` key:
 
 [source,ruby]
 ----
@@ -157,17 +157,17 @@ Several useful additions to state machine functionality were added with ManageIQ
 
 ==== Error Recovery
 
-Rather than automatically aborting the state machine (the behaviour prior to _Capablanca_), an **on_error** method now has the capability to take recovery action from an error condition, and set +$evm.root['ae_result'] = 'continue'+ to ensure that the state machine continues.
+Rather than automatically aborting the state machine (the behaviour prior to _Capablanca_), an **on_error** method now has the capability to take recovery action from an error condition, and set `$evm.root['ae_result'] = 'continue'` to ensure that the state machine continues.
 
 ==== Skipping States
 
-To allow for intelligent **on_entry** pre-processing, and to advance if pre-conditions are already met, an **on_entry** method can set +$evm.root['ae_result'] = 'skip'+ to advance directly to the next State, without calling the current State's 'Value' method.
+To allow for intelligent **on_entry** pre-processing, and to advance if pre-conditions are already met, an **on_entry** method can set `$evm.root['ae_result'] = 'skip'` to advance directly to the next State, without calling the current State's 'Value' method.
 
 ==== Jumping to a Specific State
 
-Any of our state machine methods can set +$evm.root['ae_next_state'] = <state_name>+ to allow the state machine to advance forward several steps.
+Any of our state machine methods can set `$evm.root['ae_next_state'] = <state_name>` to allow the state machine to advance forward several steps.
 
-Note: setting +ae_next_state+ only allows us to go forward in a state machine. If we want to go back to a previous state, we can restart the state machine, but set +ae_next_state+ to the name of the state that we want to restart at. When issuing a restart, if +ae_next_state+ is not specified the state machine will restart at the first state. 
+Note: setting `ae_next_state` only allows us to go forward in a state machine. If we want to go back to a previous state, we can restart the state machine, but set `ae_next_state` to the name of the state that we want to restart at. When issuing a restart, if `ae_next_state` is not specified the state machine will restart at the first state. 
 
 [source,ruby]
 ----
@@ -190,10 +190,10 @@ When a step is retried in a state machine, the Automation Engine reinstantiates 
 
 [NOTE]
 ====
-This is why state machines should not contain lines that have a *Type* field of *Relationship*. A State is a special kind of relationship that can be skipped during retries. If we had a *Relationship* line anywhere in our state machine, then it would be re-run every time a later *State*  issued a +$evm.root['ae_result'] = 'retry'+. 
+This is why state machines should not contain lines that have a *Type* field of *Relationship*. A State is a special kind of relationship that can be skipped during retries. If we had a *Relationship* line anywhere in our state machine, then it would be re-run every time a later *State*  issued a `$evm.root['ae_result'] = 'retry'`. 
 ====
 
-This reinstantiation makes life difficult if we want to store and retrieve variables between steps in a state machine (something we frequently want to do). Fortunately there are three +$evm+ methods that we can use to test the presence of, save, and read variables between reinstantiations of our state machine:
+This reinstantiation makes life difficult if we want to store and retrieve variables between steps in a state machine (something we frequently want to do). Fortunately there are three `$evm` methods that we can use to test the presence of, save, and read variables between reinstantiations of our state machine:
 
 [source,ruby]
 ----
@@ -210,7 +210,7 @@ We can save most types of variables, but because of the dRuby mechanics behind t
 my_hash=Hash.new { |h, k| h[k] = {} }
 ----
 
-Here the +|h, k| h[k] = {}+ is the initializer function. 
+Here the `|h, k| h[k] = {}` is the initializer function. 
 
 === Summary
 

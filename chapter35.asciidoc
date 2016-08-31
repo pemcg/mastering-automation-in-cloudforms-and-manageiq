@@ -16,7 +16,7 @@ For this example:
 * The new service name is "My New Service"
 * The resulting service contains a VM called test05.
 
-We can use _object_walker_ with the following +walk_association_whitelist+ to dump the objects:
+We can use _object_walker_ with the following `walk_association_whitelist` to dump the objects:
 
 [source,ruby]
 ----
@@ -43,7 +43,7 @@ image::images/ch35_service_objects.png[Service Objects,750,align="center"]
 
 ==== Service Template Provision Task
 
-Our entry point into the object structure from +$evm+ is to the main _ServiceTemplateProvisionTask_ object. We access this from:
+Our entry point into the object structure from `$evm` is to the main _ServiceTemplateProvisionTask_ object. We access this from:
 [source,ruby]
 ....
 $evm.root['service_template_provision_task']
@@ -112,7 +112,7 @@ These are generally zero or _nil_ for a single-item service, but represent the v
 .Start and stop actions and delays in a multi-item bundle
 image::images/ch35_ss1.png[Screenshot,500,align="center"]
 
-The service resource has a relationship to the _ServiceTemplate_ object via +child_task.service_resource.service_template+.
+The service resource has a relationship to the _ServiceTemplate_ object via `child_task.service_resource.service_template`.
 
 ===== Source
 
@@ -135,7 +135,7 @@ accessed from:
 ....
 child_task.destination
 ....
-This is the same _Service_ object that is accessible from +$evm.root['service_template_provision_task'].destination+.
+This is the same _Service_ object that is accessible from `$evm.root['service_template_provision_task'].destination`.
 
 ==== Grandchild miq_request_task
 
@@ -175,6 +175,6 @@ This is the _ManageIQ_Providers_Redhat_InfraManager_Vm_ object that represents t
 
 In this chapter we've taken a detailed look at the various objects that are involved in provisioning a virtual machine from a service. This is the object view from any method running as part of the service provision state machine.
 
-The lowest layer of objects in <<c35i1>> - the grandchild miq_request_task with its source and destination objects - correspond to the virtual machine provisioning objects that we discussed in <<vm-provisioning-objects>>. When the service provision state machine hands over to the VM provision state machine, these are indeed the objects that are referenced at this latter stage, just like any other VM provision workflow. Any VM provision state machine methods that we may have written that access the attributes of these objects will see no difference. The only change is in the type of request object; +$evm.root['miq_provision'].miq_provision_request+ will in this case be a +service_template_provision_request+ object.
+The lowest layer of objects in <<c35i1>> - the grandchild miq_request_task with its source and destination objects - correspond to the virtual machine provisioning objects that we discussed in <<vm-provisioning-objects>>. When the service provision state machine hands over to the VM provision state machine, these are indeed the objects that are referenced at this latter stage, just like any other VM provision workflow. Any VM provision state machine methods that we may have written that access the attributes of these objects will see no difference. The only change is in the type of request object; `$evm.root['miq_provision'].miq_provision_request` will in this case be a service_template_provision_request object.
 
 

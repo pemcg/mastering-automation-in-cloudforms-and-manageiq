@@ -5,7 +5,7 @@ The workflow of provisioning a virtual machine from a service catalog involves a
 
 If we are curious to discover more about their interaction, we can follow this workflow by examining the log lines written to _automation.log_ during the service provisioning operation. This can reveal some interesting details about the interleaving of the various operations and state machines.
 
-For this example we've grepped for the "Following.. Followed" message pairs in _automation.log_ on ManageIQ _Botvinnik_ (the workflow is similar in ManageIQ _Capablanca_). The service provisioning request was from a non-admin user in a group _Bit63Group_vm_user_, so we see some group-specific profile processing. For the purposes of brevity _service_template_provision_ is abbreviated to _stp_ in the following outputs.
+For this example we've grepped for the "Following.. Followed" message pairs in _automation.log_. The service provisioning request was from a non-admin user in a group _Bit63Group_vm_user_, so we see some group-specific profile processing. For the purposes of brevity _service_template_provision_ is abbreviated to _stp_ in the following outputs.
 
 === Initial Request
 

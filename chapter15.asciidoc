@@ -40,7 +40,7 @@ The substituted values are taken from attributes of the EventStream object repre
 
 ===== Event stream mamespace
 
-The +${/#event_stream.event_namespace}+ part of the relationship translates to one of four _event stream namespaces_:
+The `${/#event_stream.event_namespace}` part of the relationship translates to one of four _event stream namespaces_:
 
 * *CustomEvent* where we can define our own _management event_ alerts
 * *EmsEvent* if the event's origin was an _external management system_ (i.e. a provider). An EmsEvent instance contains all information about its virtual machine, host and provider related to the event
@@ -111,7 +111,7 @@ We can trace the steps in the event processing workflow on a RHEV *USER_RUN_VM* 
 
 ===== Step 1
 
-The first thing that we see in +evm.log+ is the call to the EventHandler, along with arguments containing the RHEV API ids and hrefs describing the event source.
+The first thing that we see in `evm.log` is the call to the EventHandler, along with arguments containing the RHEV API ids and hrefs describing the event source.
 
 ....
 Args: [{:id=>"26790", \
@@ -306,7 +306,7 @@ The next part of the event processing workflow handles any control policies that
 
 We can continue tracing the event processing from the previous sections, which started with a RHEV *USER_RUN_VM* event being caught. We saw <<step10>> calling _/System/event_handlers/event_enforce_policy_.
 
-This method calls the internal +process_evm_event+ method with a *target* argument corresponding to the VM object that raised the event:
+This method calls the internal `process_evm_event` method with a *target* argument corresponding to the VM object that raised the event:
 
 ....
 MIQ(MiqEvent#process_evm_event) \
@@ -491,7 +491,7 @@ We can create a _/System/Policy/AutomationRequest_created_ instance if we choose
 
 ==== Step 2 - The request_approved Event
 
-The next event that we see is *request_approved*, which follows a very similar chain of relationships (we find that *request_approved* executes almost concurrently with *request_created* because we specified +:auto_approve+ to be +true+ in the automation request API call). Here we see the extract from _evm.log_:
+The next event that we see is *request_approved*, which follows a very similar chain of relationships (we find that *request_approved* executes almost concurrently with *request_created* because we specified `:auto_approve` to be `true` in the automation request API call). Here we see the extract from _evm.log_:
 
 ....
 MIQ(AutomationRequest#call_automate_event) \

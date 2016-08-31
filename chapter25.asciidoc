@@ -65,10 +65,10 @@ Each provisioning dialog is formatted from a large (900 line+) YAML file, specif
 
 Dialog tabs and fields have four useful attributes that can be set:
 
-* Hidden (+:display: :hide+)
-* Visible (+:display: :show+)
-* Editable (+:display: :edit+)
-* Mandatory (+:required: true+)
+* Hidden (`:display: :hide`)
+* Visible (`:display: :show`)
+* Editable (`:display: :edit`)
+* Mandatory (`:required: true`)
 
 === Selection of VM Provisioning Dialog
 
@@ -151,7 +151,7 @@ miq_provision_redhat_dialogs_template
 
 === Group-Specific Dialogs
 
-We can set separate provisioning dialogs for individual groups if we wish. As an example the VMware-specific _miq_provision_dialogs-user_ dialog presents a reduced set of tabs, dialogs and input fields. The hidden tabs have been given default values, and _Automatic Placement_ has been set to +true+:
+We can set separate provisioning dialogs for individual groups if we wish. As an example the VMware-specific _miq_provision_dialogs-user_ dialog presents a reduced set of tabs, dialogs and input fields. The hidden tabs have been given default values, and _Automatic Placement_ has been set to `true`:
 
 ....
       :placement_auto:
@@ -175,7 +175,7 @@ In some cases it's useful to be able to expand the range of options presented by
 .Default memory size options
 image::images/ch25_ss2.png[Screenshot,380,align="center"]
 
-These options come from the +:vm_memory+ dialog section:
+These options come from the `:vm_memory` dialog section:
 
 ....
       :vm_memory:
@@ -196,7 +196,7 @@ We sometimes need to be able to provision larger VMs, but fortunately we can cus
 
 If we identify the dialog that is being used (in this example case it is _miq_provision_redhat_dialogs_template_ as we're provisioning into RHEV using native clone), we can copy the dialog to make it editable (we'll call the new version _bit63_miq_provision_redhat_dialogs_template_).
 
-We can then expand the +:vm_memory+ section to match our requirements:
+We can then expand the `:vm_memory` section to match our requirements:
 
 ....
       :vm_memory:

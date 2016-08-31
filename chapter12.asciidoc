@@ -59,7 +59,7 @@ In addition to those listed here, a kind of pseudo-request object is created whe
 
 When we create the catalog Item, we fill out the *Request Info* fields, as if we were provisioning a VM interactively via the *Infrastructure -> Virtual Machines -> Lifecycle -> Provision VMs* menu (See <<creating-a-service-catalog-item>>).
 
-The values that we select or enter are added to the options hash in a newly created +miq_provision_request_template+ object. This then serves as the "request" template for all subsequent VM provision operations from this service catalog Item.
+The values that we select or enter are added to the options hash in a newly created `miq_provision_request_template` object. This then serves as the "request" template for all subsequent VM provision operations from this service catalog Item.
 
 [width="86%",cols="^30%,^35%,^35%",options="header",align="center"]
 |=======================================================================
@@ -72,7 +72,7 @@ The values that we select or enter are added to the options hash in a newly crea
 
 If a request is approved, one or more task objects will be created from information contained in the request object (a single request for three VMs will result in three task objects for example).
 
-The request objects derived from the base +MiqAeServiceMiqRequest+ class are as follows:
+The request objects derived from the base `MiqAeServiceMiqRequest` class are as follows:
 
 ....
 MiqAeServiceAutomationRequest
@@ -86,7 +86,7 @@ MiqAeServiceVmMigrateRequest
 MiqAeServiceVmReconfigureRequest
 ....
 
-The task objects derived directly or indirectly from the base +MiqAeServiceMiqRequestTask+ class are as follows:
+The task objects derived directly or indirectly from the base `MiqAeServiceMiqRequestTask` class are as follows:
 
 ....
 MiqAeServiceAutomationTask
@@ -136,12 +136,12 @@ If we have a request object, there may not necessarily be a task object (yet), b
 ====
 When we're developing Automate methods, having an understanding of whether we're running in a request or task context can be really useful. Think about what stage in the automation flow the method will be running - before or after approval.
 
-Example scenario: we wish to set the number of VMs to be provisioned as part of a VM provisioning operation. We know that an options hash key +:number_of_vms+ can be set, but this appears in the options hash for both the task and request objects. (See <<the-options-hash>> for more details).
+Example scenario: we wish to set the number of VMs to be provisioned as part of a VM provisioning operation. We know that an options hash key `:number_of_vms` can be set, but this appears in the options hash for both the task and request objects. (See <<the-options-hash>> for more details).
 Where should we set it?
 
-Answer: the _task_ objects are created after the _request_ is approved, and the number of VMs to be provisioned is one of the criteria that auto-approval uses to decide whether or not to approve the request. The +:number_of_vms+ key also determines how many _task_ objects are created (it is the _task_ object that contains the VM-specific options hash keys such as +:vm_target_name+, +:ip_addr+, etc.)
+Answer: the _task_ objects are created after the _request_ is approved, and the number of VMs to be provisioned is one of the criteria that auto-approval uses to decide whether or not to approve the request. The `:number_of_vms` key also determines how many _task_ objects are created (it is the _task_ object that contains the VM-specific options hash keys such as `:vm_target_name`, `:ip_addr`, etc.)
 
-We must therefore set +:number_of_vms+ in the _request_ options hash, *before* the _task_ objects are created.
+We must therefore set `:number_of_vms` in the _request_ options hash, *before* the _task_ objects are created.
 ====
 
 === Object Contents
@@ -162,7 +162,7 @@ Much of the information in the request object is propagated to the task object, 
 
 ==== Dumping the Object Contents
 
-We can use +object_walker+ to show the difference between an automation request and task object, by setting the following +walk_association_whitelist+:
+We can use `object_walker` to show the difference between an automation request and task object, by setting the following `walk_association_whitelist`:
 
 [source,ruby]
 ----
@@ -173,7 +173,7 @@ We can call the object_walker instance from the RESTful API, using the _/api/aut
 
 ===== The Request Object
 
-When the Automate instance (in this case object_walker) runs, the request has already been approved and so our +$evm.root+ only has a direct link to the task object. The request object is still reachable via an association from the task object however:
+When the Automate instance (in this case object_walker) runs, the request has already been approved and so our `$evm.root` only has a direct link to the task object. The request object is still reachable via an association from the task object however:
 
 ....
 automation_request = $evm.root['automation_task'].automation_request
@@ -241,7 +241,7 @@ automation_request = $evm.root['automation_task'].automation_request
 
 ===== The Task Object 
 
-The task object is available directly from +$evm.root+:
+The task object is available directly from `$evm.root`:
 
 ....
 $evm.root['automation_task'] => #<MiqAeMethodService::MiqAeServiceAutomation \
@@ -315,7 +315,7 @@ $evm.root['automation_task_id'] = 2000000000003   (type: String)
 
 We can see some interesting things:
 
-* From the task object, the request object is available from either of two associations, its specific object type +$evm.root['automation_task'].automation_request+ and the more generic +$evm.root['automation_task'].miq_request+. These both link to the same request object, and this is the case with all of the more complex task objects - we can always follow an +miq_request+ association to get back to the request, regardless of request object type.
+* From the task object, the request object is available from either of two associations, its specific object type `$evm.root['automation_task'].automation_request` and the more generic `$evm.root['automation_task'].miq_request`. These both link to the same request object, and this is the case with all of the more complex task objects - we can always follow an `miq_request` association to get back to the request, regardless of request object type.
 * We see that the request object has several approval-specific methods that the task object doesn't have (or need):
 
 ....

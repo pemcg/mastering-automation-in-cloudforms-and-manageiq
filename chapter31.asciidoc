@@ -12,7 +12,7 @@ In this chapter we'll take a look at these two state machine instances in detail
 
 We can specify the _CatalogItemInitialization_ state machine as the provisioning entry point when we create a service catalog item.
 
-The state machine has been written to simplify the process of customising the provisioned VMs, using values read from the service dialog. It does this by setting options hash values or tags in the child and grandchild +miq_request_task+ objects, from specially constructed service dialog element names. It also allows us to specify a new unique name and description for the resulting service.
+The state machine has been written to simplify the process of customising the provisioned VMs, using values read from the service dialog. It does this by setting options hash values or tags in the child and grandchild `miq_request_task` objects, from specially constructed service dialog element names. It also allows us to specify a new unique name and description for the resulting service.
 
 The schema for the _CatalogItemInitialization_ instance is shown in <<c31i1>>.
 
@@ -20,7 +20,7 @@ The schema for the _CatalogItemInitialization_ instance is shown in <<c31i1>>.
 .The schema of the CatalogItemInitialization state machine instance
 image::images/ch31_ss1.png[Screenshot,600,align="center"]
 
-We can see that the schema uses the *pre1* state to add a dialog parser (common between the _CatalogItemInitialization_ and _CatalogBundleInitialization_ state machines). It also uses the *pre2* state to specify the _CatalogItemInitialization_ method, which sets the child object +options_hash+ values and/or tags accordingly.
+We can see that the schema uses the *pre1* state to add a dialog parser (common between the _CatalogItemInitialization_ and _CatalogBundleInitialization_ state machines). It also uses the *pre2* state to specify the _CatalogItemInitialization_ method, which sets the child object options hash values and/or tags accordingly.
 
 The _CatalogItemInitialization_ method itself relies on the dialog inputs having been parsed correctly by _dialog_parser_, and this requires us to use a particular naming convention for our service dialog elements.
 
@@ -30,19 +30,19 @@ To perform the service dialog -> options_hash or tag substitution correctly, we 
 
 ===== Single options hash key
 
-The simplest service dialog element to process is one that prompts for the value of a single +options_hash+ key. We name the service dialog element as:
+The simplest service dialog element to process is one that prompts for the value of a single options hash key. We name the service dialog element as:
 
-*option_0_key_name_* (for backwards compatibility with ManageIQ _Anand_)
+*option_0_key_name_* (for backwards compatibility with CloudForms 3.1/ManageIQ _Anand_)
 
 or just
 
-*_key_name_* (valid for ManageIQ _Botvinnik_ and later)
+*_key_name_* (valid for CloudForms 3.2/ManageIQ _Botvinnik_ and later)
 
 For example we can create a service dialog element as shown in <<c31i2>>.
 
 [[c31i2]]
 .Service dialog element to prompt for an options hash key
-image::images/ch31_ss2.png[Screenshot,380,align="center"]
+image::images/ch31_ss2.png[Screenshot,420,align="center"]
 
 The resulting value input from this dialog at runtime will be propagated to the child task's options hash as:
 
@@ -75,7 +75,7 @@ For example we can prompt for a tag in the *department* category by naming the s
 
 [[c31i3]]
 .Service dialog element to prompt for a tag value
-image::images/ch31_ss3.png[Screenshot,380,align="center"]
+image::images/ch31_ss3.png[Screenshot,420,align="center"]
 
 The value input into the service dialog element at runtime should be a tag within this tag category. When an element of this type is processed by the _CatalogItemInitialization_ method, if either the category or tag doesn't currently exist, it will be created.
 

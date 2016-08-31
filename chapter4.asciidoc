@@ -38,7 +38,7 @@ Notice that our _password_ schema value has been obfuscated.
 
 === The Method
 
-Each of the schema attributes will be available to our method as hash key/value pairs from +$evm.object+, which is the Automate object representing our currently running instance.
+Each of the schema attributes will be available to our method as hash key/value pairs from `$evm.object`, which is the Automate object representing our currently running instance.
 
 Our code for this example will be as follows:
 

@@ -64,7 +64,7 @@ image::images/ch22_ss5.png[ch22_ss,350,align="center"]
 
 ===== Edit the method
 
-We edit _redhat_CustomizeRequest_ to set the options hash key +:vm_auto_start+ to be +false+. We must do this after the line:
+We edit _redhat_CustomizeRequest_ to set the options hash key `:vm_auto_start` to be `false`. We must do this after the line:
 
 [source,ruby]
 ----
@@ -98,7 +98,7 @@ Next we'll examine the interesting parts of the code in each of the methods.
 
 ===== add_disk
 
-_add_disk_ defines its own method +call_rhev+ that handles the REST communication with the Red Hat Enterprise Virtualizaton Manager:
+_add_disk_ defines its own method `call_rhev` that handles the REST communication with the Red Hat Enterprise Virtualizaton Manager:
 
 [source,ruby]
 ----
@@ -218,7 +218,7 @@ The initial response back from the API contains some hrefs that we need to use, 
 We poll the API for the completion status:
 
 [NOTE]
-It's not good practice to +sleep+ in an Automate method. For simplicity in this example we're handling the sleep -> retry counter logic ourselves to avoid the possibility of sleeping forever. In a production environment we'd use the built-in state machine retry logic to handle this for us.
+It's not good practice to `sleep` in an Automate method. For simplicity in this example we're handling the sleep -> retry counter logic ourselves to avoid the possibility of sleeping forever. In a production environment we'd use the built-in state machine retry logic to handle this for us.
 
 [source,ruby]
 ---- 

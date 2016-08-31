@@ -2,9 +2,9 @@
 :numbered:
 == Provisioning a Virtual Machine
 
-One of the most common things that we do as cloud or virtualisation administrators is to create new virtual machines or instances. We get used to the procedure; picking a template, selecting a target cluster, datastore and network, choosing a suitable name. These are generally manual steps, but ManageIQ has an out-of-the-box virtual machine provisioning workflow that automates the process.
+One of the most common things that we do as cloud or virtualisation administrators is to create new virtual machines or instances. We get used to the procedure; picking a template, selecting a target cluster, datastore and network, choosing a suitable name. These are generally manual steps, but CloudForms/ManageIQ has an out-of-the-box virtual machine provisioning workflow that automates the process.
 
-There are many steps involved in automatically provisioning a virtual machine. The ManageIQ provisioning workflow has been designed to be extremely flexible, and allows a great deal of customisation based on tagging, the requesting user's group membership, and the destination Provider type (e.g. RHEV, VMware, OpenStack, etc.). 
+There are many steps involved in automatically provisioning a virtual machine. The provisioning workflow has been designed to be extremely flexible, and allows a great deal of customisation based on tagging, the requesting user's group membership, and the destination Provider type (e.g. RHEV, VMware, OpenStack, etc.). 
 
 === The Provisioning Process
 

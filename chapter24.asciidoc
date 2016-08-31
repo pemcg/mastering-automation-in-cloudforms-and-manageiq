@@ -21,7 +21,7 @@ The default value for the *Placement* stage in the _VMProvision_VM/template_ sta
 /Infra.../VM/Provisioning/Placement/default#${/#miq_provision.source.vendor}
 ----
 
-We can see that this URI includes a _message_ component at the end, which corresponds to the runtime value of the +${/#miq_provision.source.vendor}+ attribute. This is the string value for the provider type that we are provisioning into.
+We can see that this URI includes a _message_ component at the end, which corresponds to the runtime value of the `${/#miq_provision.source.vendor}` attribute. This is the string value for the provider type that we are provisioning into.
 
 If we look at the schema fields in the _/Infrastructure/VM/Provisioning/Placement/default_ placement instance, we see that the messages correspond to the same provider type string: 'redhat', 'vmware' or 'microsoft' (see <<c24i2>>).
 
@@ -42,7 +42,7 @@ As part of the added value that CloudForms brings over ManageIQ, the _RedHat_ do
 .Placement methods in the RedHat domain
 image::images/ch24_ss4.png[Screenshot,380,align="center"]
 
-The _with_scope methods allow us to apply a tag from the +prov_scope+ (provisioning scope) tag category to selected hosts and datastores. This tag indicates whether or not they should be included for consideration for automatic VM placement. The +prov_scope+ tag should be +all+, or the name of a CloudForms user group. By tagging with a group name, we can direct selected workloads (such as developer VMs) to specific hosts and datastores.
+The _with_scope methods allow us to apply a tag from the `prov_scope` (provisioning scope) tag category to selected hosts and datastores. This tag indicates whether or not they should be included for consideration for automatic VM placement. The `prov_scope` tag should be `all`, or the name of a CloudForms user group. By tagging with a group name, we can direct selected workloads (such as developer VMs) to specific hosts and datastores.
 
 The vmware_best_fit_with_tags method considers any host or datastore tagged with the same tag as the provisioning request; that is, selected from the Purpose tab of the provisioning dialog.
 
@@ -51,13 +51,13 @@ All three _RedHat_ domain methods also allow us to set thresholds for datastore 
 [role="pagebreak-before"]
 ==== Using Alternative Placement Methods
 
-To use the _RedHat_ domain placement methods (or any others that we choose to write), we copy the _ManageIQ/Infrastructure/VM/Provisioning/Placement/default_ instance into our own domain and edit the value for the +redhat+, +vmware+, or +microsoft+ schema fields as appropriate to specify the name of our preferred method.
+To use the _RedHat_ domain placement methods (or any others that we choose to write), we copy the _ManageIQ/Infrastructure/VM/Provisioning/Placement/default_ instance into our own domain and edit the value for the `redhat`, `vmware`, or `microsoft` schema fields as appropriate to specify the name of our preferred method.
 
 [[c24i4]]
 .Editing the Placement/default instance
 image::images/ch24_ss3.png[Screenshot,750,align="center"]
 
-For example, if we wished to use the RHEV placement method from the _RedHat_ domain we would set the +redhat+ schema field value to be +redhat_best_placement_with_scope+.
+For example, if we wished to use the RHEV placement method from the _RedHat_ domain we would set the `redhat` schema field value to be `redhat_best_placement_with_scope`.
 
 === Summary
 
