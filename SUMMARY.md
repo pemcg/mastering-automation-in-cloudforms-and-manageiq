@@ -45,6 +45,8 @@
   * [Creating a Service Catalog Bundle](chapter34.asciidoc)
   * [Service Objects](chapter35.asciidoc)
   * [Log Analysis During Service Provisioning](chapter36.asciidoc)
+  * [Service Hierarchies](chapter37.asciidoc)
+  * [(placeholder) Service Reconfiguration](chapter38.asciidoc.wip)
 * [Part 5](part5.asciidoc)
 * [Part 6](part6.asciidoc)
 * [Part 7](part7.asciidoc)

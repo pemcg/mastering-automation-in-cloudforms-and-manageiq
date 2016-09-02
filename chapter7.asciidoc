@@ -79,11 +79,10 @@ When called with a single argument, the method returns the generic service model
 ----
 vm = $evm.vmdb('vm').find_by_name('websrv031')
 vm = $evm.vmdb('vm').where(:name => 'websrv031')
-clusters = $evm.vmdb(:EmsCluster).all
-$evm.vmdb(:VmOrTemplate).find_each do | vm |
+$evm.vmdb(:EmsCluster).all.each do |cluster|
 ----
 
-We can also use more advanced query syntax to return results based on multiple conditions, i.e.
+We can also use more advanced query syntax to return results based on multiple conditions, for example:
 
 [source,ruby]
 ----
@@ -94,12 +93,19 @@ The service model object name can be specified in CamelCase (e.g. 'AvailabilityZ
 
 ==== Two-Argument Form
 
-If we wish to find an object by its ID, we can use the two argument form of the call. When called with two arguments, the second argument should be the service model ID to search for:
+If we wish to find an object by its ID, we can use the two argument form of the call. When called with two arguments, the second argument should be the service model ID to search for, like so:
 
-....
+[source,ruby]
+----
 owner = $evm.vmdb('user', evm_owner_id)
-....
+----
 
+We should exercise caution when using the two-argument form. If there is no service model matching the specified ID, the method will raise a `MiqAeException::ServiceNotFound` exception rather than return `nil`. We can guard against this by catching the exception ourselves, as follows:
+
+[source,ruby]
+----
+owner = $evm.vmdb('user', evm_owner_id) rescue nil
+----
 
 
 .VM or Template?

@@ -26,9 +26,20 @@ Followed [/System/Event/RequestEvent/Request/request_created#create]
 
 === Request Processing and Approval
 
-We see the request starting, and some operations performed in the context of the service template provisioning _request_ (service_template_provision_request_59), including the quota checking workflow:
+We see the request_approved workflow, and the request starting. Some operations performed in the context of the service template provisioning _request_ (service_template_provision_request_59), including the quota checking workflow:
 
 ```
+Following [/System/Event/RequestEvent/Request/request_approved#create]
+  Following [/System/Policy/request_approved#create]
+    Following [/System/Process/parse_provider_category#create]
+    Followed [/System/Process/parse_provider_category#create]
+    Following [/System/Policy/ServiceTemplateProvisionRequest_Approved#create]
+      Following [/Service/Provisioning/Email/ServiceTemplateProvisionRequest_Approved#create]
+      Followed [/Service/Provisioning/Email/ServiceTemplateProvisionRequest_Approved#create]
+    Followed [/System/Policy/ServiceTemplateProvisionRequest_Approved#create]
+  Followed [/System/Policy/request_approved#create]
+Followed [/System/Event/RequestEvent/Request/request_approved#create]
+
 (stp_request_59) Following [/System/Event/RequestEvent/Request/request_starting#create]
   (stp_request_59) Following [/System/Policy/request_starting#create]
     (stp_request_59) Following [/System/Process/parse_provider_category#create]
@@ -48,21 +59,11 @@ We see the request starting, and some operations performed in the context of the
   (stp_request_59) Followed [/Service/Provisioning/Profile/Bit63_user#include_service]
 (stp_request_59) Followed [/System/Request/SERVICE_PROVISION_INFO#create]
 (stp_request_59) Following [/System/Request/UI_PROVISION_INFO#create]
-  Following [/System/Event/RequestEvent/Request/request_approved#create]
-    (stp_request_59) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_vmname]
-      Following [/System/Policy/request_approved#create]
-        Following [/System/Process/parse_provider_category#create]
-          (stp_request_59) Following [/Infra.../VM/Provisioning/Naming/Default#create]
-          Followed [/System/Process/parse_provider_category#create]
-          Following [/System/Policy/ServiceTemplateProvisionRequest_Approved#create]
-            Following [/Service/Provisioning/Email/ServiceTemplateProvisionRequest_Approved#create]
-            (stp_request_59) Followed [/Infra.../VM/Provisioning/Naming/Default#create]
-          (stp_request_59) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_vmname]
-        (stp_request_59) Followed [/System/Request/UI_PROVISION_INFO#create]
-      Followed [/Service/Provisioning/Email/ServiceTemplateProvisionRequest_Approved#create]
-    Followed [/System/Policy/ServiceTemplateProvisionRequest_Approved#create]
-  Followed [/System/Policy/request_approved#create]
-Followed [/System/Event/RequestEvent/Request/request_approved#create]
+  (stp_request_59) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_vmname]
+    (stp_request_59) Following [/Infra.../VM/Provisioning/Naming/Default#create]
+    (stp_request_59) Followed [/Infra.../VM/Provisioning/Naming/Default#create]
+  (stp_request_59) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_vmname]
+(stp_request_59) Followed [/System/Request/UI_PROVISION_INFO#create]        
 ```
 
 Notice that this _request_ processing runs the naming method, which is therefore processed *before* _CatalogItemInitialization_ (which is processed in _task_ context).
@@ -75,9 +76,9 @@ Next we see two service template provisioning _tasks_ created, our top-level and
 ====
 The two tasks are actually running through two separate state machines.
 
-Task _service_template_provision_task_117_ is running through _/Service/Provisioning/StateMachines/ServiceProvision_Template/CatalogItemInitialization_.
+Task _service_template_provision_task_117_ is running through _/Service/Provisioning/StateMachines/ServiceProvision_Template/CatalogItemInitialization_. This is the top-level or 'parent' service_template_provision_task described in <<service-objects>>.
 
-Task _service_template_provision_task_118_ is running through _/Service/Provisioning/StateMachines/ServiceProvision_Template/clone_to_service_.
+Task _service_template_provision_task_118_ is running through _/Service/Provisioning/StateMachines/ServiceProvision_Template/clone_to_service_. This is the 'child' miq_request_task described in <<service-objects>>.
 ====
 
 ```
@@ -127,7 +128,7 @@ We see our grandchild miq_provision task object created(miq_provision_119), and 
 
 === Events
 
-We see some events being triggered:
+We see some events being triggered and handled by the event switchboard:
 ```
 Following [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_STARTED#create]
 Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_STARTED#create]
@@ -160,7 +161,7 @@ We see the VM provision state machine running its _CheckProvisioned_ method. We 
 ```        
 
 [NOTE]
-Recall that if a state exits with +$evm.root['ae_result'] = 'retry'+, the entire state machine is re-launched after the retry interval, starting at the state to be retried.
+Recall that if a state exits with `$evm.root['ae_result'] = 'retry'`, the entire state machine is re-launched after the retry interval, starting at the state to be retried.
 
 We see the service and VM provisioning state machines both running their _CheckProvisioned_ methods for several minutes while the VM provision is progressing:
 
@@ -207,7 +208,7 @@ Followed [/System/Event/MiqEvent/POLICY/request_vm_scan#create]
 
 === Virtual Machine Provision State Machine Continuing
 
-We see the _Infrastructure/VM_ provisioning state machine _CheckProvisioned_ method return success, and continue with the remainder of the state machine (starting with _PostProvision_). This example creates a VM in a RHEV provider, and we see that the provision is actually a two-stage operation; the initial VM clone operation,Followed by a VM reconfiguration task to set our desired VM configuration - number CPUs, memory size - and so on.
+We see the _Infrastructure/VM_ provisioning state machine _CheckProvisioned_ method return success, and continue with the remainder of the state machine (starting with _PostProvision_). This example creates a VM in a RHEV provider, and we see that within the internal state machine the provision is actually a two-stage operation; the initial VM clone operation, followed by a VM reconfiguration task to set our desired VM configuration - number CPUs, memory size - and so on.
 
 There is considerable event-related activity during a VM provision operation, as we see:
 
@@ -218,65 +219,39 @@ There is considerable event-related activity during a VM provision operation, as
   (miq_provision_119) Following [/Infra.../VM/Provisioning/StateMachines/VMProvision_vm/template#create]
     (miq_provision_119) Following [/Infra.../VM/Provisioning/StateMachines/Methods/CheckProvisioned#create]
     (miq_provision_119) Followed [/Infra.../VM/Provisioning/StateMachines/Methods/CheckProvisioned#create]
-
-      Following [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
-      Followed [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
-      Following [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
-        Following [/System/Event/MiqEvent/POLICY/vm_scan_start#create]
-        Followed [/System/Event/MiqEvent/POLICY/vm_scan_start#create]
-      Following [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
-      Followed [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
-      Followed [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
-      Following [/System/Event/EmsEvent/RHEVM/NETWORK_UPDATE_VM_INTERFACE#create]
-      Followed [/System/Event/EmsEvent/RHEVM/NETWORK_UPDATE_VM_INTERFACE#create]
-      Following [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
-        Following [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
-          Following [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
-            Following [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
-            Followed [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
-          Followed [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
-        Followed [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
-      Followed [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
-      Following [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
-        Following [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
-        Followed [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
-      Followed [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
+    Following [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
+    Followed [/System/Event/EmsEvent/RHEVM/USER_UPDATE_VM#create]
+    Following [/System/Event/MiqEvent/POLICY/vm_scan_start#create]
+    Followed [/System/Event/MiqEvent/POLICY/vm_scan_start#create]
+    Following [/System/Event/EmsEvent/RHEVM/NETWORK_UPDATE_VM_INTERFACE#create]
+    Followed [/System/Event/EmsEvent/RHEVM/NETWORK_UPDATE_VM_INTERFACE#create]
+    Following [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
+      Following [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
+      Followed [/Infra.../VM/Reconfigure/Email/VmReconfigureTaskComplete#create]
+    Followed [/System/Event/MiqEvent/POLICY/vm_reconfigure#create]
 
     (miq_provision_119) Following [/Infra.../VM/Provisioning/StateMachines/Methods/PostProvision#redhat]
     (miq_provision_119) Followed [/Infra.../VM/Provisioning/StateMachines/Methods/PostProvision#redhat]
     (miq_provision_119) Following [/Integration/RedHat/Methods/AddDisk#create]
+      Following [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM#create]
+      Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM#create]
+      Following [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM_FINISHED_SUCCESS#create]
+      Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM_FINISHED_SUCCESS#create]
     (miq_provision_119) Followed [/Integration/RedHat/Methods/AddDisk#create]
-    (miq_provision_119) Following [/Integration/RedHat/Methods/StartVM#create]
-    (miq_provision_119) Followed [/Integration/RedHat/Methods/StartVM#create]
-  (miq_provision_119) Followed [/Infra.../VM/Provisioning/StateMachines/VMProvision_vm/template#create]
-(miq_provision_119) Followed [/Infra.../VM/Lifecycle/Provisioning#create]
 
-Following [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM#create]
-Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM#create]
-Following [/System/Event/MiqEvent/POLICY/vm_scan_complete#create]
-Followed [/System/Event/MiqEvent/POLICY/vm_scan_complete#create]
-Following [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM_FINISHED_SUCCESS#create]
-Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM_FINISHED_SUCCESS#create]
+    Following [/System/Event/MiqEvent/POLICY/vm_scan_complete#create]
+    Followed [/System/Event/MiqEvent/POLICY/vm_scan_complete#create]
 
-(miq_provision_119) Following [/Infra.../VM/Lifecycle/Provisioning#create]
-  (miq_provision_119) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
-  (miq_provision_119) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
-  (miq_provision_119) Following [/Infra.../VM/Provisioning/StateMachines/VMProvision_vm/template#create]
     (miq_provision_119) Following [/Integration/RedHat/Methods/StartVM#create]
       Following [/System/Event/EmsEvent/RHEVM/USER_STARTED_VM#create]
       Followed [/System/Event/EmsEvent/RHEVM/USER_STARTED_VM#create]
       Following [/System/Event/MiqEvent/POLICY/request_vm_start#create]
       Followed [/System/Event/MiqEvent/POLICY/request_vm_start#create]
+      Following [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
+      Followed [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
+      Following [/System/Event/MiqEvent/POLICY/vm_start#create]
+      Followed [/System/Event/MiqEvent/POLICY/vm_start#create]
     (miq_provision_119) Followed [/Integration/RedHat/Methods/StartVM#create]
-  (miq_provision_119) Followed [/Infra.../VM/Provisioning/StateMachines/VMProvision_vm/template#create]
-(miq_provision_119) Followed [/Infra.../VM/Lifecycle/Provisioning#create]
- 
-Following [/System/Event/MiqEvent/POLICY/request_vm_start#create]
-Followed [/System/Event/MiqEvent/POLICY/request_vm_start#create]
-Following [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
-Followed [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
-Following [/System/Event/MiqEvent/POLICY/vm_start#create]
-Followed [/System/Event/MiqEvent/POLICY/vm_start#create]
 ```
 
 === Virtual Machine Provision Complete
@@ -288,8 +263,6 @@ Eventually we see the VM provision state machine complete:
   (miq_provision_119) Following [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
   (miq_provision_119) Followed [/Infra.../VM/Provisioning/Profile/Bit63_user#get_state_machine]
   (miq_provision_119) Following [/Infra.../VM/Provisioning/StateMachines/VMProvision_vm/template#create]
-    (miq_provision_119) Following [/Integration/RedHat/Methods/StartVM#create]
-    (miq_provision_119) Followed [/Integration/RedHat/Methods/StartVM#create]
     (miq_provision_119) Following [/Infra.../VM/Provisioning/Email/MiqProvision_Complete?event=vm_provisioned#create]
     (miq_provision_119) Followed [/Infra.../VM/Provisioning/Email/MiqProvision_Complete?event=vm_provisioned#create]
     (miq_provision_119) Following [/System/CommonMethods/StateMachineMethods/vm_provision_finished#create]

@@ -53,7 +53,7 @@ For this example though, we'll create our new empty service from a service catal
 
 ===== State machine
 
-First we'll copy _ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template/default_ into our own Domain, and rename it _EmptyService_. We'll add a *pre5* relationship to a new instance that we'll create, called _/Service/Provisioning/StateMachines/Methods/RenameService_ (see <<c37i6>>).
+First we'll copy _ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template/default_ into our own Domain, and rename it _EmptyService_. We'll add a *pre5* relationship to a new instance that we'll create, called __/Service/Provisioning/StateMachines/Methods/rename_service__ (see <<c37i6>>).
 
 [[c37i6]]
 .Schema of the EmptyService state machine
@@ -61,7 +61,7 @@ image::images/ch37_ss6.png[Screenshot,600,align="center"]
 
 ===== Method
 
-The *pre5* stage of this state machine is a relationship to a _RenameService_ instance. This instance calls a _rename_service_ method containing the following code:
+The *pre5* stage of this state machine is a relationship to a __rename_service__ instance. This instance calls a __rename_service__ method containing the following code:
 
 [source,ruby]
 ----
@@ -92,7 +92,7 @@ We create a simple service dialog called "New Service" with element names *servi
 
 [[c37i7]]
 .Service dialog
-image::images/ch37_ss7.png[Screenshot,300,align="center"]
+image::images/ch37_ss7.png[Screenshot,450,align="center"]
 
 ===== Putting it all together
 
@@ -100,7 +100,7 @@ Finally we assemble all of these parts by creating a new service catalog called 
 
 [[c37i8]]
 .The completed "Empty Service" service catalog item
-image::images/ch37_ss8.png[Screenshot,500,align="center"]
+image::images/ch37_ss8.png[Screenshot,550,align="center"]
 
 We can order from this service catalog item to create our new empty services.
 
@@ -122,39 +122,56 @@ We create a simple button dialog with a dynamic drop-down element named **servic
 
 [[c37i10]]
 .Button Dialog
-image::images/ch37_ss10.png[Screenshot,500,align="center"]
+image::images/ch37_ss10.png[Screenshot,600,align="center"]
 
 ===== Dialog element method
 
-The dynamic drop-down element in the service dialog calls a method called _list_services_. We only wish to display a service in the drop-down list if the user has permissions to see it via their role-based access control (RBAC) filter. We define two methods; +get_current_group_rbac_array+ to retrieve a user's RBAC filter array, and +service_visible?+ to check that a service has a tag that matches the filter:
+The dynamic drop-down element in the service dialog calls a method called _list_services_. We only wish to display a service in the drop-down list if the user has permissions to see it via their tenant membership and role-based access control (RBAC) filter. We define three methods; `get_visible_tenant_ids` to get our tenant and any child tenant IDs; `get_current_group_rbac_array` to retrieve a user's RBAC filter array, and `service_visible?` to check that a service has a tag that matches the filter:
 
 [source,ruby]
 ----
-def get_current_group_rbac_array(user, rbac_array=[])
+def get_visible_tenant_ids
+  tenant_ancestry = []
+  tenant_ancestry << $evm.root['tenant'].id
+  $evm.vmdb(:tenant).all.each do |tenant|
+    unless tenant.ancestry.nil?
+      ancestors = tenant.ancestry.split('/')
+      if ancestors.include?($evm.root['tenant'].id.to_s)
+        tenant_ancestry << tenant.id
+      end
+    end
+  end
+  tenant_ancestry
+end
+
+def get_current_group_rbac_array(rbac_array=[])
+  user = $evm.root['user']
   unless user.current_group.filters.blank?
     user.current_group.filters['managed'].flatten.each do |filter|
       next unless /(?<category>\w*)\/(?<tag>\w*)$/i =~ filter
-      rbac_array << {category=>tag}
+      rbac_array << {category => tag}
     end
   end
   rbac_array
 end
-  
-def service_visible?(rbac_array, service)
-  $evm.log(:info, "Evaluating Service #{service.name}") 
-  if rbac_array.length.zero?
-    $evm.log(:info, "No Filter, service: #{service.name} is visible to this user")
-    return true 
-  else
-    rbac_array.each do |rbac_hash| 
-      rbac_hash.each do |category, tag|
-        if service.tagged_with?(category, tag)
-          $evm.log(:info, "Service: #{service.name} is visible to this user") return true
-        end 
+   
+def service_visible?(visible_tenants, rbac_array, service)
+  visible = false
+  $evm.log(:info, "Evaluating Service #{service.name}")
+  if visible_tenants.include?(service.tenant.id)
+    if rbac_array.length.zero?
+      visible = true
+    else
+      rbac_array.each do |rbac_hash|
+        rbac_hash.each do |category, tag|
+          if service.tagged_with?(category, tag)
+            visible = true
+          end
+        end
       end
     end
-    false
-  end 
+  end
+  visible
 end
 ----
 
@@ -162,10 +179,14 @@ When we enumerate the services, we check on visibility to the user before adding
 
 [source,ruby]
 ----
-$evm.vmdb(:service).find(:all).each do |service|
+rbac_array       = get_current_group_rbac_array
+visible_tenants  = get_visible_tenant_ids
+values_hash      = {}
+visible_services = []
+  
+$evm.vmdb(:service).all.each do |service|
   if service['display']
-    $evm.log(:info, "Found service: #{service.name}")
-    if service_visible?(rbac_array, service)
+    if service_visible?(visible_tenants, rbac_array, service)
       visible_services << service
     end
   end
@@ -187,24 +208,23 @@ Here we use a simple technique of keeping the string "-- select from list --" at
 [[button-method]]
 ===== Button method
 
-The main instance and method called from the button are called _AddToService_ and _add_to_service_. This method adds the current virtual machine or service, into the service selected from the drop-down list. As we wish to be able to call this from a button on either a _Service_ object type or a _VM and instance_ object type, we identify our context using +$evm.root['vmdb_object_type']+.
+The main instance and method called from the button are each called _add_to_service_. This method adds the current virtual machine or service, into the service selected from the drop-down list. As we wish to be able to call this from a button on either a _Service_ object type or a _VM and instance_ object type, we identify our context using `$evm.root['vmdb_object_type']`.
 
 If we are adding a virtual machine to an existing service, we should allow for the fact that the virtual machine might itself have been provisioned from a service. We detect any existing service membership, and if the old service is empty after we move the virtual machine, we delete the service from the VMDB:
 
 [source,ruby]
 ----
 begin
-  parent_service_id = $evm.root['dialog_service']
-  parent_service = $evm.vmdb('service').find_by_id(parent_service_id)
-  if parent_service.nil?
-    $evm.log(:error, "Can't find service with ID: #{parent_service_id}")
+  new_service_id = $evm.root['dialog_service']
+  new_service = $evm.vmdb('service', new_service_id) rescue nil
+  if new_service.nil?
+    $evm.log(:error, "Can't find service with ID: #{new_service_id}")
     exit MIQ_ERROR
   else
     case $evm.root['vmdb_object_type']
     when 'service'
-      $evm.log(:info, "Adding Service #{$evm.root['service'].name} to \
-                                                         #{parent_service.name}")
-      $evm.root['service'].parent_service = parent_service
+      $evm.log(:info, "Adding Service #{$evm.root['service'].name} to #{new_service.name}")
+      $evm.root['service'].new_service = new_service
     when 'vm'
       vm = $evm.root['vm']
       #
@@ -214,11 +234,21 @@ begin
         old_service = vm.service
         vm.remove_from_service
         if old_service.v_total_vms.zero?
+          $evm.log(:info, "Old service #{old_service.name} is now empty, removing it from VMDB")
           old_service.remove_from_vmdb
         end
       end
-      $evm.log(:info, "Adding VM #{vm.name} to #{parent_service.name}")
-      vm.add_to_service(parent_service)
+      $evm.log(:info, "Adding VM #{vm.name} to #{new_service.name}")
+      vm.add_to_service(new_service)
+      #
+      # Set the VM's owner and group to be the same as the new service
+      #
+      unless new_service.evm_owner_id.nil?
+        vm.owner = $evm.vmdb(:user).find_by_id(new_service.evm_owner_id)
+      end
+      unless new_service.miq_group_id.nil?
+        vm.group = $evm.vmdb(:miq_group).find_by_id(new_service.miq_group_id)
+      end
     end
   end
   exit MIQ_OK

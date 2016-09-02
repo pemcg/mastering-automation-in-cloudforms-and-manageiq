@@ -2,3 +2,86 @@
 == Tenancy and Automate
 
 Since CloudForms 4.0/ManageIQ _Capablanca_, all Automate operations have been performed within the context of a Tenant for role-based access control.
+
+Tag-related RBAC works within the confines of a tenant. Adding a visibility flag to a VM owned by anther tenant does not make the VM visible outsode of the tenant.
+
+....
+     |    $evm.root['tenant'] => #<MiqAeMethodService::MiqAeServiceTenant:0x0000000b392fa0>
+     |    |    --- attributes follow ---
+     |    |    $evm.root['tenant'].ancestry = 1   (type: String)
+     |    |    $evm.root['tenant'].default_miq_group_id = 17   (type: Fixnum)
+     |    |    $evm.root['tenant'].description = Engineering   (type: String)
+     |    |    $evm.root['tenant'].divisible = true   (type: TrueClass)
+     |    |    $evm.root['tenant'].domain = nil
+     |    |    $evm.root['tenant'].id = 2   (type: Fixnum)
+     |    |    $evm.root['tenant'].login_logo_content_type = nil
+     |    |    $evm.root['tenant'].login_logo_file_name = nil
+     |    |    $evm.root['tenant'].login_logo_file_size = nil
+     |    |    $evm.root['tenant'].login_logo_updated_at = nil
+     |    |    $evm.root['tenant'].login_text = nil
+     |    |    $evm.root['tenant'].logo_content_type = nil
+     |    |    $evm.root['tenant'].logo_file_name = nil
+     |    |    $evm.root['tenant'].logo_file_size = nil
+     |    |    $evm.root['tenant'].logo_updated_at = nil
+     |    |    $evm.root['tenant'].name = Engineering   (type: String)
+     |    |    $evm.root['tenant'].subdomain = nil
+     |    |    $evm.root['tenant'].use_config_for_attributes = false   (type: FalseClass)
+     |    |    --- end of attributes ---
+     |    |    --- virtual columns follow ---
+     |    |    $evm.root['tenant'].allocated_memory = 6442450944   (type: Fixnum)
+     |    |    $evm.root['tenant'].allocated_storage = 161061273600   (type: Fixnum)
+     |    |    $evm.root['tenant'].allocated_vcpu = 3   (type: Fixnum)
+     |    |    $evm.root['tenant'].display_type = Tenant   (type: String)
+     |    |    $evm.root['tenant'].parent_name = Bit63   (type: String)
+     |    |    $evm.root['tenant'].provisioned_storage = 167503724544   (type: Fixnum)
+     |    |    $evm.root['tenant'].region_description = Region 0   (type: String)
+     |    |    $evm.root['tenant'].region_number = 0   (type: Fixnum)
+     |    |    --- end of virtual columns ---
+     |    |    --- associations follow ---
+     |    |    $evm.root['tenant'].ae_domains (type: Association)
+     |    |    $evm.root['tenant'].ext_management_systems (type: Association (empty))
+     |    |    $evm.root['tenant'].miq_groups (type: Association)
+     |    |    $evm.root['tenant'].miq_request_tasks (type: Association)
+     |    |    $evm.root['tenant'].miq_requests (type: Association)
+     |    |    $evm.root['tenant'].miq_templates (type: Association (empty))
+     |    |    $evm.root['tenant'].providers (type: Association (empty))
+     |    |    $evm.root['tenant'].service_templates (type: Association (empty))
+     |    |    $evm.root['tenant'].services (type: Association)
+     |    |    $evm.root['tenant'].tenant_quotas (type: Association (empty))
+     |    |    $evm.root['tenant'].users (type: Association)
+     |    |    $evm.root['tenant'].vm_or_templates (type: Association)
+     |    |    $evm.root['tenant'].vms (type: Association)
+     |    |    --- end of associations ---
+     |    |    --- methods follow ---
+     |    |    $evm.root['tenant'].inspect
+     |    |    $evm.root['tenant'].inspect_all
+     |    |    $evm.root['tenant'].model_suffix
+     |    |    $evm.root['tenant'].reload
+     |    |    $evm.root['tenant'].tag_assign
+     |    |    $evm.root['tenant'].tag_unassign
+     |    |    $evm.root['tenant'].tagged_with?
+     |    |    $evm.root['tenant'].tags
+     |    |    --- end of methods ---
+     |    |    --- The $evm.root['tenant'] object does not support custom attributes ---
+....
+
+[source,ruby]
+----
+def get_visible_tenants
+  tenant_ancestry = []
+  tenant_ancestry << $evm.root['tenant'].id.to_s
+  our_tenant_ancestors = $evm.root['tenant'].ancestry.nil? ? [] : $evm.root['tenant'].ancestry.split('/')
+  $evm.vmdb(:tenant).all.each do |tenant|
+    unless tenant.ancestry.nil?
+      ancestors = tenant.ancestry.split('/')
+      if ancestors.include?($evm.root['tenant'].id.to_s)
+        tenant_ancestry << tenant.id.to_s
+      end
+    end
+  end
+  tenant_ancestry.flatten.uniq.select { |tenant| !our_tenant_ancestors.include?(tenant) }
+end
+----
+
+$evm.log(:info, "Visible tenants: #{get_visible_tenants.inspect}")
+
