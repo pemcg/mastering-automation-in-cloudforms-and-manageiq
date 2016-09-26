@@ -2,9 +2,9 @@
 :numbered:
 == Distributed Automation Processing
 
-As we start using ManageIQ Automate to expand our workflows into the wider Enterprise, we may find that we need to add further ManageIQ appliances to spread the workload in our Region.
+As we start using Automate to expand our workflows into the wider Enterprise, we may find that we need to add further CloudForms or ManageIQ appliances to spread the workload in our Region.
 
-ManageIQ Automate has been designed to be scalable by supporting distributed worker appliances, each running the *Automation Engine* role and polling the VMDB database appliance for work. In this chapter we'll take an in-depth look at how the automation operations are distributed between appliances via a central queue. This is another background information chapter, so feel free to skip on first read or bookmark for later reference.
+Automate has been designed to be scalable by supporting distributed worker appliances, each running the *Automation Engine* role and polling the VMDB database appliance for work. In this chapter we'll take an in-depth look at how the automation operations are distributed between appliances via a central queue. This is another background information chapter, so feel free to skip on first read or bookmark for later reference.
 
 === Nondistributed Automation Operations
 

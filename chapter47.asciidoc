@@ -1,20 +1,20 @@
 [[miscellaneous-tips]]
 == Miscellaneous Tips
 
-We've reached the final chapter in the book, and our journey towards automation mastery is almost complete. In this last chapter we'll cover some miscellaneous tips that can help us when we work with ManageIQ Automate.
+We've reached the final chapter in the book, and our journey towards automation mastery is almost complete. In this last chapter we'll cover some miscellaneous tips that can help us when we work with Automate.
 
 === Updating the Appliance
 
-When a minor update to ManageIQ is released and installed, any changes to the Automate code are not automatically visible to the Automate Explorer. 
+When a minor update to CloudForms is released and installed, any changes to the Automate code are not automatically visible to the Automate Explorer. 
 
 Go to **Import /Export**, and *Reset all Datastore custom classes and instances to default* to get the updates added and visible (see <<c47i1>>).
 
 [[c47i1]]
 .Resetting the locked domains after an appliance upgrade
-image::part6/chapter47/images/screenshot1hd.png[Screenshot,500,align="center"]
+image::images/ch47_ss1.png[ch47_ss,500,align="center"]
 
 [NOTE]
-This does not, as the wording might suggest, reset our custom domains, it merely reloads the ManageIQ domain.
+This does not, as the wording might suggest, reset our custom domains, it merely reloads the RedHat and ManageIQ domains.
 
 === The ManageIQ Coding Style and Standards Guide
 
@@ -24,7 +24,7 @@ https://github.com/ManageIQ/ruby-style-guide[Ruby Style Guide]. Although the gui
 The guides recommend using snake_case for symbols, methods and variables, and CamelCase for classes and modules. Although this doesn't explicitly refer to Automate Datastore Classes and Methods, we can adopt the same guidelines for our code as well.
 
 [TIP]
-The style guide doesn't currently mention whether we should name instances in CamelCase or snake_case. Although the examples in this book have used CamelCase naming for instances, it is likely that future versions of ManageIQ will standardise on snake_case naming for both instances and methods.
+The style guide doesn't currently mention whether we should name instances in CamelCase or snake_case. Although a lot of the existing code in the Automate datastore uses CamelCase naming for instances, from CloudForms 4.1/ManageIQ _Darga_ and onwards all new instances and methods should be named in snake_case.
 
 === Defensive Programming
 
@@ -88,13 +88,13 @@ The built-in WebUI code editor is fairly basic. It is often easier to develop in
 
 There isn't any yet, although Git integration for the Automate Datastore is in development for a future release of ManageIQ. In the meantime we should use our own Git repository, but this is a manual process unfortunately.
 
-Several of Red Hat's US consultants have created an open source project for handling version control and continuous integration (CI) of ManageIQ artefacts such as Automate code and dialogs, across regions. footnote:[The project code is located https://github.com/rhtconsulting/miq-ci[here]]
+Several of Red Hat's US consultants have created an open source project for handling version control and continuous integration (CI) of CloudForms artefacts such as Automate code and dialogs, across regions. footnote:[The project code is located https://github.com/rhtconsulting/miq-ci[here]]
 
 The CI workflow is created using Jenkins. It provides a pipeline view that allows us to visualize which version of any of the artefacts is in any region at a given time. We can implement regions as lifecycle stages in our development process, such as DEV, TEST, QA, and promote code through the lifecycle as our testing progresses (see <<c47i2>>).
 
 [[c47i2]]
 .Continuous integration workflow for ManageIQ automation development
-image::part6/chapter47/images/miq_ci_workflow.png[]
+image::images/ch47_miq_ci_workflow.png[]
 
 === Use Configuration Domains
 
@@ -118,14 +118,14 @@ The process of testing then becomes simpler as we cycle the code domain through 
 
 === Summary
 
-This completes our study of the Automate capability of ManageIQ. Over the preceding chapters we have learned about the Automate Datastore and the entities that we use to create our automation scripts. We have taken a look behind the scenes at the objects that we work with, and learned about their attributes, virtual columns, associations and methods.
+This completes our study of the Automate capability of CloudForms and ManageIQ. Over the preceding chapters we have learned about the Automate Datastore and the entities that we use to create our automation scripts. We have taken a look behind the scenes at the objects that we work with, and learned about their attributes, virtual columns, associations and methods.
 
 We discovered how these components come together to create the workflows that provision infrastructure virtual machines and cloud instances, and we have seen examples of how we can customise the provisioning state machines for our own purposes.
 
-We created service catalogs to deploy servers both singly and in bundles, and we integrated our Automate workflows with an external Red Hat Satellite 6.1 server.
+We created service catalogs to deploy servers both singly and in bundles, and we integrated our Automate workflows with an external Red Hat Satellite 6.2 server.
 
-We have seen how ManageIQ is able to manage our entire virtual machine lifcycle, including retirement, and we have studied the retirement process for virtual machines and services.
+We have seen how CloudForms and ManageIQ are able to manage our entire virtual machine lifcycle, including retirement, and we have studied the retirement process for virtual machines and services.
 
-We looked at the _integration_ capabilities of ManageIQ Automate, and saw how easily we can integrate our automation workflows with our wider enterprise.
+We looked at the _integration_ capabilities of Automate, and saw how easily we can integrate our automation workflows with our wider enterprise.
 
 Our journey toward automation mastery is complete. All that is left is to practice, and start automating!

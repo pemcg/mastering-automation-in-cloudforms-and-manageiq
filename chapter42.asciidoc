@@ -25,20 +25,34 @@ post_params = {
 }.to_json
 ----
 
-We can call the RESTful API from an external Ruby script by using the +rest-client+ gem:
+We can call the RESTful API from an external Ruby script by using the `rest-client` gem. As we typically make multiple calls to the REST API as part of an automation request, it's more efficient to request an authentication token once, and then use that with subsequent calls:
 
 [source,ruby]
 ----
-url = 'https://manageiq_server'
-query = '/api/automation_requests'
+api_uri = 'https://myserver/api'
+url = URI.encode(api_uri + '/auth')
 rest_return = RestClient::Request.execute(
-                            method: :post,
-                            url: url + query,
-                            :user => username,
-                            :password => password,
-                            :headers => {:accept => :json},
-                            :payload => post_params,
-                            verify_ssl: false)
+                          method:    :get,
+                          url:        url,
+                          :user       => username,
+                          :password   => password,
+                          :headers    => {:accept => :json},
+                          verify_ssl: false)
+auth_token = JSON.parse(rest_return)['auth_token']
+----
+
+Having received the authentication token we can make the automation request call with our `post_params` payload:
+
+[source,ruby]
+----
+url = URI.encode(api_uri + '/automation_requests')
+rest_return = RestClient::Request.execute(
+                          method:    :post,
+                          url:        url,
+                          :headers    => {:accept        => :json, 
+                                          'x-auth-token' => auth_token},
+                          :payload    => post_params,
+                          verify_ssl: false)
 result = JSON.parse(rest_return)
 ----
 
@@ -53,24 +67,22 @@ We call poll this to check on status:
 
 [source,ruby]
 ----
-query = "/api/automation_requests/#{request_id}"
+url = URI.encode(api_uri + "/automation_requests/#{request_id}")
 rest_return = RestClient::Request.execute(
-                            method: :get, 
-                            url: url + query, 
-                            :user => username,
-                            :password => password,
-                            :headers => {:accept => :json},
-                            verify_ssl: false)
+                          method:    :get,
+                          url:        url,
+                          :headers    => {:accept        => :json, 
+                                          'x-auth-token' => auth_token},
+                          verify_ssl: false)
 result = JSON.parse(rest_return)
 request_state = result['request_state']
 until request_state == "finished"
   puts "Checking completion state..."
   rest_return = RestClient::Request.execute(
-                            method: :get,
-                            url: url + query,
-                            :user => username,
-                            :password => password,
-                            :headers => {:accept => :json},
+                            method:     :get,
+                            url:        url,
+                            :headers    => {:accept        => :json, 
+                                            'x-auth-token' => auth_token},
                             verify_ssl: false)
   result = JSON.parse(rest_return)
   request_state = result['request_state']
@@ -103,7 +115,7 @@ Using this technique we can write our own pseudo-API calls for CloudForms or Man
 
 === Authentication and auto_approve
 
-When we make a RESTful call, we must authenticate using a valid username and password. This user must be an admin or equivalent however if we wish to specify an +:auto_approve+ value of +true+ in our calling arguments (only admins can auto-approve automation requests).
+When we make a RESTful call, we must authenticate using a valid username and password, (or subsequent authentication token). This user must be an admin or equivalent if we wish to specify an `:auto_approve` value of `true` in our calling arguments (only admins can auto-approve automation requests).
 
 If we try making a RESTful call as a non-admin user, the automation request will be blocked, pending approval (as expected). If we want to submit an auto-approved automation request as a non-admin user, we would need to write our own approval workflow (see <<automation-request-approval>>).
 
@@ -132,11 +144,11 @@ The behaviour of this parameter is as follows:
 
 === run_via_api
 
-The accompanying code https://github.com/pemcg/oreilly-mastering-cloudforms-automation/tree/master/chapter42/scripts[here] contains an example script called _run_via_api.rb_ that can be used to call any Automate instance, using arguments to pass server name, credentials, and URI parameters to the instance to be called. Its usage is as follows:
+The accompanying code https://github.com/pemcg/mastering-automation-in-cloudforms-and-manageiq/blob/4.1/darga/scripts/chapter42/scripts[here] contains an example script called _run_via_api.rb_ that can be used to call any Automate instance, using arguments to pass server name, credentials, and URI parameters to the instance to be called. Its usage is as follows:
 
 ----
 Usage: run_via_api.rb [options]
-    -s, --server server              ManageIQ server to connect to
+    -s, --server server              Server to connect to
     -u, --username username          Username to connect as
     -p, --password password          Password
     -d, --domain                     Domain
@@ -150,7 +162,7 @@ Usage: run_via_api.rb [options]
 Edit the default values for server, username and password if required. Run the script as:
 
 ----
-./run_via_api.rb -s 192.168.1.1 -u miqadmin -p password -d ACME -n General \
+./run_via_api.rb -s cloudforms01 -u miqadmin -p password -d ACME -n General \
 -c Methods -i AddNIC2VM -P vm_id,1000000000195 -P nic_name,nic1 -P nic_network,vlan_712
 ----
 

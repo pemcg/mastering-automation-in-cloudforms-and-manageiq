@@ -1,7 +1,7 @@
 [[calling-external-services]]
 == Calling External Services
 
-We saw in <<calling-automation-from-the-restful-api>> how external systems can make _incoming_ calls to ManageIQ using the RESTful API, and run Automate instances, perhaps to initiate workflows that we've defined.
+We saw in <<calling-automation-from-the-restful-api>> how external systems can make _incoming_ calls to CloudForms or ManageIQ using the RESTful API, and run Automate instances, perhaps to initiate workflows that we've defined.
 
 From Automate we can also make _outgoing_ calls to external systems. We typically use SOAP or RESTful APIs to access theses external services, and there are several Ruby Gems that make this easy for us, including Savon (SOAP client), RestClient, XmlSimple and Nokogiri (XML parsers), and Fog (a Ruby Cloud Services Library). 
 
