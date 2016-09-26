@@ -2,9 +2,9 @@
 :numbered:
 == Virtual Machine and Instance Retirement
 
-ManageIQ is a virtual machine and instance lifecycle management tool, and so far we have concentrated on the provisioning phase of that lifecycle. ManageIQ also has a virtual machine retirement workflow that lets us manage the retirement and deletion of our virtual machines or instances, both from the provider and from the ManageIQ VMDB if required.
+CloudForms and ManageIQ are virtual machine and instance lifecycle management tools, and so far we have concentrated on the provisioning phase of that lifecycle. The products also have virtual machine retirement workflows that lets us manage the retirement and deletion of our virtual machines or instances, both from the provider and from the CloudForms/ManageIQ VMDB if required.
 
-The retirement process allows us to treat differently virtual machines that were provisioned from ManageIQ, and those that might have existed on the provider infrastructure before ManageIQ was installed.
+The retirement process allows us to treat differently virtual machines that were provisioned by CloudForms or ManageIQ, and those that might have already existed on the provider infrastructure, or have been [rovisioned by the native infrastructure manager.
 
 [NOTE]
 We may wish to keep the VMDB record of a virtual machine long after its deletion from the provider, for recording and auditing purposes.
@@ -17,7 +17,7 @@ Virual machine or instance retirement is initiated from the *Lifecycle* menu on 
 
 [[c40i1]]
 .Virtual machine or instance retirement menu
-image::part4/chapter40/images/screenshot1hd.png[Screenshot,400,align="center"]
+image::images/ch40_ss1.png[Screenshot,400,align="center"]
 
 Clicking on *Retire this VM* raises a *request_vm_retire* event that begins a chain of relationships through the datastore:
 
@@ -34,14 +34,15 @@ The relationship from _Lifecycle/Retirement_ forwards the event processing into 
 A virtual machine object has a number of retirement-related methods:
 
 ....
+$evm.root['vm'].retire_now
 $evm.root['vm'].start_retirement
 $evm.root['vm'].finish_retirement
-$evm.root['vm'].retire_now
+$evm.root['vm'].retiring?
 $evm.root['vm'].retired?
+$evm.root['vm'].error_retiring?
 $evm.root['vm'].retirement_state=
 $evm.root['vm'].retirement_warn=
 $evm.root['vm'].retires_on=
-$evm.root['vm'].retiring?
 ....
 
 It also has several attributes:
@@ -77,7 +78,7 @@ The VM retirement state machines(s) undo many of the operations performed by the
 
 [[c40i2]]
 .VM retirement state machine
-image::part4/chapter40/images/screenshot2hd.png[Screenshot,700,align="center"]
+image::images/ch40_ss2.png[Screenshot,700,align="center"]
 
 ==== StartRetirement
 
@@ -119,13 +120,18 @@ It also raises a *vm_retired* event that can be caught by an Automate action or 
 
 ==== DeleteFromVMDB
 
-The _DeleteFromVMDB_ instance calls the _delete_from_vmdb_ state machine method that checks for the state variable +vm_removed_from_provider+, and if found (and true) it removes the virtual machine record from the VMDB.
+The _DeleteFromVMDB_ instance calls the _delete_from_vmdb_ state machine method that checks for the state variable +vm_removed_from_provider+, and if found (and true) it removes the virtual machine record from the VMDB. With CloudForms 4.0/ManageIQ _Capablanca_, this state was enabled by default, meaning that all VM entries were deleted. With 4.1/_Darga_ this entry is commented out, and so we see retired VMs in the WebUI as having an 'A' in their tile quadrant, indicating their archived status.
 
 === Summary
 
-This chapter shows that retirement is a more complex process than simply deleting the virtual machine. We must potentially free up resources that were allocated when the VM was created, such as an IP address. We might need to delete a CI record from a CMDB,  unregister from Active Directory, or even keep the VMDB object inside ManageIQ for auditing purposes.
+This chapter shows that retirement is a more complex process than simply deleting the virtual machine. We must potentially free up resources that were allocated when the VM was created, such as an IP address. We might need to delete a CI record from a CMDB, unregister from Active Directory, or even keep the VMDB object inside CloudForms or ManageIQ for auditing purposes. 
 
-Fortunately the retirement workflow allows us to fine-tune all of these options, and handle retirement in a manner that suits us.
+[NOTE]
+====
+If the VM remains in the VMDB in an archived state, it will still be returned as a valid VM if we run a `$evm.vmdb(:vm).all` call. This can get even more confusing if we have subsequently re-provisioned a VM with the same name, as `$evm.vmdb(:vm).find_by_name(vm_name)` may return the 'wrong' object to us. Fortunately there is a `vm.archived` boolean attribute that we can check to determine whether a VM object is active or archived.
+====
+
+As we have seen, the retirement workflow allows us to fine-tune all of these options, and handle retirement in a manner that suits us.
 
 === Further Reading
 

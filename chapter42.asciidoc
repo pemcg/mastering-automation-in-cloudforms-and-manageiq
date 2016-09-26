@@ -2,9 +2,9 @@
 :numbered:
 == Calling Automation Using the RESTful API
 
-Our first look at the integration capabilities of ManageIQ examines how external systems can make _inbound_ calls to ManageIQ to run Automate instances using the RESTful API.footnote:[We need to enable the _Web Services_ server role on any of our ManageIQ appliances to which we wish to make RESTful calls]
+Our first look at the integration capabilities of CloudForms and ManageIQ examines how external systems can make _inbound_ calls to an appliance to run Automate instances using the RESTful API.footnote:[We need to enable the _Web Services_ server role on any of our appliances to which we wish to make RESTful calls]
 
-Being able to call automation in this way enables our workflows to be utilised by other enterprise tools in a number of ways. For example organisations may wish to use a help-desk ticketing system as their starting point for new virtual machine provisioning requests. The ticketing system can make a RESTful call to ManageIQ Automate to initiate the workflow.
+Being able to call automation in this way enables our workflows to be utilised by other enterprise tools in a number of ways. For example organisations may wish to use a help-desk ticketing system as their starting point for new virtual machine provisioning requests. The ticketing system can make a RESTful call to Automate to initiate the workflow.
 
 === API Entry Point
 
@@ -99,7 +99,7 @@ result = JSON.parse(rest_return)
 puts "Results: #{result['options']['return'].inspect}"
 ----
 
-Using this technique we can write our own pseudo-API calls for ManageIQ to handle anything that the standard RESTful API doesn't support. We implement the "API" using a standard Automate method, call it using the RESTful automate call, and we can pass parameters to, and retrieve result back from the called method.
+Using this technique we can write our own pseudo-API calls for CloudForms or ManageIQ to handle anything that the standard RESTful API doesn't support. We implement the "API" using a standard Automate method, call it using the RESTful automate call, and we can pass parameters to, and retrieve result back from the called method.
 
 === Authentication and auto_approve
 
@@ -109,7 +109,7 @@ If we try making a RESTful call as a non-admin user, the automation request will
 
 === Zone Implications
 
-When we submit an automation request via the API, by default the Automate task is queued on the same appliance that the web service is running on. This will be dequeued to run by any appliance with the _Automation Engine_ role set **in the same zone**. If we have separated out our WebUI/web wervice appliances into a separate zone, this may not necessarily be our desired behaviour.
+When we submit an automation request via the API, by default the Automate task is queued on the same appliance that the web service is running on. This will be dequeued to run by any appliance with the _Automation Engine_ role set **in the same zone**. If we have separated out our WebUI/web service appliances into a separate zone, this may not necessarily be our desired behaviour.
 
 We can add the parameter +:miq_zone+ to the automation request to override this:
 
@@ -156,9 +156,9 @@ Edit the default values for server, username and password if required. Run the s
 
 === Summary
 
-This chapter has examined how we can make RESTful API calls into Automate, and if necessary return results back to the caller. This is a very powerful feature that lets us harness the power of ManageIQ Automate from external systems.
+This chapter has examined how we can make RESTful API calls into Automate, and if necessary return results back to the caller. This is a very powerful feature that lets us harness the power of Automate from external systems.
 
-We can implement bidirectional workflows for example, whereby ManageIQ makes outgoing calls to integrate with some other enterprise tool, perhaps to initiate an asynchronous action that may take some time to complete. We can implement callback routines as REST-callable Automate instances that can be called to signal that the external processing has finished.
+We can implement bidirectional workflows for example, whereby a CloudForms or ManageIQ appliance can make outgoing calls to integrate with some other enterprise tool, perhaps to initiate an asynchronous action that may take some time to complete. We can implement callback routines as REST-callable Automate instances that can be called to signal that the external processing has finished.
 
 
 ==== Further Reading

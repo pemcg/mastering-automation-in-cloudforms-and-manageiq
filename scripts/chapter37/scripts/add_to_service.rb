@@ -8,7 +8,7 @@ begin
     case $evm.root['vmdb_object_type']
     when 'service'
       $evm.log(:info, "Adding Service #{$evm.root['service'].name} to #{new_service.name}")
-      $evm.root['service'].new_service = new_service
+      $evm.root['service'].parent_service = new_service
     when 'vm'
       vm = $evm.root['vm']
       #
