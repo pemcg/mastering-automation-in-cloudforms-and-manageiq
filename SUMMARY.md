@@ -55,7 +55,7 @@
   * [Automation Request Approval](chapter43.asciidoc)
   * [Calling External Services](chapter44.asciidoc)
 * [Part 7](part7.asciidoc)
-  * [Tenancy and Automate](chapter15a.asciidoc.wip)
+  * [Tenancy and Automate](chapter15a.asciidoc)
   * [Distributed Automation Processing](chapter45.asciidoc)
   * [Argument Passing and Handling](chapter46.asciidoc)
   * [(placeholder) Writing Testable Code](chapterxx.asciidoc.wip)
