@@ -115,10 +115,10 @@ We can connect to the Rails console to have a look around.
 
 [CAUTION]
 ====
-When we're working with the Rails command line, we have full read/write access to the objects and tables that we find there. We should purely use this technique for read-only investigation, and at our own risk. Making any additions or changes may render our ManageIQ appliance unstable.
+When we're working with the Rails command line, we have full read/write access to the objects and tables that we find there. We should purely use this technique for read-only investigation, and at our own risk. Making any additions or changes may render our appliance unstable.
 ====
 
-On the ManageIQ appliance itself:
+On the CloudForms or ManageIQ appliance itself:
 
 ....
 # vmdb   # alias vmdb='cd /var/www/miq/vmdb/' is defined on the appliance

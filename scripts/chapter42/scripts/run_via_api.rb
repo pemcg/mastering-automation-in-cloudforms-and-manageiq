@@ -109,13 +109,13 @@ begin
   # Get an authentication token
   #
   url = URI.encode(api_uri + '/auth')
-  rest_response = RestClient::Request.execute(method:     :get,
+  rest_return = RestClient::Request.execute(method:     :get,
                                               url:        url,
                                               :user       => username,
                                               :password   => password,
                                               :headers    => {:accept => :json},
                                               verify_ssl: false)
-  auth_token = JSON.parse(rest_response)['auth_token']
+  auth_token = JSON.parse(rest_return)['auth_token']
   raise "Couldn't get an authentication token" if auth_token.nil?
   
   post_params = {

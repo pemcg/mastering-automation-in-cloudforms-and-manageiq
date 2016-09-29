@@ -2,7 +2,7 @@
 :numbered:
 == Service Dialogs
 
-When we design our services in ManageIQ, we try to simplify the ordering process for our users as much as possible. We pre-configure as many provisioning choices as we can, and ideally offer a small selection of options in the form of a _service dialog_ to allow our users to customise their service request. An example might be to offer a simple 'T-Shirt size' ordering style to specify the size of a virtual machine (see <<c29i1>>).
+When we design our services in CloudForms or ManageIQ, we try to simplify the ordering process for our users as much as possible. We pre-configure as many provisioning choices as we can, and ideally offer a small selection of options in the form of a _service dialog_ to allow our users to customise their service request. An example might be to offer a simple 'T-Shirt size' ordering style to specify the size of a virtual machine (see <<c29i1>>).
 
 [[c29i1]]
 .Ordering VMs in 'T-shirt' sizes
@@ -16,13 +16,13 @@ The service dialog that we created in <<working-with-virtual-machines>> used two
 
 [[c29i2]]
 .The available dialog element types
-image::images/ch29_ss2.png[Screenshot,300,align="center"]
+image::images/ch29_ss2.png[Screenshot,380,align="center"]
 
 Service dialog elements gained several useful new features with recent versions of ManageIQ, as we'll see in this chapter.
 
 === Dynamic Elements
 
-Prior to ManageIQ _Botvinnik_ only one element type was capable of dynamic (runtime) population, the **Dynamic Drop Down List**. _Botvinnik_ extended the dynamic population capability to most other dialog element types, so the *Dynamic Drop Down List* has been removed as a separate element type.
+Prior to CloudForms 3.2/ManageIQ _Botvinnik_ only one element type was capable of dynamic (runtime) population, the **Dynamic Drop Down List**. _Botvinnik_ extended the dynamic population capability to most other dialog element types, so the *Dynamic Drop Down List* has been removed as a separate element type.
 
 Dynamic elements are populated from a method, called either when the service dialog is initially displayed, or from an optional *Refresh* button (dynamic elements can also be autorefreshed, as we'll see shortly). The URI to the method is specified when we add the element and select the checkbox to make it dynamic.
 
@@ -85,7 +85,7 @@ This example populates a dynamic drop-down list with infrastructure lifecycle en
 
 === Read-Only and Protected Elements
 
-ManageIQ _Anand_ added the ability to mark a text box as protected, which results in any input being obfuscated. This is particularly useful for inputting passwords (see <<c29i3>>).
+CloudForms 3.1/ManageIQ _Anand_ added the ability to mark a text box as protected, which results in any input being obfuscated. This is particularly useful for inputting passwords (see <<c29i3>>).
 
 [[c29i3]]
 .Dialog that prompts for a password in a protected element
@@ -117,7 +117,7 @@ We can use dynamically populated read-only text or text area boxes as status box
 
 === Element Validation
 
-ManageIQ _Botvinnik_ introduced the ability to add input field validation to dialog elements. Currently the only validator types are *None* or **Regular Expression**, but regular expressions are useful for validating input for values such as IP Addresses (see <<c29i4>>).
+CloudForms 3.2/ManageIQ _Botvinnik_ introduced the ability to add input field validation to dialog elements. Currently the only validator types are *None* or **Regular Expression**, but regular expressions are useful for validating input for values such as IP Addresses (see <<c29i4>>).
 
 [[c29i4]]
 .Validator rule for an IP address element
@@ -125,7 +125,7 @@ image::images/ch29_ss4.png[Screenshot,480,align="center"]
 
 === Using the Input from One Element in Another Element's Dynamic Method
 
-We can link elements in such a way that a user's input in one element can be used by subsequent dynamic elements that are _refreshable_. The subsequent dynamic method, when refreshed, can access the first element's input value using `$evm.root['dialog_elementname']` or `$evm.object['dialog_elementname']`. Elements can be refreshed with a *Refresh* button, but ManageIQ _Capablanca_ added the ability to mark dynamic elements with the *Auto refresh* characteristic. There is a corresponding characteristic *Auto Refresh other fields when modified* that we can apply to the initial element at the start of this refresh chain.
+We can link elements in such a way that a user's input in one element can be used by subsequent dynamic elements that are _refreshable_. The subsequent dynamic method, when refreshed, can access the first element's input value using `$evm.root['dialog_elementname']` or `$evm.object['dialog_elementname']`. Elements can be refreshed with a *Refresh* button, but CloudForms 4.0/ManageIQ _Capablanca_ added the ability to mark dynamic elements with the *Auto refresh* characteristic. There is a corresponding characteristic *Auto Refresh other fields when modified* that we can apply to the initial element at the start of this refresh chain.
 
 We can use this in several useful ways, such as to populate a dynamic list based on a value input previously, or to create a validation method.
 

@@ -165,7 +165,6 @@ The official documentation for CloudForms is here: https://access.redhat.com/doc
  
 The official documentation for ManageIQ is here: http://manageiq.org/documentation/
 
-
 ==== Code Repositories
 
 One of the best sources of reference material is the excellent _CloudForms_Essentials_ code collection maintained by Kevin Morey from Red Hat (https://github.com/ramrexx/CloudForms_Essentials). This contains a wealth of useful code samples, and many of the examples in this book have originated from this source. 
@@ -205,7 +204,6 @@ _Italic_:: Indicates new terms, URLs, email addresses, filenames, and file exten
 **`Constant width bold`**:: Shows commands or other text that should be typed literally by the user.
 
 _++Constant width italic++_:: Shows text that should be replaced with user-supplied values or by values determined by context.
-
 
 [NOTE]
 ====

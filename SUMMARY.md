@@ -1,7 +1,7 @@
 # Summary
 
 * [Introduction](README.md)
-  * [Preface](preface.asciidoc)
+  * [Preface](preface.asciidoc.wip)
 * [Part 1](part1.asciidoc)
   * [Introduction to CloudForms and ManageIQ](chapter1.asciidoc)
   * [Introduction to the Automate Datastore](chapter2.asciidoc)
@@ -17,7 +17,6 @@
   * [Requests and Tasks](chapter12.asciidoc)
   * [State Machines](chapter13.asciidoc)
   * [More Advanced Schema and Instance Features](chapter14.asciidoc)
-  * [(placeholder) Tenancy and Automate](chapter15a.asciidoc.wip)
   * [Event Processing](chapter15.asciidoc)
 * [Part 2](part2.asciidoc)
   * [Provisioning a Virtual Machine](chapter16.asciidoc)
@@ -56,6 +55,7 @@
   * [Automation Request Approval](chapter43.asciidoc)
   * [Calling External Services](chapter44.asciidoc)
 * [Part 7](part7.asciidoc)
+  * [Tenancy and Automate](chapter15a.asciidoc.wip)
   * [Distributed Automation Processing](chapter45.asciidoc)
   * [Argument Passing and Handling](chapter46.asciidoc)
   * [(placeholder) Writing Testable Code](chapterxx.asciidoc.wip)
