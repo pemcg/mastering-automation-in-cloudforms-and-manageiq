@@ -11,7 +11,7 @@ Tenancy is very useful if we wish to sub-divide our organization into multiple s
 
 [NOTE]
 ====
-A _project_ is a tenant that can have no child tenants of its own. A tenant object within Automate (see <<tenant-object>> has an attribute `$evm.root['tenant'].divisible` that is `true` for a normal tenant, but `false` for a project.
+A _project_ is a tenant that can have no child tenants of its own. A tenant object within Automate (see <<tenant-object>>) has an attribute `$evm.root['tenant'].divisible` that is `true` for a normal tenant, but `false` for a project.
 ====
 
 === Tenant Visibility Rules
@@ -52,7 +52,7 @@ If created in a child tenant, the following objects should not be visible to any
 ====
 The tenant visibility rules defined above for VMs and templates only apply if the user's group role has *VM & Template Access Restriction* set to _None_. If we set the role's access restriction to _Only User or Group Owned_ the user will only have visibility of their own group's VMs or templates, as expected.
 
-Tag-related RBAC works within the confines of the tenant parent/child hierarchy. Adding a visibility flag to a tenant's VM does not make the VM visible outside of these tenant hierarchy rules, even if a group in a different tenant hierarchy branch is defined as having the same visibility tag.
+Tag-related RBAC works within the confines of the tenant parent/child hierarchy. Adding a visibility tag to a tenant's VM does not make the VM visible outside of these tenant hierarchy rules, even if a group in a different tenant hierarchy branch is defined as having the same visibility tag.
 ====
 
 === Tenancy Within Automate
@@ -215,7 +215,7 @@ vms = $evm.vmdb(:vm).all.select { |vm| child_ids.include?(vm.tenant_id.to_s) }
 
 This chapter has shown how we can use Automate to our advantage when we sub-divide our organization into multiple tenants. We can allow child tenants to create their own Automate domains, enabling them to implement custom workflows, or to override enterprise-wide settings such as a VM naming scheme or placement policy.
 
-We have also seen how we sometimes need to take tenancy filtering into account when we write our automation scripts - particularly for dynamic dialog methods - so that the tenant visibility rules are complied with.
+We have also seen how we sometimes need to take tenancy filtering into account when we write our automation scripts - particularly for dynamic dialog methods - in order to comply with visibility rules.
 
 As Super Administrators we need to exercise a degree of trust when we implement a tenant hierarchy, particularly when adding users with EvmRole-administrator or equivalent rights to the tenant. A tenant user with WebUI access to the Automate Explorer is able to access some 'global' Automate objects, and the output from `$evm.log` called from any tenant is always written into the common _automation.log_ file.
 
