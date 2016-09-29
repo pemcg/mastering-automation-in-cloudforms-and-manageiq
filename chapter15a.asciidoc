@@ -116,15 +116,14 @@ All of the useful service models that we interact with when automation scripting
 
 ==== Tenant Domains
 
-A tenant user with an RBAC role of EvmRole-administrator or equivalent can create a tenant-specific Automate domain. Such domains are useful for creating domain-specific workflows, or to override wider organizational Automate schemes such as a VM naming policy.
+A tenant user with an RBAC role of EvmRole-administrator or equivalent can create a tenant-specific Automate domain. Such domains are useful for creating tenant-specific workflows, or to override wider organizational Automate schemes such as a VM naming policy.
 
-A tenant domain will be visible and editable to all users in the domain who have access to the Automate Explorer. The domain will appear visible but locked to any users in a child domain who have access to the Automate Explorer. 
-
+A tenant domain will be visible and editable to all tenant users who have access to the Automate Explorer. The domain will appear visible but locked to any users in a child tenant who have access to the Automate Explorer. 
 [[c15ai2]]
 .Automate Explorer view from an Engineering domain Administrator
 image::images/ch15a_ss2.png[Screenshot,300,align="center"]
 
-The domain will not be visible to any users in a parent domain who have access to the Automate Explorer (even if they have an RBAC role of EvmRole-super_administrator or equivalent).
+The domain will not be visible to any users in a parent tenant who have access to the Automate Explorer (even if they have an RBAC role of EvmRole-super_administrator or equivalent).
 
 [[c15ai3]]
 .Automate Explorer view from a Bit63 domain Super Administrator
