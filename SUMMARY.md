@@ -42,6 +42,7 @@
   * [Approval and Quota](chapter32.asciidoc)
   * [Creating a Service Catalog Item](chapter33.asciidoc)
   * [Creating a Service Catalog Bundle](chapter34.asciidoc)
+  * [(placeholder) Creating Services to use Ansible Tower](chapterxx.asciidoc.wip)
   * [Service Objects](chapter35.asciidoc)
   * [Log Analysis During Service Provisioning](chapter36.asciidoc)
   * [Service Hierarchies](chapter37.asciidoc)

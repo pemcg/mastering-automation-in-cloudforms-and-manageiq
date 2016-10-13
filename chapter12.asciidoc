@@ -334,9 +334,3 @@ The chapter illustrates how more complex automation workflows are split into a _
 We have discussed request and task objects, and why it can be beneficial to keep track of whether our automation scripts are running in request or task context (and therefore which of the two objects to make use of) . 
 
 This has been quite a detailed analysis, but they are very useful concepts to grasp. 
-
-
-
-
-
-

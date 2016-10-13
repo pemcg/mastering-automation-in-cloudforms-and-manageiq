@@ -48,6 +48,8 @@ If created in a child tenant, the following objects should not be visible to any
 
 * Automate domains
 
+'''
+
 [NOTE]
 ====
 The tenant visibility rules defined above for VMs and templates only apply if the user's group role has *VM & Template Access Restriction* set to _None_. If we set the role's access restriction to _Only User or Group Owned_ the user will only have visibility of their own group's VMs or templates, as expected.
@@ -71,7 +73,7 @@ $evm.root['tenant'].default_miq_group_id = 17   (type: Fixnum)
 $evm.root['tenant'].description = Engineering   (type: String)
 $evm.root['tenant'].divisible = true   (type: TrueClass)
 $evm.root['tenant'].domain = nil
-$evm.root['tenant'].id = 5   (type: Fixnum)
+$evm.root['tenant'].id = 2   (type: Fixnum)
 $evm.root['tenant'].login_logo_content_type = nil
 $evm.root['tenant'].login_logo_file_name = nil
 $evm.root['tenant'].login_logo_file_size = nil
@@ -139,7 +141,7 @@ If we wish to present a list of existing VMs or available templates in a service
 
 Fortunately the tenant object has an `ancestry` attribute that we can use. The ancestry values for the tenant hierarchy shown in <<c15ai1>> are as follows:
 
-[width="75%",cols="^30%,^20%,^20%",options="header",align="center"]
+[width="75%",cols="^33%,^33%,^33%",options="header",align="center"]
 |=======================================================================
 |Tenant| Tenant ID | Tenant ancestry
 |Bit63 (tenant zero)|1|nil
