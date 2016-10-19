@@ -25,7 +25,7 @@ post_params = {
 }.to_json
 ----
 
-We can call the RESTful API from an external Ruby script by using the `rest-client` gem. As we typically make multiple calls to the REST API as part of an automation request, it's more efficient to request an authentication token once, and then use that with subsequent calls:
+We can call the RESTful API from an external Ruby script by using the `rest-client` gem. As before we'll request an authentication token, and then use that with subsequent calls:
 
 [source,ruby]
 ----

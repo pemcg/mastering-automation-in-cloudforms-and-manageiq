@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# run_via_api
+# vm_provision_via_api
 #
 # Author:   Peter McGowan (pemcg@redhat.com)
 #           Copyright 2015 Peter McGowan, Red Hat
@@ -16,14 +16,10 @@ begin
             :server     => nil,
             :username   => nil,
             :password   => nil,
-            :domain     => nil,
-            :namespace  => nil,
-            :class      => nil,
-            :instance   => nil,
-            :parameters => []
+
             }
   parser = OptionParser.new do|opts|
-    opts.banner = "Usage: run_via_api.rb [options]"
+    opts.banner = "Usage: vm_provision_via_api.rb [options]"
     opts.on('-s', '--server server', 'CloudForms server to connect to') do |server|
       options[:server] = server
     end
@@ -32,25 +28,6 @@ begin
     end
     opts.on('-p', '--password password', 'Password') do |password|
       options[:password] = password
-    end
-    opts.on('-d', '--domain ', 'Domain') do |domain|
-      options[:domain] = domain
-    end
-    opts.on('-n', '--namespace ', 'Namespace') do |namespace|
-      options[:namespace] = namespace
-    end
-    opts.on('-c', '--class ', 'Class') do |klass|
-      options[:class] = klass
-    end
-    opts.on('-i', '--instance ', 'Instance') do |instance|
-      options[:instance] = instance
-    end
-    opts.on('-P', '--parameter <key,value>', Array, 'Parameter (key => value pair) for the instance') do |parameters|
-      unless parameters.length == 2
-        puts "Parameter argument must be key,value list"
-        exit!
-      end
-      options[:parameters].push parameters
     end
     opts.on('-h', '--help', 'Displays Help') do
       puts opts
@@ -74,37 +51,18 @@ begin
   else
     password = options[:password]
   end
-  if options[:domain].nil?
-    puts "Domain must be specified"
-    exit!
-  end
-  if options[:namespace].nil?
-    puts "Namespace must be specified"
-    exit!
-  end
-  if options[:class].nil?
-    puts "Class must be specified"
-    exit!
-  end
-  if options[:instance].nil?
-    puts "Instance to run must be specified"
-    exit!
-  end
 
   api_uri = "https://#{server}/api"
   #
   # Turn parameter list into hash
   #
-  parameter_hash = {}
-  options[:parameters].each do |parameter|
-    parameter_hash[parameter[0]] = parameter[1]
-  end
+
   
-  message = "Running automation method "
-  message += "#{options[:namespace]}/#{options[:class]}/#{options[:instance]}"
-  message += " using parameters: "
-  message += "#{parameter_hash.inspect}"
-  puts message
+  #message = "Running automation method "
+  #message += "#{options[:namespace]}/#{options[:class]}/#{options[:instance]}"
+  #message += " using parameters: "
+  #message += "#{parameter_hash.inspect}"
+  #puts message
   #
   # Get an authentication token
   #
@@ -119,22 +77,36 @@ begin
   raise "Couldn't get an authentication token" if auth_token.nil?
   
   post_params = {
-    :version => '1.1',
-    :uri_parts => {
-      :namespace => "#{options[:domain]}/#{options[:namespace]}",
-      :class => options[:class],
-      :instance => options[:instance]
+    'version'               => '1.1',
+    'template_fields'       => {
+      'name'                => 'rhel72-generic',
+      'request_type'        => 'template'
     },
-    :parameters => parameter_hash,
-    :requester => {
-      #:auto_approve => false
-      :auto_approve => true
-    }
+    'vm_fields'             => {
+      'number_of_cpus'      => '1',
+      'vm_name'             => 'delme-16101902',
+      'vm_memory'           => '2048',
+      'vlan'                => 'rhevm'
+    },
+    'requester'             => {
+      'owner_first_name'    => 'Peter',
+      'owner_last_name'     => 'McGowan',
+      'owner_email'         => 'pemcg@bit63.com',
+    },
+    'tags'                  => {
+      'location'            => 'winchester'
+    },
+    'additional_values'     => {
+      'disk_size_gb'        => '50',
+      'mountpoint'          => '/opt'
+    },
+    'ems_custom_attributes' => {},
+    'miq_custom_attributes' => {}
   }.to_json
   #
-  # Issue the automation request
+  # Issue the provision request
   #
-  url = URI.encode(api_uri + '/automation_requests')
+  url = URI.encode(api_uri + '/provision_requests')
   rest_return = RestClient::Request.execute(method:     :post,
                                             url:        url,
                                             :headers    => {:accept        => :json, 
@@ -149,7 +121,7 @@ begin
   #
   # Now we have to poll the automate engine to see when the request_state has changed to 'finished'
   #
-  url = URI.encode(api_uri + "/automation_requests/#{request_id}")
+  url = URI.encode(api_uri + "/provision_requests/#{request_id}")
   rest_return = RestClient::Request.execute(method:     :get,
                                             url:        url,
                                             :headers    => {:accept        => :json, 
@@ -166,7 +138,8 @@ begin
                                               verify_ssl: false)
     result = JSON.parse(rest_return)
     request_state = result['request_state']
-    sleep 3
+    puts "Current request state: #{request_state}"
+    sleep 30
   end
   puts "Request exited with status: #{result['status']}"
   if result['status'].downcase != 'ok'
@@ -187,3 +160,9 @@ rescue => err
   puts "[#{err}]\n#{err.backtrace.join("\n")}"
   exit!
 end
+
+
+
+
+
+

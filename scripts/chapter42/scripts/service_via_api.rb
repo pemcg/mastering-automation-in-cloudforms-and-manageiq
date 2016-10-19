@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 #
-# run_service_via_api
+# service_via_api
 #
 # Author:   Peter McGowan (pemcg@redhat.com)
 #           Copyright 2016 Peter McGowan, Red Hat
@@ -22,7 +22,7 @@ begin
             :dialog_option => []
             }
   parser = OptionParser.new do|opts|
-    opts.banner = "Usage: run_service_via_api.rb [options]"
+    opts.banner = "Usage: service_via_api.rb [options]"
     opts.on('-s', '--server server', 'CloudForms server to connect to') do |server|
       options[:server] = server
     end

@@ -1,0 +1,52 @@
+[[automation_using_ansible]]
+== Automation Using Ansible
+
+
+Ansible Tower integration
+
+Inventory
+
+Terminology
+
+Jobs, Playbooks, Job Templates, Roles
+
+
+update on launch = inventory sync job
+
+Name        : cloud-init
+Arch        : x86_64
+Version     : 0.7.6
+Release     : 2.el7
+Size        : 1.4 M
+Repo        : installed
+From repo   : rhel-7-server-rh-common-rpms
+Summary     : Cloud instance init scripts
+URL         : http://launchpad.net/cloud-init
+Licence     : GPLv3
+Description : Cloud-init is a set of init scripts for cloud instances.  Cloud instances
+            : need special scripts to run during initialization to retrieve and install
+            : ssh keys and to let the user run various scripts.
+            
+            
+#cloud-config
+# <% root_password = MiqPassword.decrypt(evm[:"password::dialog_root_password"]) %>
+
+ssh_pwauth: true 
+disable_root: false
+
+users:
+  - default
+  - name: ansible-remote
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFp3eHxz5o6AnILnpNeNjC9cJc+hWNqqdlCrVH6jjPxdMvVl91sSy+lR8OhULgvBuUthQCuUS2hKV2uXjwViH/BO+Q2FGAzgI0fpmRty1AXUxdb1CD8osD6PO7DQ2LAbLGR13iLrdSDKnL+M0D65ckNnl9Wl6qkI80ojCR6Tf pemcg@This-MBP.bit63.net
+
+chpasswd:
+  list: |
+    root:<%= MiqPassword.decrypt(evm[:root_password]) %>
+  expire: false
+
+preserve_hostname: false
+manage_etc_hosts: true
+fqdn: <%= evm[:hostname] %>
