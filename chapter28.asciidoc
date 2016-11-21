@@ -11,6 +11,7 @@ Satellite 6.2 has two different types of host record. We can add the server as a
 
 If we just wish to add the newly provisioned system as a content host, we use the *+subscription-manager+* tool on the new virtual machine to register with the Satellite. If we wish to add the newly provisioned system as both a host _and_ content host, we can use the new _bootstrap.py_ script that is supplied with Satellite 6.2.
 
+'''
 .The Challenge of Triggering the Client Operations
 ****
 For this example we'll be provisioning into a RHEV provider, and cloning from fully installed 'fat' templates (i.e. not using a kickstart unattended installation script to build the VM). 
@@ -25,6 +26,7 @@ Fortunately there are several ways of remotely running commands in a newly creat
 
 For simplicity, we'll use a cloud-init script to prepare the new virtual machine as an Ansible managed server, and we'll use an Ansible job template to run the remote commands over ssh. We'll use the capabilities of an Ansible Tower server, added as a provider, and the playbook that we run will be part of an Ansible role.
 ****
+'''
 
 === Satellite 6 Preparation
 

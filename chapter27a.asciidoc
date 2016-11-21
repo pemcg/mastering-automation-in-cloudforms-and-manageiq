@@ -18,7 +18,7 @@ When we use Ansible to perform our automation tasks, if helps to to be familiar 
 
 ==== Playbooks
 
-Playbooks are Ansible’s configuration, deployment, and orchestration language. Playbooks are designed to be human-readable and are developed in YAML. An example snippet of a playbook is as follows:
+Playbooks are Ansible’s configuration, deployment, and orchestration language. Playbooks are designed to be human-readable and are developed in YAML. An example snippet from a playbook is as follows:
 
 [source,yaml]
 ----
@@ -74,7 +74,7 @@ roles/
 
 ==== Projects
 
-A Project is a logical collection of Ansible playbooks (usually in the form of roles), represented in Ansible Tower. Projects are often stored in a source code management (SCM) system such as Git, and Tower allows for projects to be imported directly from an SCM, and even refreshed immediately before running.
+A Project is a logical collection of Ansible playbooks (usually in the form of roles), represented in Ansible Tower. Projects are often stored in a source code management (SCM) system such as Git, and Ansible Tower supports the importing of projects directly from an SCM, and even refreshed immediately before running.
 
 An example project directory structure might be as follows:
 
@@ -111,7 +111,7 @@ image::images/ch27a_ss1.png[Screenshot,800,align="center"]
 
 ===== Extra Variables
 
-Ansible playbook variables can be defined in a number of places, but there is an established precedence order. If a variable of the same name is defined multiple times, it will be overwritten by the same variable defined at a higher precedence (See <<table27a.1>> for the precedence list footnote:[See http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable])
+Ansible playbook variables can be defined in a number of places, but there is an established precedence to determine which value is used when the playbook is run. If a variable of the same name is defined multiple times, it will be overwritten by the same variable defined at a higher precedence (See <<table27a.1>> for the precedence list footnote:[See http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable])
 
 [[table27a.1]]
 .Ansible variable precedence
@@ -136,7 +136,7 @@ Ansible playbook variables can be defined in a number of places, but there is an
 |highest precedence|extra vars
 |===================================================================
 
-We see that extra variables have the highest precedence, and we can define defaults for extra variables in the job template. If the *Prompt on launch* option is checked then we can also override these default values from CloudForms/ManageIQ when we launch the job template.
+We see that extra variables have the highest precedence, and we can define defaults for extra variables in the job template. If the *Prompt on launch* option is checked then we can also override these default values from CloudForms/ManageIQ when we launch the job template. The precedence ensures that our dynamically defined variables are the ones that are used by the playbook.
 
 ==== Jobs
 
@@ -144,17 +144,45 @@ A job is an instance of Ansible Tower launching a playbook against an inventory 
 
 ==== Inventories
 
-===== Inventory Synchronisation (update on launch)
+An inventory defines a list of managed hosts that Ansible jobs can be run against. Inventories can contain _groups_ which further sub-divide hosts into logical collections of systems. Groups and their contents can be dynamically generated using an Ansible Tower inventory script (see <<c27ai2>>).
 
-===== Using the Limit Variable
+[[c27ai2]]
+.Definition of an "All Servers" inventory group
+image::images/ch27a_ss2.png[Screenshot,700,align="center"]
+ 
+We can define several different inventories, and use them in our various job template definitions.
 
-Many Ansible job templates contain playbooks that have a `hosts` key defined as `all`. When we execute a job from CloudForms or ManageIQ, we usually wish to override this and the run the job on a specific system. The built-in `limit` variable enables us to to this. 
+===== Update on Launch
 
-When we run an Ansible job from a button on a VM object in the CloudForms/ManageIQ WebUI, the `limit` variable is automatically set for us by Automate to be the host name of the VM whose details we are displaying.
+The *Update on launch* update option is particularly important when we define dynamic inventory groups to be referenced from CloudForms or ManageIQ Automate. We often wish to call Ansible Tower jobs as part of our provisioning workflow, and so we need an up-to-date inventory that contains our newly provisioned virtual machine. The *Update on launch* setting ensures that the inventory defined in the job template is always refreshed immediately before the job is run.
+
+===== The Limit Variable
+
+Many Ansible job templates contain playbooks that have a `hosts` key defined as `all`. When we execute a job from CloudForms or ManageIQ, we usually wish to override this and the run the job on a specific system, and the built-in `limit` variable enables us to to this. 
+
+The `limit` variable is automatically defined for us by Automate and passed to Ansible Tower with a new job request if either of the following two attributes contain valid non-nil values:
+
+[source,ruby]
+----
+$evm.root['vm'].name
+----
+
+or
+
+[source,ruby]
+----
+$evm.root['miq_provision'].destination.name
+----
+
+These values will be set if we are calling an Ansible Tower job template either from a button on a VM object, or as part of a VM provisioning workflow (after the virtual machine has been created). For these two common use-cases we don't have to worry about defining the limit ourselves.
 
 === Adding the ansible-remote User with a cloud-init Script
 
-As Ansible uses ssh to connect to managed servers and run playbooks, we must ensure that our newly provisioned virtual machines are configured with the ssh credentials required to perform the actions.
+As Ansible uses ssh to connect to managed servers and run playbooks, we must ensure that our newly provisioned virtual machines are configured with the ssh credentials required to perform the actions. 
+
+If we are provisioning from 'fat' template we can achive this by creating a CloudForms/ManageIQ CloudInit-type customization template and calling it from the *Customize* tab of the provisioning dialog.
+
+An example cloud-init script to setup the newly provisioning virtual machine as an Ansible Tower managed host is as follows:
 
 ```
 #cloud-config
@@ -180,42 +208,19 @@ manage_etc_hosts: true
 fqdn: <%= evm[:hostname] %>
 ```
 
-We create an Ansible Tower machine credential containing the private key that matches this public key, and we can specifiy this machine credential when we define our job templates.
+We create an Ansible Tower machine credential containing the private key that matches this public key, and we can specify this machine credential when we define our job templates.
 
-
-
-
+[NOTE]
+====
+We should also ensure that our virtual machine templates are prepared with the cloud-init package. For Red Hat Enterprise Linux this is installed from the *rhel-7-server-rh-common-rpms* repository.
+====
 
 === Listing available job templates
 
-
+===
 
 === Passing parameters to jobs
 
 === Automate Namespace changes
 
-=== Ansible Tower integration
-
-Inventory
-
-
-
-
-
-update on launch = inventory sync job
-
-Name        : cloud-init
-Arch        : x86_64
-Version     : 0.7.6
-Release     : 2.el7
-Size        : 1.4 M
-Repo        : installed
-From repo   : rhel-7-server-rh-common-rpms
-Summary     : Cloud instance init scripts
-URL         : http://launchpad.net/cloud-init
-Licence     : GPLv3
-Description : Cloud-init is a set of init scripts for cloud instances.  Cloud instances
-            : need special scripts to run during initialization to retrieve and install
-            : ssh keys and to let the user run various scripts.
-            
-            
+ 
