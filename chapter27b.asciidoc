@@ -1,10 +1,12 @@
 [[running_ansible_jobs_from_automate]]
 == Running Ansible Tower Jobs from Automate
 
-
+=== Passing parameters to jobs
 
 === Running an Ansible Job from a Button
 
+button dialog options
 
 
 === Running an Ansible Job from a State machine
+

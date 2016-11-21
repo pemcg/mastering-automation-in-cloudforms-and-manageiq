@@ -42,10 +42,12 @@ image::images/ch28_ss1.png[Screenshot,550,align="center"]
 
 Although the host groups will define default values for architecture, operating system, media, partition table, domain and root password, these will have no effect in the newly registered virtual machine as they are parameters used during kickstart. The host groups will however define the Puppet environment that the newly attached Satellite client will use for configuration. The __Generic_RHEL7_Servers__ hostgroup will install the _motd_ and _ntp_ Puppet modules.
 
+'''
 .Ansible _and_ Puppet?
 ****
 In this example we'll be using two configuration management providers; Ansible Tower and Satellite 6. Each has its own configuration management tool: Tower uses Ansible, whereas Satellite 6.2 uses Puppet. Each tool has its strengths (and passionate advocates), and although there is a degree of overlap in their capabilities, using both together is often a valid choice in a modern enterprise.
 ****
+'''
 
 ==== Activation Keys
 
