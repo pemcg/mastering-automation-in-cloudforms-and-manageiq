@@ -1,14 +1,205 @@
 [[automation_using_ansible]]
 == Automation Using Ansible
 
+With CloudForms 4.1/ManageIQ _Darga_ we now have a possibility of performing automation tasks using Ansible playbooks in addition to or instead of using native Ruby. This automation requires the presence of an Ansible Tower server, added to CloudForms/ManageIQ as a Configuration Management provider.
 
-Ansible Tower integration
+.Ruby or Ansible?
+****
+One of the most powerful features of Ansible as a configuration management tool is the relative simplicity and ease of understanding of its YAML-formatted playbooks. Adding the capability to be able to call Ansible playbooks from Automate as well as run Ruby methods presents us with a dilemma; when to use which?
+
+Ruby methods allow us to access all of the objects and their properties within the VMDB, and so we can make real-time decisions as part of our automation workflow, depending 
+
+Ansible playbooks
+****
+
+=== Terminology
+
+When we use Ansible to perform our automation tasks, if helps to to be familiar of some of the terminology that Ansible Tower uses.
+
+==== Playbooks
+
+Playbooks are Ansible’s configuration, deployment, and orchestration language. Playbooks are designed to be human-readable and are developed in YAML. An example snippet of a playbook is as follows:
+
+[source,yaml]
+----
+---
+  hosts: webserver
+  vars:
+    web_pkg: httpd
+    firewall_pkg: firewalld
+    python_pkg: python-httplib2
+    firewall_service: firewalld
+  tasks:
+    - name: Install the required packages
+      yum:
+        name:
+          - "{{ web_pkg  }}"
+          - "{{ firewall_pkg }}"
+          - "{{ python_pkg }}"
+        state: latest
+    - name: Start and enable the {{ firewall_service }} service
+      service:
+        name: "{{ firewall_service }}"
+        enabled: true
+        state: started
+----
+
+With more advanced playbooks we split out various sections (such as variable or handler definitions) into separate files that we can include into our main playbook. This logical separation eases maintenance and promotes reuse.
+
+==== Roles
+
+Roles provide Ansible with a way to load tasks, handlers, and variables from external files, based on a known file structure. Assigning a role to a group of hosts (or a set of groups, or host patterns, etc.) implies that they should implement a specific behaviour, i.e. adopt that role. Grouping content by roles also allows easy sharing of roles with other users.
+
+A typical role directory structure might be as follows:
+
+```
+roles/
+    common/               # this hierarchy represents a "role"
+        tasks/            #
+            main.yml      #  <-- tasks file can include smaller files if warranted
+        handlers/         #
+            main.yml      #  <-- handlers file
+        templates/        #  <-- files for use with the template resource
+            ntp.conf.j2   #  <------- templates end in .j2
+        files/            #
+            bar.txt       #  <-- files for use with the copy resource
+            foo.sh        #  <-- script files for use with the script resource
+        vars/             #
+            main.yml      #  <-- variables associated with this role
+        defaults/         #
+            main.yml      #  <-- default lower priority variables for this role
+        meta/             #
+            main.yml      #  <-- role dependencies
+```
+
+==== Projects
+
+A Project is a logical collection of Ansible playbooks (usually in the form of roles), represented in Ansible Tower. Projects are often stored in a source code management (SCM) system such as Git, and Tower allows for projects to be imported directly from an SCM, and even refreshed immediately before running.
+
+An example project directory structure might be as follows:
+
+```
+site.yml
+webservers.yml
+dbservers.yml
+roles/
+    common/
+        files/
+        templates/
+        tasks/
+        handlers/
+        vars/
+        defaults/
+        meta/
+    webservers/
+        files/
+        templates/
+        tasks/
+        handlers/
+        vars/
+        defaults/
+        meta/
+    ...
+```
+==== Job Templates
+
+A job template is a definition and set of parameters for running an Ansible job. Job templates allow us to execute the same job many times, by pre-defining such items as the playbook to run, extra variables to pass, inventory to be managed, and credentials that should be used. A typical job template definition in Tower is shown in <<c27ai1>>.
+
+[[c27ai1]]
+.Typical job template
+image::images/ch27a_ss1.png[Screenshot,800,align="center"]
+
+===== Extra Variables
+
+Ansible playbook variables can be defined in a number of places, but there is an established precedence order. If a variable of the same name is defined multiple times, it will be overwritten by the same variable defined at a higher precedence (See <<table27a.1>> for the precedence list footnote:[See http://docs.ansible.com/ansible/playbooks_variables.html#variable-precedence-where-should-i-put-a-variable])
+
+[[table27a.1]]
+.Ansible variable precedence
+[width="50%",cols="^20%,^35%",options="header",align="center"]
+|===================================================================
+|Precedence|where defined
+|lowest precedence|role defaults
+|-|inventory vars
+|--|inventory group_vars
+|---|inventory host_vars
+|----|playbook group_vars
+|-----|playbook host_vars
+|------|host facts
+|-------|play vars
+|--------|play vars_prompt
+|---------|play vars_files
+|----------|registered vars
+|-----------|set_facts
+|------------|role and include vars
+|-------------|block vars (only for tasks in block)
+|--------------|task vars (only for the task)
+|highest precedence|extra vars
+|===================================================================
+
+We see that extra variables have the highest precedence, and we can define defaults for extra variables in the job template. If the *Prompt on launch* option is checked then we can also override these default values from CloudForms/ManageIQ when we launch the job template.
+
+==== Jobs
+
+A job is an instance of Ansible Tower launching a playbook against an inventory of hosts.
+
+==== Inventories
+
+===== Inventory Synchronisation (update on launch)
+
+===== Using the Limit Variable
+
+Many Ansible job templates contain playbooks that have a `hosts` key defined as `all`. When we execute a job from CloudForms or ManageIQ, we usually wish to override this and the run the job on a specific system. The built-in `limit` variable enables us to to this. 
+
+When we run an Ansible job from a button on a VM object in the CloudForms/ManageIQ WebUI, the `limit` variable is automatically set for us by Automate to be the host name of the VM whose details we are displaying.
+
+=== Adding the ansible-remote User with a cloud-init Script
+
+As Ansible uses ssh to connect to managed servers and run playbooks, we must ensure that our newly provisioned virtual machines are configured with the ssh credentials required to perform the actions.
+
+```
+#cloud-config
+
+ssh_pwauth: true 
+disable_root: false
+
+users:
+  - default
+  - name: ansible-remote
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh_authorized_keys:
+      - ssh-rsa AAAAB3N...bit63.net
+
+chpasswd:
+  list: |
+    root:<%= MiqPassword.decrypt(evm[:root_password]) %>
+  expire: false
+
+preserve_hostname: false
+manage_etc_hosts: true
+fqdn: <%= evm[:hostname] %>
+```
+
+We create an Ansible Tower machine credential containing the private key that matches this public key, and we can specifiy this machine credential when we define our job templates.
+
+
+
+
+
+=== Listing available job templates
+
+
+
+=== Passing parameters to jobs
+
+=== Automate Namespace changes
+
+=== Ansible Tower integration
 
 Inventory
 
-Terminology
 
-Jobs, Playbooks, Job Templates, Roles
+
 
 
 update on launch = inventory sync job
@@ -28,25 +219,3 @@ Description : Cloud-init is a set of init scripts for cloud instances.  Cloud in
             : ssh keys and to let the user run various scripts.
             
             
-#cloud-config
-# <% root_password = MiqPassword.decrypt(evm[:"password::dialog_root_password"]) %>
-
-ssh_pwauth: true 
-disable_root: false
-
-users:
-  - default
-  - name: ansible-remote
-    shell: /bin/bash
-    sudo: ['ALL=(ALL) NOPASSWD:ALL']
-    ssh_authorized_keys:
-      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDFp3eHxz5o6AnILnpNeNjC9cJc+hWNqqdlCrVH6jjPxdMvVl91sSy+lR8OhULgvBuUthQCuUS2hKV2uXjwViH/BO+Q2FGAzgI0fpmRty1AXUxdb1CD8osD6PO7DQ2LAbLGR13iLrdSDKnL+M0D65ckNnl9Wl6qkI80ojCR6Tf pemcg@This-MBP.bit63.net
-
-chpasswd:
-  list: |
-    root:<%= MiqPassword.decrypt(evm[:root_password]) %>
-  expire: false
-
-preserve_hostname: false
-manage_etc_hosts: true
-fqdn: <%= evm[:hostname] %>

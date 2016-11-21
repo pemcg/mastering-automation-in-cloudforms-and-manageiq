@@ -68,11 +68,11 @@ image::images/ch41_ss5.png[Screenshot,600,align="center"]
 
 ==== StartRetirement
 
-The _StartRetirement_ instance calls the _start_retirement_ state machine method, which checks whether the service is already in state _retired_ or _retiring_, and if so it aborts. If in neither of these states it calls the service's +start_retirement+ method, which sets the +retirement_state+ attribute to 'retiring'.
+The _StartRetirement_ instance calls the _start_retirement_ state machine method, which checks whether the service is already in state _retired_ or _retiring_, and if so it aborts. If in neither of these states it calls the service's `start_retirement` method, which sets the `retirement_state` attribute to 'retiring'.
 
 ==== RetireService/CheckServiceRetired
 
-The +RetireService+ instance calls the +retire_service+ state machine method, which in turn calls the service object's +retire_service_resources+ method. This method calls the +retire_now+ method of every VM comprising the service, to initiate their retirement. *CheckServiceRetired* retries the stage until all VMs are retired or deleted.
+The _RetireService_ instance calls the _retire_service_ state machine method, which in turn calls the service object's `retire_service_resources` method. This method calls the `retire_now` method of every VM comprising the service, to initiate their retirement. *CheckServiceRetired* retries the stage until all VMs are retired or deleted.
 
 ==== FinishRetirement
 

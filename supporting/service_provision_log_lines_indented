@@ -114,16 +114,16 @@
 
  Following [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_FINISHED_SUCCESS#create]
  Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_VM_FINISHED_SUCCESS#create]
-
  Following [/System/Event/MiqEvent/POLICY/vm_snapshot_complete#create]
-   Following [/System/Event/MiqEvent/POLICY/vm_create#create]
-   Followed [/System/Event/MiqEvent/POLICY/vm_create#create]
  Followed [/System/Event/MiqEvent/POLICY/vm_snapshot_complete#create]
+ Following [/System/Event/MiqEvent/POLICY/vm_create#create]
+ Followed [/System/Event/MiqEvent/POLICY/vm_create#create]
  Following [/System/Event/MiqEvent/POLICY/vm_provisioned#create]
  Followed [/System/Event/MiqEvent/POLICY/vm_provisioned#create]
+ Following [/System/Event/MiqEvent/POLICY/request_vm_scan#create]
+ Followed [/System/Event/MiqEvent/POLICY/request_vm_scan#create]
+
  (stp_task_117) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
-   Following [/System/Event/MiqEvent/POLICY/request_vm_scan#create]
-   Followed [/System/Event/MiqEvent/POLICY/request_vm_scan#create]
  (stp_task_117) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
  (stp_task_118) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
  (stp_task_118) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
@@ -168,16 +168,10 @@
    (miq_provision_119) Followed [/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template#create]
  (miq_provision_119) Followed [/infrastructure/VM/Lifecycle/Provisioning#create]
 
- Following [/System/Event/MiqEvent/POLICY/request_vm_start#create]
- Followed [/System/Event/MiqEvent/POLICY/request_vm_start#create]
  Following [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM#create]
  Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM#create]
  Following [/System/Event/MiqEvent/POLICY/vm_scan_complete#create]
  Followed [/System/Event/MiqEvent/POLICY/vm_scan_complete#create]
-
- (stp_task_117) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
- (stp_task_117) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
-
  Following [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM_FINISHED_SUCCESS#create]
  Followed [/System/Event/EmsEvent/RHEVM/USER_ADD_DISK_TO_VM_FINISHED_SUCCESS#create]
 
@@ -185,31 +179,16 @@
    (miq_provision_119) Following [/Infrastructure/VM/Provisioning/Profile/Bit63_Engineering_user#get_state_machine]
    (miq_provision_119) Followed [/Infrastructure/VM/Provisioning/Profile/Bit63_Engineering_user#get_state_machine]
    (miq_provision_119) Following [/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template#create]
-     Following [/System/Event/EmsEvent/RHEVM/USER_STARTED_VM#create]
-     Followed [/System/Event/EmsEvent/RHEVM/USER_STARTED_VM#create]
      (miq_provision_119) Following [/Integration/RedHat/Methods/StartVM#create]
-     (miq_provision_119) Followed [/Integration/RedHat/Methods/StartVM#create]
-   (miq_provision_119) Followed [/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template#create]
- (miq_provision_119) Followed [/infrastructure/VM/Lifecycle/Provisioning#create]
-
- (stp_task_118) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
- (stp_task_118) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
-
- Following [/System/Event/MiqEvent/POLICY/request_vm_start#create]
- Followed [/System/Event/MiqEvent/POLICY/request_vm_start#create]
- (miq_provision_119) Following [/infrastructure/VM/Lifecycle/Provisioning#create]
-   (miq_provision_119) Following [/Infrastructure/VM/Provisioning/Profile/Bit63_Engineering_user#get_state_machine]
-   (miq_provision_119) Followed [/Infrastructure/VM/Provisioning/Profile/Bit63_Engineering_user#get_state_machine]
-   (miq_provision_119) Following [/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template#create]
-     (miq_provision_119) Following [/Integration/RedHat/Methods/StartVM#create]
+       Following [/System/Event/EmsEvent/RHEVM/USER_STARTED_VM#create]
+       Followed [/System/Event/EmsEvent/RHEVM/USER_STARTED_VM#create]
+       Following [/System/Event/MiqEvent/POLICY/request_vm_start#create]
+       Followed [/System/Event/MiqEvent/POLICY/request_vm_start#create]
      (miq_provision_119) Followed [/Integration/RedHat/Methods/StartVM#create]
    (miq_provision_119) Followed [/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template#create]
  (miq_provision_119) Followed [/infrastructure/VM/Lifecycle/Provisioning#create]
  Following [/System/Event/MiqEvent/POLICY/request_vm_start#create]
  Followed [/System/Event/MiqEvent/POLICY/request_vm_start#create]
-
- (stp_task_117) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
- (stp_task_117) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
 
  Following [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
  Followed [/System/Event/EmsEvent/RHEVM/USER_RUN_VM#create]
@@ -231,7 +210,7 @@
      (miq_provision_119) Followed [/System/CommonMethods/StateMachineMethods/vm_provision_finished#create]
    (miq_provision_119) Followed [/Infrastructure/VM/Provisioning/StateMachines/VMProvision_vm/template#create]
  (miq_provision_119) Followed [/infrastructure/VM/Lifecycle/Provisioning#create]
- 
+
  (stp_task_117) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
  (stp_task_117) Followed [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]
  (stp_task_118) Following [/Service/Provisioning/StateMachines/Methods/CheckProvisioned#create]

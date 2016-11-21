@@ -1,1 +1,3 @@
-# <center>Mastering Automation in CloudForms 4.1 and ManageIQ Darga</center>
+# <center>Mastering Automation in CloudForms and ManageIQ</center>
+
+## <center>(Including CloudForms 4.2 & ManageIQ _Euwe_)</center>

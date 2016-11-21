@@ -82,7 +82,7 @@ image::images/ch40_ss2.png[Screenshot,700,align="center"]
 
 ==== StartRetirement
 
-The _StartRetirement_ instance calls the _start_retirement_ state machine method, which checks whether the VM is already in state 'retired' or 'retiring', and if so it aborts. If in neither of these states it calls the VM's +start_retirement+ method, which sets the +retirement_state+ attribute to 'retiring'.
+The _StartRetirement_ instance calls the _start_retirement_ state machine method, which checks whether the VM is already in state 'retired' or 'retiring', and if so it aborts. If in neither of these states it calls the VM's `start_retirement` method, which sets the `retirement_state` attribute to 'retiring'.
 
 ==== PreRetirement/CheckPreRetirement
 
@@ -96,13 +96,13 @@ The *RemoveFromProvider* stage allows us some flexibility in handling the actual
 
 ===== Default
 
-The *RemoveFromProvider* stage of the _Default_ state machine links to the _RemoveFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the +removal_type+ argument of +'remove_from_disk'+. This checks whether the VM was provisioned from ManageIQ (+vm.miq_provision+ is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it fully deletes the VM from the underlying provider, including the disk image. Having done so it sets a boolean state variable +vm_removed_from_provider+ to +true+.
+The *RemoveFromProvider* stage of the _Default_ state machine links to the _RemoveFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the `removal_type` argument of `'remove_from_disk'`. This checks whether the VM was provisioned from ManageIQ (`vm.miq_provision` is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it fully deletes the VM from the underlying provider, including the disk image. Having done so it sets a boolean state variable `vm_removed_from_provider` to `true`.
 
 If neither of these checks returns **true**, no action is performed.
 
 ===== Unregister
 
-The *RemoveFromProvider* stage of the _Unregister_ state machine links to the _UnregisterFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the +removal_type+ argument of +'unregister'+. This checks whether the VM was provisioned from ManageIQ (+vm.miq_provision+ is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it deletes the VM from the underlying provider, but retains the VM's disk image, allowing the VM to be re-created if required in the future. Having done so it sets a boolean state variable +vm_removed_from_provider+ to +true+.
+The *RemoveFromProvider* stage of the _Unregister_ state machine links to the _UnregisterFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the `removal_type` argument of `'unregister'`. This checks whether the VM was provisioned from ManageIQ (`vm.miq_provision` is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it deletes the VM from the underlying provider, but retains the VM's disk image, allowing the VM to be re-created if required in the future. Having done so it sets a boolean state variable `vm_removed_from_provider` to `true`.
 
 If neither of these checks is true, no action is performed.
 
@@ -120,7 +120,7 @@ It also raises a *vm_retired* event that can be caught by an Automate action or 
 
 ==== DeleteFromVMDB
 
-The _DeleteFromVMDB_ instance calls the _delete_from_vmdb_ state machine method that checks for the state variable +vm_removed_from_provider+, and if found (and true) it removes the virtual machine record from the VMDB. With CloudForms 4.0/ManageIQ _Capablanca_, this state was enabled by default, meaning that all VM entries were deleted. With 4.1/_Darga_ this entry is commented out, and so we see retired VMs in the WebUI as having an 'A' in their tile quadrant, indicating their archived status.
+The _DeleteFromVMDB_ instance calls the _delete_from_vmdb_ state machine method that checks for the state variable `vm_removed_from_provider`, and if found (and true) it removes the virtual machine record from the VMDB. With CloudForms 4.0/ManageIQ _Capablanca_, this state was enabled by default, meaning that all VM entries were deleted. With 4.1/_Darga_ this entry is commented out, and so we see retired VMs in the WebUI as having an 'A' in their tile quadrant, indicating their archived status.
 
 === Summary
 

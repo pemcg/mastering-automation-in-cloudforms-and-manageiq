@@ -3,8 +3,8 @@
 
 
 
-Buttons
+=== Running an Ansible Job from a Button
 
 
 
-State Machines
+=== Running an Ansible Job from a State machine

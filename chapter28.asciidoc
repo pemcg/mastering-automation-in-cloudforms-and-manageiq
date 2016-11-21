@@ -1,562 +1,367 @@
 [[integrating-with-satellite-6-during-provisioning]]
 == Integrating with Satellite 6 During Provisioning
 
-It is a relatively common requirement to register newly provisioned Red Hat Enterprise Linux virtual machines directly with Satellite 6 as part of the provisioning process. This ensures that the resultant VM is patched and up to date, and is configured by Puppet according to a server role.
+It is a relatively common requirement to register newly provisioned Red Hat Enterprise Linux virtual machines directly with Satellite 6 as part of the provisioning process. This ensures that the resultant VM is patched and up to date, and optionally configured by Puppet according to a server role.
 
-This tutorial chapter describes the steps involved in adapting the provisioning workflow so that Red Hat virtual machines are automatically registered with Satellite 6 as part of the provisioning operation. We'll be preparing the Satellite environment slightly for the automation, and we'll call the Satellite RESTful API to perform some of the integration steps. This is a relatively simple use case that demonstrates the capability of ManageIQ to _Integrate_ with our wider enterprise.
+This chapter describes the steps involved in adapting the provisioning workflow so that Red Hat virtual machines are automatically registered with Satellite 6 at the end of the provisioning operation. We'll run an Ansible Tower job template from our provisioning state machine to perform the registration. This is a relatively simple use case that demonstrates the capability of CloudForms and ManageIQ to _Integrate_ with our wider enterprise.
 
 === Hosts and Content Hosts
 
-Registering a new system with Satellite 6.1 currently requires two operations. We need to create a Satellite _host_ entry, which registers the server as a configuration management client, manageable by Puppet. We also need to use *+subscription-manager+* to activate the server as a _content host_, which associates one or more Red Hat Subscriptions with the server, and makes software package repository content available.
+Satellite 6.2 has two different types of host record. We can add the server as a _content host_, which associates one or more Red Hat Subscriptions with the server, and makes software package repository content available. We can also add a new system as a plain _host_, which registers the server as a provisioning and configuration management client, manageable by Puppet.
+
+If we just wish to add the newly provisioned system as a content host, we use the *+subscription-manager+* tool on the new virtual machine to register with the Satellite. If we wish to add the newly provisioned system as both a host _and_ content host, we can use the new _bootstrap.py_ script that is supplied with Satellite 6.2.
 
 .The Challenge of Triggering the Client Operations
 ****
-For this example we'll be provisioning into a VMware provider, and cloning from fully installed 'fat' templates (i.e. no kickstarting). 
+For this example we'll be provisioning into a RHEV provider, and cloning from fully installed 'fat' templates (i.e. not using a kickstart unattended installation script to build the VM). 
 
-Cloning from template (infrastructure providers) or image (cloud providers) presents us with the challenge of how to initiate several commands on the new VM, including *+subscription-manager register+*, using dynamic arguments such as *+--activationkey+* or *+--org+*.
+Cloning from template (infrastructure providers) or image (cloud providers) presents us with the challenge of how to run remote commands inside the new VM. For this example we may need to register with Satellite by calling *+subscription-manager register+*, and using using dynamic arguments such as *+--activationkey+* or *+--org+*.
 
-There are several ways of remotely running commands in a newly created VM, including:
+Fortunately there are several ways of remotely running commands in a newly created virtual machine, including:
 
-* Using the VMware VIX SDK Library to connect to VMware Tools runing in a guest (VMware providers only)
-* Using cloud-init (RHEV, OpenStack and Amazon providers)
-* Using ssh, including Ansible (all providers)
+* Using the VMware VIX SDK Library to connect to VMware Tools running in a guest (VMware providers only)
+* Using cloud-init (RHEV, OpenStack and some cloud providers, including Amazon EC2 and Azure)
+* Using ssh (all providers)
 
-For flexibility (at the expense of some added complexity), we'll be triggering the +subscription-manager+ registration of the newly provisioned system using an Ansible playbook, dynamically created as part of the provisioning workflow.
+For simplicity, we'll use a cloud-init script to prepare the new virtual machine as an Ansible managed server, and we'll use an Ansible job template to run the remote commands over ssh. We'll use the capabilities of an Ansible Tower server, added as a provider, and the playbook that we run will be part of an Ansible role.
 ****
 
-=== The Satellite 6 Host Entry
+=== Satellite 6 Preparation
 
-A host entry in Satellite 6 requires certain parameters:
+We need to do some preparation on our Satellite 6 server. To keep the example simple we'll only be working with Red Hat Enterprise Linux 7, and we'll create some generic host groups and activation keys in Satellite that we can use.
 
-* Hostname
-* Host's MAC address
-* Location
-* Organizaton
-* Puppet environment
-* Architecture
-* Operating system
-* Media
-* Partition table
-* Domain
-* Root password
+==== Host Groups
 
-We can however define a _host group_ in Satellite, containing defaults for several of these parameters. When we create the host entry, we can specify a host group as a configuration template.
-
-=== Non-ManageIQ Preparation
-
-We need to do some preparation of our environment. To keep the example simple we'll allow for provisioning Red Hat Enterprise Linux 6 and 7 servers (both x86_64), but we'll create a single generic host group and activation key for each operating system version.
-
-==== Creating the Host Groups in Satellite 6
-
-We'll create two host groups in Satellite 6, *Generic_RHEL6_Servers* and *Generic_RHEL7_Servers* (see <<c28i1>>).
+We'll create some simple host groups in Satellite 6 (see <<c28i1>>).
 
 [[c28i1]]
-.Preparation of two Satellite 6 host groups
-image::images/ch28_ss1.png[Screenshot,370,align="center"]
+.Satellite 6.2 host groups
+image::images/ch28_ss1.png[Screenshot,550,align="center"]
 
-These host groups will define defaults for:
+Although the host groups will define default values for architecture, operating system, media, partition table, domain and root password, these will have no effect in the newly registered virtual machine as they are parameters used during kickstart. The host groups will however define the Puppet environment that the newly attached Satellite client will use for configuration. The __Generic_RHEL7_Servers__ hostgroup will install the _motd_ and _ntp_ Puppet modules.
 
-* Puppet environment
-* Architecture
-* Operating system
-* Media
-* Partition table
-* Domain
-* Root password
+.Ansible _and_ Puppet?
+****
+In this example we'll be using two configuration management providers; Ansible Tower and Satellite 6. Each has its own configuration management tool: Tower uses Ansible, whereas Satellite 6.2 uses Puppet. Each tool has its strengths (and passionate advocates), and although there is a degree of overlap in their capabilities, using both together is often a valid choice in a modern enterprise.
+****
 
-The host group will also install the _motd_ and _ntp_ Puppet modules.
+==== Activation Keys
 
-==== Creating the Activation Keys in Satellite 6
+To register a newly provisioned system with Satellite as a _content host_, we can include an activation key name as an argument to *+subscription-manager+* or the _bootstrap.py_ script. The activation key determines the lifecycle environment, content view, Red Hat subscriptions, and repository content sets to which the newly registered server has visibility. It can be useful to create activation keys for different types of server that require specific combinations of product repositories.
 
-When a newly provisioned system registers with Satellite as a _content host_, it can include an activation key name as an argument to +subscription-manager+.
-
-We'll create two activation keys in Satellite 6, *RHEL6-Generic* and *RHEL7-Generic* (see <<c28i2>>).
+We'll create a small selection of activation keys in Satellite 6 (see <<c28i2>>). 
 
 [[c28i2]]
-.Preparation of two Satellite 6 activation keys
-image::images/ch28_ss2.png[Screenshot,325,align="center"]
+.Satellite 6.2 activation keys
+image::images/ch28_ss2.png[Screenshot,500,align="center"]
 
-These activation keys will define defaults for:
+The *RHEL7-Generic* activation key will be used for this example. The Satellite client will:
 
-* Content view and lifecycle environment ('Production')
-* Red Hat subscriptions
-* Repository content sets
+* Be assigned to the *RHEL 7.2 Q4 2016* content view in the *Production* lifecycle environment
+* Be granted an enterprise Red Hat subscription
+* Have the following product content repositories enabled:
+** Red Hat Enterprise Linux 7 Server (RPMs)
+** Red Hat Enterprise Linux 7 Server - RH Common (RPMs)
+** Red Hat Satellite Tools 6.2 (for RHEL 7 Server) (RPMs)
+** PuppetForge Modules
 
-==== Adding an SSH Key to the VMware Template
+=== Ansible Tower Preparation
 
-We're going to be using Ansible from the ManageIQ server to set the new VM's hostname, register the new VM with Satellite, and install and run Puppet. We need to copy root's public key from the ManageIQ server to the VMware template and add to _/root/.ssh/authorized_keys_.
+We must do some preparation on our Ansible Tower server.
 
-=== Installing and Configuring Ansible on the ManageIQ Appliance
+==== Inventory Credential
 
-For convenience we'll install Ansible from the EPEL repository. We need to add the *rhel-7-server-optional-rpms* repository, and then the EPEL installation RPM on the ManageIQ appliances with the Automation Engine role set:
-
-----
-subscription-manager repos --enable=rhel-7-server-optional-rpms
-rpm -ivh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
-----
-
-
-[WARNING]
-Installing extra packages from the EPEL repository may leave your ManageIQ installation unstable
-
-Now we can install Ansible:
-
-----
-yum -y install ansible
-Loaded plugins: product-id, search-disabled-repos, subscription-manager
-Resolving Dependencies
---> Running transaction check
----> Package ansible.noarch 0:1.9.4-1.el7 will be installed
---> Processing Dependency: sshpass for package: ansible-1.9.4-1.el7.noarch
---> Processing Dependency: python-paramiko for package: ansible-1.9.4-1.el7.no...
---> Processing Dependency: python-keyczar for package: ansible-1.9.4-1.el7.noa...
---> Processing Dependency: python-jinja2 for package: ansible-1.9.4-1.el7.noarch
---> Processing Dependency: python-httplib2 for package: ansible-1.9.4-1.el7.no...
---> Running transaction check
----> Package python-httplib2.noarch 0:0.7.7-3.el7 will be installed
----> Package python-jinja2.noarch 0:2.7.2-2.el7 will be installed
---> Processing Dependency: python-babel >= 0.8 for package: python-jinja2-2.7....
---> Processing Dependency: python-markupsafe for package: python-jinja2-2.7.2-...
----> Package python-keyczar.noarch 0:0.71c-2.el7 will be installed
---> Processing Dependency: python-crypto for package: python-keyczar-0.71c-2.e...
----> Package python-paramiko.noarch 0:1.15.1-1.el7 will be installed
---> Processing Dependency: python-ecdsa for package: python-paramiko-1.15.1-1....
----> Package sshpass.x86_64 0:1.05-5.el7 will be installed
---> Running transaction check
----> Package python-babel.noarch 0:0.9.6-8.el7 will be installed
----> Package python-ecdsa.noarch 0:0.11-3.el7 will be installed
----> Package python-markupsafe.x86_64 0:0.11-10.el7 will be installed
----> Package python2-crypto.x86_64 0:2.6.1-9.el7 will be installed
---> Processing Dependency: libtomcrypt.so.0()(64bit) for package: python2-cry...
---> Running transaction check
----> Package libtomcrypt.x86_64 0:1.17-23.el7 will be installed
---> Processing Dependency: libtommath >= 0.42.0 for package: libtomcrypt-1.17-...
---> Processing Dependency: libtommath.so.0()(64bit) for package: libtomcrypt-1...
---> Running transaction check
----> Package libtommath.x86_64 0:0.42.0-4.el7 will be installed
---> Finished Dependency Resolution
-...
-----
-
-We probably want to disable the EPEL repo after installing this to ensure that we don't accidentally pull anything else down from it.
-
-----
-sed -i -e 's/enabled=1/enabled=0/' /etc/yum.repos.d/epel.repo
-----
-
-Uncomment +host_key_checking+ in _/etc/ansible/ansible.cfg_:
-
-....
-# uncomment this to disable SSH key host checking
-host_key_checking = False
-....
-
-=== Modifying the ManageIQ Provisioning Workflow
-
-We need to make two additions to the +VMProvision_VM+ state machine. The first is to add a *RegisterSatellite* state to register the new VM with Satellite 6 as a _host_. The second is to add an *ActivateSatellite* state to create the Ansible playbook, and initiate the subscription-manager activation of the new system as a _content host_.
-
-Both of these states must be added at some point _after_ the VM has been provisioned. The registration must include the MAC address of the new VM, and the activation uses Ansible to connect via ssh to the running VM.
-
-<<c28i3>> shows the new states added.
+On our Ansible Tower server, we'll create a *Red Hat CloudForms* credential that enables us to synchronize inventory from our ManageIQ or CloudForms appliance (see <<c28i4>>). We'll use this to ensure that the Tower inventory is up-to-date before any job template is run.
 
 [[c28i3]]
-.RegisterSatellite and ActivateSatellite states added to the VM provision state machine
-image::images/ch28_ss3.png["RegisterSatellite and ActivateSatellite States Added to the VM Provision State Machine"]
+.Inventory Credential
+image::images/ch28_ss3.png[Screenshot,600,align="center"]
 
-==== RegisterSatellite
+==== Machine Credential
 
-Our new _RegisterSatellite_ instance schema can store some more defaults. In this case we'll create per-organization/location instances, so that we can store the organization name and location in the schema (see <<c28i4>>).
+We'll also create a *Machine* credential called *SSH Key (ansible-remote)* that allows key-based ssh connection to a managed host as the ansible-remote user, and allows for sudo privileged escalation as the root user. This credential will include the vault password that we use to decrypt the Satellite 6 Admin user's password, stored in the playbook variable `vault_admin_pass`.
+
+==== Inventory
+
+We'll create a Tower inventory called *CloudForms VMs* to hold the list of virtual machines that are visible to CloudForms. We'll add a group to this called *All Servers*, that uses our CloudForms credential to populate itself. We must also ensure that this group is marked as *Overwrite* and *Update on Launch* (see <<c28i4>>).
 
 [[c28i4]]
-.RegisterSatellite instance schema
-image::images/ch28_ss4.png[Screenshot,300,align="center"]
+.Inventory Group
+image::images/ch28_ss4.png[Screenshot,650,align="center"]
 
-The _register_satellite_ method can access these in the usual way, from +$evm.object+:
+==== Project
 
-[source,ruby]
-----
-  servername    = $evm.object['servername']
-  username      = $evm.object['username']
-  password      = $evm.object.decrypt('password')
-  organization  = $evm.object['organization']
-  location      = $evm.object['location']
-----
+Well create a new Git project from the https://github.com/pemcg/ansible_roles repository (master branch).
 
-We need to ensure that we register only Linux VMs with Satellite, and we can select a host group by testing the VM operating_system object's +product_name+ attribute (we're only provisioning RHEL 6 or 7, both x86_64):
+==== Job Template
 
-[source,ruby]
-----
-...
-prov = $evm.root['miq_provision']
-template = prov.source
-vm = prov.destination
+From this new project we'll create a job template called *Satellite 6 Client*. It will be a *Run* job type; use the *CloudForms VMs* inventory and *SSH Key (ansible-remote)* machine credential that we defined previously, and will execute the __satellite_client.yaml__ project playbook (see <<c28i5>>).
 
-if template.platform == "linux"
-  #
-  # Pick a host group based on the operating system being provisioned
-  #
-  if vm.operating_system.product_name == 'Red Hat Enterprise Linux 6 (64-bit)'
-    hostgroup = 'Generic_RHEL6_Servers'
-  elsif vm.operating_system.product_name == 'Red Hat Enterprise Linux 7 (64-bit)'
-    hostgroup = 'Generic_RHEL7_Servers'
-  else
-    raise "Unrecognised Operating System Name"
-  end
-...
-----
+[[c28i5]]
+.Job Template
+image::images/ch28_ss5.png[Screenshot,700,align="center"]
+
+As several of the playbook commands require root privileges, we must ensure that *Enable Privilege Escalation* is checked (see <<c28i6>>).
+
+[[c28i6]]
+.Enabling Privilege Escalation
+image::images/ch28_ss6.png[Screenshot,250,align="center"]
+
+We'll define some defaults for the extra variables that will be passed to the playbook:
+
+* sat6_ip (Satellite 6 server IP address) 
+* sat6_fqdn (Satellite 6 server fully-qualified domain name)
+* admin_user (Admin-level user for registration with Satellite 6)  
+* organization (Satellite 6 organization to join)
+* location (Satellite 6 location to join)  
+* hostgroup (Satellite 6 configuration hostgroup to use, or 'false' for no Puppet configuration)
+* activationkey (Satellite 6 activation key to use)
+* updatehost ('true' or 'false')
+
+We must also ensure that *Prompt on Launch* is checked, to allow the variables to be overridden from CloudForms/ManageIQ if we wish (see <<c28i7>>).
+
+[[c28i7]]
+.Default Extra Variables
+image::images/ch28_ss7.png[Screenshot,350,align="center"]
+
+The playbook uses an additional variable `admin_pass`, which has the value "{{ vault_admin_pass }}". The value for `vault_admin_pass` should be stored as an encrypted string, and so must be defined in a vault file. We can create this using the following commands on the Tower server:
+
+....
+su - awx
+cd /var/lib/awx/projects/<project_dir>/roles/satellite_client/group_vars/all
+ansible-vault create vault
+New Vault password:
+Confirm New Vault password:
+vault_admin_pass: secret_password
+~
+~
+~
+....
+
+We then add the vault password to the machine credential that we created earlier.
 
 [NOTE]
 ====
-In a more advanced example we could present a selection of host groups to register with in a service dialog drop-down list (see <<service-reconfiguration>>).
+Adding our own local vault file to the project directory will prevent the project from cleanly performing an SCM update unless we enable the 'Clean' SCM update project option. 
 ====
 
-We'll be creating the new host entry using the Satellite API, and this requires us to use the internal Satellite ID for each parameter, rather than a name. We define a generic +query_id+ method, and call it three times to retrieve the IDs for the location, organization and host group:
+=== ManageIQ/CloudForms Preparation
 
-[source,ruby]
-----
-def query_id (uri, field, content)
- 
-  url = URI.escape("#{@uri_base}/#{uri}?search=#{field}=\"#{content}\"")
-  request = RestClient::Request.new(
-    method: :get,
-    url: url,
-    headers: @headers,
-    verify_ssl: OpenSSL::SSL::VERIFY_NONE
-  )
- 
-  id = nil
-  rest_result = request.execute
-  json_parse = JSON.parse(rest_result)
-  
-  subtotal = json_parse['subtotal'].to_i
-  if subtotal == 1
-    id = json_parse['results'][0]['id'].to_s
-  elsif subtotal.zero?
-    $evm.log(:error, "Query to #{url} failed, no result")
-    id = -1
-  elsif subtotal > 1
-    $evm.log(:error, "Query to #{url} returned multiple results")
-    id = -1
-  else
-    $evm.log(:error, "Query to #{url} failed, unknown condition")
-    id = -1
-  end
-  id
-end
+We must also do some preparation of our ManageIQ or CloudForms appliances.
 
-...
-$evm.log(:info, "Getting hostgroup id for '#{hostgroup}' from Satellite")
-hostgroup_id = query_id("hostgroups", "name", hostgroup)
-raise "Cannot determine hostgroup id for '#{hostgroup}'" if hostgroup_id == -1
-$evm.log(:info, "hostgroup_id: #{hostgroup_id}")
-----
+==== cloud-init Customization Template
 
-Finally we create the host record. We specify the +:build+ parameter as +false+ because we don't want Satellite to provision the VM:
+We need our newly provisioned virtual machine to be configured as an Ansible manageable host, so we'll use the cloud-init template described in <<automation_using_ansible>>. We'll specify this template in the provisioning dialog when we provision our VM.
 
-[source,ruby]
-----
-#
-# Create the host record
-#
-hostinfo = {
-    :name             => vm.name,
-    :mac              => vm.mac_addresses[0],
-    :hostgroup_id     => hostgroup_id,
-    :location_id      => location_id,
-    :organization_id  => organization_id,
-    :build            => 'false'
-    }
-$evm.log(:info, "Creating host record in Satellite")
-    
-uri = "#{@uri_base}/hosts"
-request = RestClient::Request.new(
-    method: :post,
-    url: uri,
-    headers: @headers,
-    verify_ssl: OpenSSL::SSL::VERIFY_NONE,
-    payload: { host: hostinfo }.to_json
-  )
-rest_result = request.execute
-----
+==== Service Dialog and Button
 
-==== ActivateSatellite
+Before we integrate the new playbook into our virtual machine provisioning workflow, it is useful to be able to test its functionality from a button on a VM object. This will allow us to troubleshoot its operation, and will also add useful functionality to our VM-related button group.
 
-Our new *ActivateSatellite* instance schema can also store some defaults. In this case we'll create per-organization instances, and we'll store the organization name in the schema (see <<c28i5>>).
-
-[[c28i5]]
-.ActivateSatellite instance schema
-image::images/ch28_ss5.png[Screenshot,300,align="center"]
-
-Once again we check that the system being provisioned is running Linux, and select the activation key based on the operating system version:
-
-[source,ruby]
-----
-if template.platform == "linux"
-  #
-  # Pick an activation key based on the operating system being provisioned
-  #
-  if vm.operating_system.product_name == 'Red Hat Enterprise Linux 6 (64-bit)'
-    activationkey = 'RHEL6-Generic'
-  elsif vm.operating_system.product_name == 'Red Hat Enterprise Linux 7 (64-bit)'
-    activationkey = 'RHEL7-Generic'
-  else
-    raise "Unrecognised Operating System Name"
-  end
-----
-
-We need to check that the VM is booted, and has an IP address:
-
-[source,ruby]
-----
-if vm.ipaddresses.length.zero?
-  $evm.log(:info, "VM doesnt have an IP address yet - retrying in 1 minute")
-  $evm.root['ae_result'] = 'retry'
-  $evm.root['ae_retry_interval'] = '1.minute'
-  exit MIQ_OK
-end
-ip_address = vm.ipaddresses[0]
-----
-
-For this example we'll be connecting to the newly provisioned VM by IP address rather than hostname, so we have to add the new IP address to _/etc/ansible/hosts_ if it doesn't already exist:
-
-[source,ruby]
-----
-unless File.foreach('/etc/ansible/hosts').grep(/#{Regexp.escape(ip_address)}/).any?
-  open('/etc/ansible/hosts', 'a') do |f|
-    f.puts "#{ip_address}"
-    f.close
-  end
-end
-----
-
-We need to remove the hosts key for that IP address if it already exists:
-
-----
-cmd = "ssh-keygen -R #{ip_address}"
-`#{cmd}`
-----
-
-We create a temporary file, and write the Ansible playbook to it:
-
-[source,ruby]
-----
-tempfile = Tempfile.new('ansible-')
-    
-playbook = []
-this_host = {}
-this_host['hosts'] = []
-this_host['hosts'] = "#{ip_address}"
-this_host['tasks'] << { 'name'      => 'Set hostname',
-                        'hostname'  => "name=#{vm.name}"
-                      }
-this_host['tasks'] = []
-this_host['tasks'] << { 'name'      => 'Install Cert',
-                        'command'   => "/usr/bin/yum -y localinstall \
-                  http://#{servername}/pub/katello-ca-consumer-latest.noarch.rpm"
-                      }
-this_host['tasks'] << { 'name'      => 'Register with Satellite',
-                        'command'   => "/usr/sbin/subscription-manager register \
-                        --org #{organization} --activationkey #{activationkey}",
-                        'register'  => 'registered'
-                      }
-this_host['tasks'] << { 'name'      => 'Enable Repositories',
-                        'command'   => "subscription-manager repos \
-                                         --enable=rhel-*-satellite-tools-*-rpms",
-                        'when'      => 'registered|success'
-                      }
-this_host['tasks'] << { 'name'      => 'Install Katello Agent',
-                        'yum'       => 'pkg=katello-agent state=latest',
-                        'when'      => 'registered|success',
-                        'notify'    => ['Enable Katello Agent', \
-                                                           'Start Katello Agent']
-                      }
-this_host['tasks'] << { 'name'      => 'Install Puppet',
-                        'yum'       => 'pkg=puppet state=latest',
-                        'when'      => 'registered|success',
-                        'register'  => 'puppet_installed',
-                        'notify'    => ['Enable Puppet']
-                      }
-this_host['tasks'] << { 'name'      => 'Configure Puppet Agent',
-                        'command'   => "/usr/bin/puppet config set server \
-                                                  #{servername} --section agent",
-                        'when'      => 'puppet_installed|success'
-                      }
-this_host['tasks'] << { 'name'      => 'Run Puppet Test',
-                        'command'   => '/usr/bin/puppet agent --test --noop \
-                                                     --onetime --waitforcert 60',
-                        'when'      => 'puppet_installed|success'
-                      }
-this_host['tasks'] << { 'name'      => 'Start Puppet',
-                        'service'   => 'name=puppet state=started'
-                      }
-this_host['tasks'] << { 'name'      => 'Update all packages',
-                        'command'   => '/usr/bin/yum -y update'
-                      }
-this_host['handlers'] = []
-this_host['handlers'] << { 'name'    => 'Enable Katello Agent',
-                           'service' => 'name=goferd enabled=yes'
-                         }
-this_host['handlers'] << { 'name'    => 'Start Katello Agent',
-                           'service' => 'name=goferd state=started'
-                         }
-this_host['handlers'] << { 'name'    => 'Enable Puppet',
-                           'service' => 'name=puppet enabled=yes'
-                         }
-playbook << this_host
-
-tempfile.write("#{playbook.to_yaml}\n")
-tempfile.close
-----
-
-Finally we run +ansible-playbook+:
-
-[source,ruby]
-----
-cmd = "ansible-playbook -s #{tempfile.path}"
-ansible_results = `#{cmd}`
-$evm.log(:info, "Finished ansible-playbook, results: #{ansible_results}")
-tempfile.unlink
-----
-
-The full scripts are available https://github.com/pemcg/oreilly-mastering-cloudforms-automation[here].
-
-=== Testing the Integration - Provisioning a New VM
-
-First we check that we have no hosts with _test_ in their name in our Satellite (see <<c28i6>>).
-
-[[c28i6]]
-.The number of "test" hosts in Satellite before provisioning
-image::images/ch28_ss6.png[screenshot]
-
-We'll provision a RHEL 6 virtual machine and call it _rhel6test_ (see <<c28i7>>).
-
-[[c28i7]]
-.Provisioning a new virtual machine called "rhel6test"
-image::images/ch28_ss7.png["Provisioning a new Virtual Machine"]
-
-Once the VM has finished cloning, we see the output from _register_satellite_ in _automation.log_:
-
-----
-<AEMethod register_satellite> Getting hostgroup id for 'Generic_RHEL6_Servers' \
-                                                                   from Satellite
-<AEMethod register_satellite> hostgroup_id: 3
-<AEMethod register_satellite> Getting location id for 'Winchester' from Satellite
-<AEMethod register_satellite> location_id: 4
-<AEMethod register_satellite> Getting organization id for 'Bit63' from Satellite
-<AEMethod register_satellite> organization_id: 3
-<AEMethod register_satellite> Creating host record in Satellite with the \
-          following details: {:name=>"rhel6test", :mac=>"00:50:56:b8:51:da", \
-                              :hostgroup_id=>"3", :location_id=>"4", \
-                              :organization_id=>"3", :build=>"false"}
-<AEMethod register_satellite> return code => 200
-----
-
-In Satellite we see the new _host_ entry, but the 'N' icon indicates that no reports have been received from it yet (see <<c28i8>>).
+We first create a service dialog from the Ansible job template (see <<c28i8>>).
 
 [[c28i8]]
-.Newly Added host Record
-image::images/ch28_ss8.png["Newly Added host Record"]
+.Job Template in CloudForms
+image::images/ch28_ss8.png[Screenshot,700,align="center"]
 
-Soon afterwards we see the output from _activate_satellite_ in _automation.log_:
+We'll give the new service dialog the name "Satellite 6 Client" so that we can identify it as coming from the job template. We need to make some minor changes to the dialog. 
 
-....
-activate_satellite> VM doesnt have an IP address yet - retrying in 1 minute
-...
-activate_satellite> IP Address is: 192.168.1.185
-activate_satellite> Running ansible-playbook using /tmp/ansible-20151026-26705...
-<AEMethod activate_satellite> Finished ansible-playbook, results:
-PLAY [192.168.1.185] **********************************************************
-
-GATHERING FACTS ***************************************************************
-ok: [192.168.1.185]
-
-TASK: [Set hostname] **********************************************************
-changed: [192.168.1.185]
-
-TASK: [Install Cert] **********************************************************
-changed: [192.168.1.185]
-
-TASK: [Register with Satellite] ***********************************************
-changed: [192.168.1.185]
-
-TASK: [Enable Repositories] ***************************************************
-changed: [192.168.1.185]
-
-TASK: [Install Katello Agent] *************************************************
-changed: [192.168.1.185]
-
-TASK: [Install Puppet] ********************************************************
-changed: [192.168.1.185]
-
-TASK: [Configure Puppet Agent] ************************************************
-changed: [192.168.1.185]
-
-TASK: [Run Puppet Test] *******************************************************
-changed: [192.168.1.185]
-
-TASK: [Start Puppet] **********************************************************
-changed: [192.168.1.185]
-
-TASK: [Update all packages] ***************************************************
-changed: [192.168.1.185]
-
-NOTIFIED: [Enable Katello Agent] **********************************************
-ok: [192.168.1.185]
-
-NOTIFIED: [Start Katello Agent] ***********************************************
-ok: [192.168.1.185]
-
-NOTIFIED: [Enable Puppet] *****************************************************
-changed: [192.168.1.185]
-
-PLAY RECAP ********************************************************************
-192.168.1.185              : ok=14   changed=11   unreachable=0    failed=0
-....
-
-In Satellite we now see the new _content host_ entry, showing that all packages have been updated (see <<c28i9>>).
+We can delete the *Options* box and its *Limit* element as we don't need to manually specify these when we call an Ansible job template from a button. We'll also edit the *hostgroup* element to change 't' to 'true' and untick the 'Read only' checkbox. Similarly we'll edit the *updatehost* element to change 'f' to 'false' (see <<c28i9>>).
 
 [[c28i9]]
-.Newly added content host Record
-image::images/ch28_ss9.png["Newly Added content host Record"]
+.Edited Service Dialog
+image::images/ch28_ss9.png[Screenshot,400,align="center"]
 
-We also see that the new _host_ record is shown as _Active_, showing that the Puppet agent is connecting to the Puppet Master (see <<c28i10>>).
+Having created the dialog, we can add a button to our VM button group if we wish. Our button will use the new "Satellite 6 Client" dialog, and will call the ansible_tower_job instance, as shown in <<c28i14>>.
+
+[[c28i14]]
+.Button request details
+image::images/ch28_ss14.png[Screenshot,500,align="center"]
+
+Once defined we can use this button to test the integration with Ansible Tower.
+
+[[c28i13]]
+.Button added to button group
+image::images/ch28_ss13.png[Screenshot,450,align="center"]
+
+==== JobTemplate Instance
+
+We'll clone the _/ConfigurationManagement/AnsibleTower/Operations/JobTemplate_ class into our domain, and add a new instance of this class called _satellite_6_client_. We'll add the value "Satellite 6 Client" as the job template name, and for our first test we'll leave all of the *param* fields blank. By not passing any of these parameters to Tower, we ensure that the default job template extra variables that we've defined within Ansible Tower are used for the running job.
 
 [[c28i10]]
-.Host record activated
-image::images/ch28_ss10.png["host Record Activated"]
+.Fields of the satellite_6_client instance
+image::images/ch28_ss10.png[Screenshot,600,align="center"]
 
+==== register_satellite
+
+We only want to register a new virtual machine with our Satellite 6 server if it's running the Red Hat Enterprise Linux (RHEL) operating system. Fortunately we can use a template property called `operating_system.distribution` to determine whether our template is true RHEL, a clone (such as CentOS), or another distribution or operating system entirely.
+
+[NOTE]
+====
+We must run a SmartState Analysis on all of our templates for the `operating_system.distribution` property to be populated.
+====
+
+We'll create a new class _/Integration/Satellite/AnsibleMethods_ in our domain, and a new instance of this class called _register_satellite_. We can put an assertion in our _register_satellite_ instance to evaluate the `operating_system.distribution` property and compare it with the string "redhat". The execution of the Ansible job template will only proceed if this assertion evaluates to `true`.
+
+The schema of _register_satellite_ is shown in <<c28i11>>.
+
+[[c28i11]]
+.Fields of the register_satellite instance
+image::images/ch28_ss11.png[Screenshot,700,align="center"]
+
+==== Modify the Provisioning Workflow
+
+We must add an additional state to the _VMProvision_VM_ state machine schema at some point after the VM has been provisioned, called *RegisterSatellite*. We'll edit a cloned copy of the _template_ instance of this state machine in our domain, to add our _/Integration/Satellite/AnsibleMethods/register_satellite_ instance to the *RegisterSatellite* state (see <<c28i12>>).
+
+[[c28i12]]
+.Fields of the VMProvision_VM/template state machine instance
+image::images/ch28_ss12.png[Screenshot,700,align="center"]
+
+=== Testing the Integration
+
+We'll test the integration changes that we've made in three ways.
+
+==== Test 1 - Registering a RHEL 7.2 Server for Content Management
+
+Our first test is to provision a new RHEL 7 VM called "ralsrv001", and have it register with Satellite 6 purely for package content management. We'll use a fully provisioned 'fat' RHEL 7.2 template called 'rhel72-generic' as our source to provision from, and we'll select a *Provision Type* of 'Native Clone'. The template has the cloud-init package installed and configured. 
+
+To ensure that the new server is automatically provisioned as an Ansible managed host, we'll select the *Setup for Ansible Tower Management* cloud-init script in the *Customize* tab of the provisioning dialog (see <<c28i16>>).
+
+[[c28i16]]
+.Selecting the cloud-init template
+image::images/ch28_ss16.png[Screenshot,800,align="center"]
+
+We'll also complete the *Root Password* and *Host Name* fields as these values are passed to the cloud-init script (see <<c28i15>>).
+
+[[c28i15]]
+.Customize tab of the provisioning dialog
+image::images/ch28_ss15.png[Screenshot,550,align="center"]
+
+The absence of any overridden parameters in our initial _satellite_6_client_ instance means that the default value of 'false' for the *hostgroup* extra variable will be used. When this value is passed to the Ansible playbook, the server is registered with Satellite 6 as a content host using *+subscription-manager+*.
+
+If we examine _automation.log_ while the server is provisioning, we see our assertion being evaluated to *true* and the Ansible job template being called:
+
+```
+Evaluating substituted assertion ["redhat" == "redhat"]
+Q-task_id([miq_provision_183]) Following Relationship [miqaedb: \
+  /ConfigurationManagement/AnsibleTower/Operations/JobTemplate/satellite_6_client#create]
+```
+
+On the Tower server we can see the progress of the job:
+
+```
+Identity added: /tmp/ansible_tower_xeMhte/credential (/tmp/ansible_tower_xeMhte/credential)
+Vault password: 
+
+PLAY [all] *********************************************************************
+
+TASK [setup] *******************************************************************
+ok: [ralsrv001]
+
+TASK [satellite_client : Workaround for a non working DNS] *********************
+changed: [ralsrv001]
+
+TASK [satellite_client : Download bootstrap.py from satellite01.bit63.net] *****
+skipping: [ralsrv001]
+
+TASK [satellite_client : Copy bootstrap.py script to /usr/local/sbin and make it executable] ***
+skipping: [ralsrv001]
+
+TASK [satellite_client : Register to Satellite 6 with puppet enabled and add it to the correct hostgroup] ***
+skipping: [ralsrv001]
+
+TASK [satellite_client : Install the katello-ca-consumer-latest.noarch.rpm from satellite01.bit63.net] ***
+changed: [ralsrv001]
+
+TASK [satellite_client : Register to Satellite 6 only for content] *************
+changed: [ralsrv001]
+
+TASK [satellite_client : Install the katello-agent] ****************************
+changed: [ralsrv001]
+
+TASK [satellite_client : Update the host to latest errata within the attached content view] ***
+changed: [ralsrv001]
+
+RUNNING HANDLER [satellite_client : Start katello-agent] ***********************
+ok: [ralsrv001]
+
+RUNNING HANDLER [satellite_client : Enable katello-agent] **********************
+ok: [ralsrv001]
+
+PLAY RECAP *********************************************************************
+ralsrv001                  : ok=8    changed=5    unreachable=0    failed=0   
+```
+
+We see that the playbook completed successfully, and that the bootstrap-related tasks were skipped. The new server is registered to Satellite 6 as a content host.
+
+==== Test 2 - Registering a RHEL 7.2 Server for both Content and Configuration Management
+
+For this test we'll provision another RHEL 7.2 VM (called "ralsrv002"), also from the 'rhel72-generic' template. We'll use the same provisioning dialog settings as before.
+
+Before we start the provisioning process however, we'll edit the __satellite_6_client__ instance to add a value for param1. We're going to override the default 'hostgroup' extra variable, and pass the value "Generic_RHEL7-Servers" (see <<c28i18>>).
+
+[[c28i18]]
+.Content host in Satellite 6
+image::images/ch28_ss18.png[Screenshot,800,align="center"]
+
+If we follow the provisioning process in _automation.log_ we once again we see our assertion evaluate to *true*, and the Ansible job template being called. On the Tower server we can follow the progress of the job:
+
+```
+Identity added: /tmp/ansible_tower_NzAfZi/credential (/tmp/ansible_tower_NzAfZi/credential)
+Vault password: 
+
+PLAY [all] *********************************************************************
+
+TASK [setup] *******************************************************************
+ok: [ralsrv002]
+
+TASK [satellite_client : Workaround for a non working DNS] *********************
+changed: [ralsrv002]
+
+TASK [satellite_client : Download bootstrap.py from satellite01.bit63.net] *****
+changed: [ralsrv002]
+
+TASK [satellite_client : Copy bootstrap.py script to /usr/local/sbin and make it executable] ***
+changed: [ralsrv002]
+
+TASK [satellite_client : Register to Satellite 6 with puppet enabled and add it to the correct hostgroup] ***
+changed: [ralsrv002]
+
+TASK [satellite_client : Install the katello-ca-consumer-latest.noarch.rpm from satellite01.bit63.net] ***
+skipping: [ralsrv002]
+
+TASK [satellite_client : Register to Satellite 6 only for content] *************
+skipping: [ralsrv002]
+
+TASK [satellite_client : Install the katello-agent] ****************************
+skipping: [ralsrv002]
+
+TASK [satellite_client : Update the host to latest errata within the attached content view] ***
+changed: [ralsrv002]
+
+PLAY RECAP *********************************************************************
+ralsrv002                  : ok=6    changed=5    unreachable=0    failed=0   
+```
+
+This time we see that the _bootstrap.py_ script was copied to the newly provisioned server and used to register the host as both content host and Puppet client.
+
+In Satellite we can see the two new hosts added. We can verify that the second host, ralsrv02 was added to the host group "Generic_RHEL7_Servers", and has the "KT_Bit63_Production_RHEL_7_2_Q4_2016_9" Puppet environment assigned (see <<c28i19>>).
+
+[[c28i19]]
+.New hosts added to Satellite inventory
+image::images/ch28_ss19.png[Screenshot,800,align="center"]
+
+==== Test 3 - Provisioning a CentOS 7.2 Server
+
+To confirm the operation of our assertion in the __register_satellite__ instance when provisioning a non-RHEL server, we'll provision a CentOS 7.2 server from 'fat' template.
+
+If we follow the provisioning progress in _automation.log_ we see that the assertion evaluates to *false*, and our Ansible job template is not called.
+
+```
+Evaluating substituted assertion ["centos" == "redhat"]
+Q-task_id([miq_provision_184]) Assertion Failed: <"centos" == "redhat">
+```
 === Summary
 
-This chapter shows how we can integrate our virtual machine provisioning workflow with our wider enterprise, in this case by registering new VMs with a Satellite 6 server. The example is deliberately simple in having only one host group and activation key per operating system version, but hopefully this simplicity allows the relative ease of integration to be seen. 
-
-If we prefer to provision our new virtual machine by PXE boot/kickstart, we simply pass any additional parameters that are required for the kickstart in the +hostinfo+ hash, and set the key +:build+ to be +'true'+, as follows:
-
-[source,ruby]
-----
-hostinfo = {
-    :name               => vm.name,
-    :mac                => vm.mac_addresses[0],
-    :hostgroup_id       => hostgroup_id,
-    :location_id        => location_id,
-    :organization_id    => organization_id,
-    :operatingsystem_id => operatingsystem_id,
-    :architecture_id    => architecture_id,
-    :domain_id          => domain_id,
-    :subnet_id          => subnet_id,
-    :root_pass          => root_password,
-    :ip                 => ip_address,
-    :disk               => partition_layout,
-    :build              => 'true'
-}
-----
+This chapter shows how we can integrate our virtual machine provisioning workflow with our wider enterprise, in this case by registering new VMs with a Satellite 6 server. It also illustrates how we can dynamically enable or block states in our workflow depending on attributes that we can test for using an assertion.
 
 
-In this example we've also installed Ansible directly onto our ManageIQ appliance. At the time of writing it seems likely that a future version of ManageIQ will have a dedicated Ansible Tower provider, so rendering this step unnecessary.
-
-==== Further Reading
-
-http://www.jung-christian.de/2015/04/how-to-provision-vms-with-foreman-and-manageiq/[How to Provision VMs with Foreman and ManageIQ]
-
-http://www.jung-christian.de/2015/06/check-provisioning-state-in-manageiq-with-foreman/[Check Provisioning State in ManageIQ with Foreman]
-
-http://theforeman.org/api/1.9/apidoc/v2/hosts/create.html[Foreman API - Create a Host]

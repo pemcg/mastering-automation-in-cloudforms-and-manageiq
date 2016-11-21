@@ -34,7 +34,7 @@
 * [Part 3](part3.asciidoc)
   * [(placeholder) Automation Using Ansible](chapterxx.asciidoc.wip)
   * [(placeholder) Running Ansible Tower Jobs from Automate](chapterxx.asciidoc.wip)
-  * [(placeholder) Integrating with Satellite 6 During Provisioning](chapter28.asciidoc.wip)
+  * [Integrating with Satellite 6 During Provisioning](chapter28.asciidoc)
 * [Part 4](part4.asciidoc)
   * [Service Dialogs](chapter29.asciidoc)
   * [The Service Provisioning State Machine](chapter30.asciidoc)
