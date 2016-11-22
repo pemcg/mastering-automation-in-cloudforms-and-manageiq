@@ -149,9 +149,9 @@ We then add the vault password to the machine credential that we created earlier
 Adding our own local vault file to the project directory will prevent the project from cleanly performing an SCM update unless we enable the 'Clean' SCM update project option. 
 ====
 
-=== ManageIQ/CloudForms Preparation
+=== CloudForms/ManageIQ Preparation
 
-We must also do some preparation of our ManageIQ or CloudForms appliances.
+We must also do some preparation of our CloudForms or ManageIQ appliances.
 
 ==== cloud-init Customization Template
 

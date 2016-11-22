@@ -1,16 +1,18 @@
 [[automation_using_ansible]]
 == Automation Using Ansible
 
-With CloudForms 4.1/ManageIQ _Darga_ we now have a possibility of performing automation tasks using Ansible playbooks in addition to or instead of using native Ruby. This automation requires the presence of an Ansible Tower server, added to CloudForms/ManageIQ as a Configuration Management provider.
+CloudForms 4.1/ManageIQ _Darga_ introduced the possibility of performing automation tasks using Ansible playbooks in addition to or instead of using native Ruby. This automation requires the presence of an Ansible Tower server, added to CloudForms or ManageIQ as a configuration management provider.
 
+'''
 .Ruby or Ansible?
 ****
 One of the most powerful features of Ansible as a configuration management tool is the relative simplicity and ease of understanding of its YAML-formatted playbooks. Adding the capability to be able to call Ansible playbooks from Automate as well as run Ruby methods presents us with a dilemma; when to use which?
 
-Ruby methods allow us to access all of the objects and their properties within the VMDB, and so we can make real-time decisions as part of our automation workflow, depending 
+Ruby methods allow us to access all of the objects and their properties within the VMDB, and so we can make real-time decisions as part of our automation workflow. This might include determining how many VMs are currently running on each hypervisor in a cluster before making placement decisions during provisioning, for example. The disadvantage is that we need to be fairly comfortable with the Ruby scripting language and the Automate object model to 
 
-Ansible playbooks
+Ansible playbooks allow us to harness the power of the Ansible module library to interact with many systems or infrastructure components in our enterprise that may not be natively supported by CloudForms or ManageIQ (such as load balancers for example). They allow us to do this using an easy to learn scripting format, based on YAML. We are also able to take advantage of the many thousands of existing Ansible roles that are downloadable from the Ansible Galaxy web site footnote:[https://galaxy.ansible.com]
 ****
+'''
 
 === Terminology
 
@@ -215,12 +217,10 @@ We create an Ansible Tower machine credential containing the private key that ma
 We should also ensure that our virtual machine templates are prepared with the cloud-init package. For Red Hat Enterprise Linux this is installed from the *rhel-7-server-rh-common-rpms* repository.
 ====
 
-=== Listing available job templates
+=== Summary
 
-===
+This chapter has introduced using Ansible 
 
 
-
-=== Automate Namespace changes
 
  

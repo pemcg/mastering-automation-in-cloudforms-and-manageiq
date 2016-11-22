@@ -1,6 +1,22 @@
 [[running_ansible_jobs_from_automate]]
 == Running Ansible Tower Jobs from Automate
 
+In this chapter we'll learn how to 
+
+[[c27ai2]]
+.ConfigurationManagement namespace
+image::images/ch27b_ss1.png[Screenshot,350,align="center"]
+
+[[c27ai2]]
+.Fields of the .missing instance
+image::images/ch27b_ss2.png[Screenshot,550,align="center"]
+
+[[c27ai2]]
+.Fields of the default state machine
+image::images/ch27b_ss3.png[Screenshot,700,align="center"]
+
+=== Listing available job templates
+
 === Passing parameters to jobs
 
 === Running an Ansible Job from a Button

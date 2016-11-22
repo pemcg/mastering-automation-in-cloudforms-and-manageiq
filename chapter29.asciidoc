@@ -44,7 +44,7 @@ dialog_field["sort_order"] = "ascending"
 dialog_field["data_type"] = "integer"
 
 # required: true / false
-dialog_field["required"] = "true"
+dialog_field["required"] = true
 
 dialog_field["values"] = {2 => "2GB", 4 => "4GB", 16 => "16GB"}
 dialog_field["default_value"] = 2
