@@ -1,28 +1,134 @@
 [[running_ansible_jobs_from_automate]]
 == Running Ansible Tower Jobs from Automate
 
-In this chapter we'll learn how to 
+In this chapter we'll learn how to integrate Ansible into our Automate workflows. We'll look at the Ansible-related components in the Automate datastore, and how we utilise these to run Ansible job templates from a button or from an instance such as a state machine.
 
-[[c27ai2]]
-.ConfigurationManagement namespace
+=== Automate Datastore Components
+
+The Ansible-related Automate code is in the _ManageIQ_ domain, under the _ConfigurationManagement/AnsibleTower_ namespace. The _Operations_ namespace contains the _JobTemplate_ and _StateMachines/Job_ classes (see <<c27bi1>>).
+
+[[c27bi1]]
+.ConfigurationManagement/AnsibleTower namespace
 image::images/ch27b_ss1.png[Screenshot,350,align="center"]
 
-[[c27ai2]]
+[NOTE]
+====
+There is a further namespace called _Service_ under _ConfigurationManagement/AnsibleTower_ that contains the service-related Automate components, but we'll cover these in a later chapter.
+====
+
+==== Job State Machine
+
+The _Job_ state machine class provides the workflow to integrate with Ansible Tower. The _default_ instance contains three states (see <<c27bi3>>).
+
+[[c27bi3]]
+.Fields of the default state machine
+image::images/ch27b_ss3.png[Screenshot,800,align="center"]
+
+===== WaitForIP
+
+The *WaitForIP* state calls the __wait_for_ip__ method, which waits for the `vm.ipaddresses` list attribute to be non-empty. The `vm` object is populated from either `$evm.root['miq_provision'].destination` (i.e. the VM resulting from a provisioning operation) or `$evm.root['vm']` (i.e. the current VM object loaded from a button operation).
+
+[NOTE]
+====
+For the `ipaddresses` list attribute to be populated, the native virtual infrastructure guest agent such as VMware tools or the RHEV-M management agent should be installed and running in the target VM.
+
+The __wait_for_ip__ method does not attempt to power-on the virtual machine. If the VM is not powered on by some other workflow step or manual operation, this state will error after 100 retries.
+====
+
+===== Launch
+
+The *Launch* state calls the __launch_ansible_job__ method. This method uses arguments passed to `$evm.object` to determine the job template to be run, and any extra variables that should be passed to the job. 
+
+====== Determining the Job Template
+
+The method attempts to identify the job template to be run in three ways, as follows (in order):
+
+1. From the value of `$evm.object['job_template']` if it exists, which should be a  `ManageIQ_Providers_AnsibleTower_ConfigurationManager_ConfigurationScript` object.
+2. From the value of `$evm.object['job_template_name']` if it exists, which should be a text string containing the job template name (e.g. "Tomcat Standalone Server")
+3. From the value of `$evm.object['job_template_id']` if it exists, which should be a text string containing the job template ID (e.g. "342")
+
+This gives us considerable flexibility in how we call the _Job/default_ state machine.
+
+====== Determining the Extra Variables
+
+The method also uses several ways to search for arguments to pass to the job template as extra variables, as follows:
+
+1. The method searches `$evm.object` and all of its parent instances up to `$evm.root` for attribute keys with either the style `dialog_param_<extra_var> = value` or `dialog<n> = <extra_var>=value`. For example if passing an extra variable called "package_name" with the value "vim_enhanced", we could use either of the following styles:
+
+[source,ruby]
+----
+$evm.object['dialog_param_package_name'] = 'vim_enhanced'
+----
+
+or
+
+[source,ruby]
+----
+$evm.object['param1'] = 'package_name=vim_enhanced'
+----
+
+The first style makes it easy for us to prompt for extra variables from a service dialog. In this example we need only give our service dialog element the name "param_package_name", and the value is ready to pass into the state machine.
+
+The second style is for compatibility with parameter passing using the _JobTemplate_ class (see <<job_template_class>>).
+
+[start=2]
+2. If the _ConfigurationManagement/AnsibleTower/Operations/Job/default_ state machine has been called as part of a provisioning operation (`$evm.root['miq_provision']` exists), the method searches the provisioning task options hash for keys with a name in the style `dialog_param_<extra_var>`. If any are found then the extra_var name is extracted from the key name, and it and the value are passed to the job template as extra variables.
+
+Once the method has successfully launched the job template in the Ansible Tower provider, it saves the job ID as the state variable `:ansible_job_id`.
+
+===== WaitForCompletion
+
+The *WaitForCompletion* state calls the __wait_for_completion__ method. This reads the job ID from the `:ansible_job_id` state variable, and polls the Ansible Tower provider for the job completion status.
+
+The method exists with `$evm.root['ae_result']` set to 'error', 'retry' or 'ok' as appropriate, and prints a message to _automation.log_ in the case of an error.
+
+==== Example of Calling the State Machine from an Automate Method
+
+This example shows how we can call 
+
+[source,ruby]
+----
+state_machine = '/ConfigurationManagement/AnsibleTower/Operations/StateMachines/Job/default'
+SCRIPT_CLASS = 'ManageIQ_Providers_AnsibleTower_ConfigurationManager_ConfigurationScript'
+#
+# Lookup the job template object and attach to $evm.root
+#
+$evm.root['job_template'] = $evm.vmdb(SCRIPT_CLASS).find_by_name('Install Single Package')
+#
+# Lookup the VM object and attach to $evm.root
+#
+$evm.root['vm'] = $evm.vmdb('VmOrTemplate').find_by_name('testserver002')
+#
+# Power on the VM of it's not already on
+#
+$evm.root['vm'].start if $evm.root['vm'].power_state != 'on'
+#
+# Define our URI to call the state machine, including the extra_var as an argument
+#
+uri = "#{state_machine}?param1=package_name%3Dscreen"
+$evm.instantiate(uri)
+----
+
+
+
+[source,ruby]
+----
+#
+#uri = "#{path}?job_template_name=Install%20Single%20Package&param1=package_name%3Dscreen"
+#
+----
+
+[[job_template_class]]
+==== JobTemplate Class
+
+[[c27bi2]]
 .Fields of the .missing instance
 image::images/ch27b_ss2.png[Screenshot,550,align="center"]
 
-[[c27ai2]]
-.Fields of the default state machine
-image::images/ch27b_ss3.png[Screenshot,700,align="center"]
-
-=== Listing available job templates
-
-=== Passing parameters to jobs
-
-=== Running an Ansible Job from a Button
-
-button dialog options
 
 
-=== Running an Ansible Job from a State machine
+
+
+
+
 

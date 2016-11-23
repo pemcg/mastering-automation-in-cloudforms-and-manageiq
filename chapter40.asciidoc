@@ -1,5 +1,4 @@
 [[vm-instance-retirement]]
-:numbered:
 == Virtual Machine and Instance Retirement
 
 CloudForms and ManageIQ are virtual machine and instance lifecycle management tools, and so far we have concentrated on the provisioning phase of that lifecycle. The products also have virtual machine retirement workflows that lets us manage the retirement and deletion of our virtual machines or instances, both from the provider and from the CloudForms/ManageIQ VMDB if required.
@@ -92,17 +91,17 @@ _CheckPreRetirement_ checks that the power off has completed. The cloud versions
 
 ==== RemoveFromProvider/CheckRemovedFromProvider
 
-The *RemoveFromProvider* stage allows us some flexibility in handling the actual removal of the VM, and this is where the _Default_ and _Unregister_ state machines differ.
+The *RemoveFromProvider* state allows us some flexibility in handling the actual removal of the VM, and this is where the _Default_ and _Unregister_ state machines differ.
 
 ===== Default
 
-The *RemoveFromProvider* stage of the _Default_ state machine links to the _RemoveFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the `removal_type` argument of `'remove_from_disk'`. This checks whether the VM was provisioned from ManageIQ (`vm.miq_provision` is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it fully deletes the VM from the underlying provider, including the disk image. Having done so it sets a boolean state variable `vm_removed_from_provider` to `true`.
+The *RemoveFromProvider* state of the _Default_ state machine links to the _RemoveFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the `removal_type` argument of `'remove_from_disk'`. This checks whether the VM was provisioned from ManageIQ (`vm.miq_provision` is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it fully deletes the VM from the underlying provider, including the disk image. Having done so it sets a boolean state variable `vm_removed_from_provider` to `true`.
 
 If neither of these checks returns **true**, no action is performed.
 
 ===== Unregister
 
-The *RemoveFromProvider* stage of the _Unregister_ state machine links to the _UnregisterFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the `removal_type` argument of `'unregister'`. This checks whether the VM was provisioned from ManageIQ (`vm.miq_provision` is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it deletes the VM from the underlying provider, but retains the VM's disk image, allowing the VM to be re-created if required in the future. Having done so it sets a boolean state variable `vm_removed_from_provider` to `true`.
+The *RemoveFromProvider* state of the _Unregister_ state machine links to the _UnregisterFromProvider_ instance, which calls the _remove_from_provider_ state machine method, passing the `removal_type` argument of `'unregister'`. This checks whether the VM was provisioned from ManageIQ (`vm.miq_provision` is not *nil* ), *or* if the VM is tagged with **lifecycle/retire_full**. If either of these is true it deletes the VM from the underlying provider, but retains the VM's disk image, allowing the VM to be re-created if required in the future. Having done so it sets a boolean state variable `vm_removed_from_provider` to `true`.
 
 If neither of these checks is true, no action is performed.
 

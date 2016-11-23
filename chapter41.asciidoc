@@ -76,7 +76,7 @@ The _RetireService_ instance calls the _retire_service_ state machine method, wh
 
 ==== FinishRetirement
 
-The *FinishRetirement* stage sets the following Service object attributes:
+The *FinishRetirement* state sets the following Service object attributes:
 
 ....
 :retires_on       => Date.today

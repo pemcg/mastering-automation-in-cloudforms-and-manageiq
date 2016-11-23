@@ -1,5 +1,4 @@
 [[service-dialogs]]
-:numbered:
 == Service Dialogs
 
 When we design our services in CloudForms or ManageIQ, we try to simplify the ordering process for our users as much as possible. We pre-configure as many provisioning choices as we can, and ideally offer a small selection of options in the form of a _service dialog_ to allow our users to customise their service request. An example might be to offer a simple 'T-Shirt size' ordering style to specify the size of a virtual machine (see <<c29i1>>).
