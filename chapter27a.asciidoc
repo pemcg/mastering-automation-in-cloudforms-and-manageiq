@@ -108,17 +108,19 @@ project_name
 ```
 ==== Job Templates
 
-A job template is a definition and set of parameters for running an Ansible job. Job templates allow us to execute the same job many times, by pre-defining such items as the playbook to run, extra variables to pass, inventory to be managed, and credentials that should be used. A typical job template definition in Tower is shown in <<c27ai1>>.
+A job template is a definition and set of parameters for running an Ansible Tower job. Job templates allow us to execute the same job many times, by pre-defining such items as the playbook to run, extra variables to pass, inventory to be managed, and credentials that should be used. A typical job template definition in Ansible Tower is shown in <<c27ai1>>.
 
 [[c27ai1]]
 .Typical job template in Ansible Tower
 image::images/ch27a_ss1.png[Screenshot,800,align="center"]
+{zwsp} +
 
-Job templates are significant when we discuss CloudForms/ManageIQ integration with Ansible Tower, because a job template is the entity that we run from Automate.
+Job templates are significant when we discuss CloudForms/ManageIQ integration with Ansible Tower, because a job template is the entity that we run from Automate. <<c27ai2>> shows the list of Ansible Tower job templates displayed in the CloudForms WebUI.
 
 [[c27ai2]]
 .Ansible job templates visible in CloudForms
 image::images/ch27a_ss3.png[Screenshot,400,align="center"]
+{zwsp} +
 
 ===== Extra Variables
 
@@ -160,6 +162,7 @@ An inventory defines a list of managed hosts that Ansible jobs can be run agains
 [[c27ai3]]
 .Definition of an "All Servers" inventory group in Ansible Tower
 image::images/ch27a_ss2.png[Screenshot,700,align="center"]
+{zwsp} +
  
 We can define several different inventories, and use them in our various job template definitions.
 
@@ -191,7 +194,7 @@ These values will be set if we are calling an Ansible Tower job template either 
 
 As Ansible uses ssh to connect to managed servers and run playbooks, we must ensure that our newly provisioned virtual machines are configured with the ssh credentials required to perform the actions. It is generally considered good practice not to connect at the root user, so the examples described in this book use an account called 'ansible-remote'.
 
-If we are provisioning from 'fat' template we can achive this by creating a CloudForms/ManageIQ CloudInit-type customization template and calling it from the *Customize* tab of the provisioning dialog.
+If we are provisioning from 'fat' template we can create the ansible-remote user using a CloudForms/ManageIQ CloudInit-type customization template,  called from the *Customize* tab of the provisioning dialog.
 
 An example cloud-init script to setup the newly provisioning virtual machine as an Ansible Tower managed host is as follows:
 
@@ -228,8 +231,9 @@ We should also ensure that our virtual machine templates are prepared with the c
 
 === Summary
 
-This chapter has introduced some of the Ansible concepts and terminology 
+This chapter has introduced some of the concepts and terminology that we encounter when we use the powerful capabilities of Ansible Tower. In the next chapter we'll take a look at the new features of Automate that allow us to create Ansible Tower jobs as part of our automation workflows.
 
+==== Further Reading
 
-
+https://docs.ansible.com[Ansible Documentation]
  

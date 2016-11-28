@@ -1,32 +1,15 @@
 [[integrating-with-satellite-6-during-provisioning]]
 == Integrating with Satellite 6 During Provisioning
 
-It is a relatively common requirement to register newly provisioned Red Hat Enterprise Linux virtual machines directly with Satellite 6 as part of the provisioning process. This ensures that the resultant VM is patched and up to date, and optionally configured by Puppet according to a server role.
+It is a fairly common requirement to register newly provisioned Red Hat Enterprise Linux virtual machines directly with Satellite 6 as part of the provisioning process. This ensures that the resultant VM is patched and up to date, and optionally configured by Puppet according to a server role.
 
-This chapter describes the steps involved in adapting the provisioning workflow so that Red Hat virtual machines are automatically registered with Satellite 6 at the end of the provisioning operation. We'll run an Ansible Tower job template from our provisioning state machine to perform the registration. This is a relatively simple use case that demonstrates the capability of CloudForms and ManageIQ to _Integrate_ with our wider enterprise.
+This chapter describes the steps involved in adapting the provisioning workflow so that Red Hat virtual machines are automatically registered with Satellite 6 at the end of the provisioning operation. We'll run an Ansible Tower job template from our provisioning state machine to perform the registration. This simple use case demonstrates the capability of CloudForms and ManageIQ to _Integrate_ with our wider enterprise.
 
 === Hosts and Content Hosts
 
 Satellite 6.2 has two different types of host record. We can add the server as a _content host_, which associates one or more Red Hat Subscriptions with the server, and makes software package repository content available. We can also add a new system as a plain _host_, which registers the server as a provisioning and configuration management client, manageable by Puppet.
 
 If we just wish to add the newly provisioned system as a content host, we use the *+subscription-manager+* tool on the new virtual machine to register with the Satellite. If we wish to add the newly provisioned system as both a host _and_ content host, we can use the new _bootstrap.py_ script that is supplied with Satellite 6.2.
-
-'''
-.The Challenge of Triggering the Client Operations
-****
-For this example we'll be provisioning into a RHEV provider, and cloning from fully installed 'fat' templates (i.e. not using a kickstart unattended installation script to build the VM). 
-
-Cloning from template (infrastructure providers) or image (cloud providers) presents us with the challenge of how to run remote commands inside the new VM. For this example we may need to register with Satellite by calling *+subscription-manager register+*, and using using dynamic arguments such as *+--activationkey+* or *+--org+*.
-
-Fortunately there are several ways of remotely running commands in a newly created virtual machine, including:
-
-* Using the VMware VIX SDK Library to connect to VMware Tools running in a guest (VMware providers only)
-* Using cloud-init (RHEV, OpenStack and some cloud providers, including Amazon EC2 and Azure)
-* Using ssh (all providers)
-
-For simplicity, we'll use a cloud-init script to prepare the new virtual machine as an Ansible managed server, and we'll use an Ansible job template to run the remote commands over ssh. We'll use the capabilities of an Ansible Tower server, added as a provider, and the playbook that we run will be part of an Ansible role.
-****
-'''
 
 === Satellite 6 Preparation
 
@@ -39,6 +22,7 @@ We'll create some simple host groups in Satellite 6 (see <<c28i1>>).
 [[c28i1]]
 .Satellite 6.2 host groups
 image::images/ch28_ss1.png[Screenshot,550,align="center"]
+{zwsp} +
 
 Although the host groups will define default values for architecture, operating system, media, partition table, domain and root password, these will have no effect in the newly registered virtual machine as they are parameters used during kickstart. The host groups will however define the Puppet environment that the newly attached Satellite client will use for configuration. The __Generic_RHEL7_Servers__ hostgroup will install the _motd_ and _ntp_ Puppet modules.
 
@@ -58,6 +42,7 @@ We'll create a small selection of activation keys in Satellite 6 (see <<c28i2>>)
 [[c28i2]]
 .Satellite 6.2 activation keys
 image::images/ch28_ss2.png[Screenshot,500,align="center"]
+{zwsp} +
 
 The *RHEL7-Generic* activation key will be used for this example. The Satellite client will:
 
@@ -73,43 +58,22 @@ The *RHEL7-Generic* activation key will be used for this example. The Satellite 
 
 We must do some preparation on our Ansible Tower server.
 
-==== Inventory Credential
+==== Inventory 
 
-On our Ansible Tower server, we'll create a *Red Hat CloudForms* credential that enables us to synchronize inventory from our ManageIQ or CloudForms appliance (see <<c28i4>>). We'll use this to ensure that the Tower inventory is up-to-date before any job template is run.
-
-[[c28i3]]
-.Inventory Credential
-image::images/ch28_ss3.png[Screenshot,600,align="center"]
+We'll use the same inventory credential and inventory that we created in <<running_an_ansible_tower_job_from_a_button>>
 
 ==== Machine Credential
 
-We'll also create a *Machine* credential called *SSH Key (ansible-remote)* that allows key-based ssh connection to a managed host as the ansible-remote user, and allows for sudo privileged escalation as the root user. This credential will include the vault password that we use to decrypt the Satellite 6 Admin user's password, stored in the playbook variable `vault_admin_pass`.
-
-==== Inventory
-
-We'll create a Tower inventory called *CloudForms VMs* to hold the list of virtual machines that are visible to CloudForms. We'll add a group to this called *All Servers*, that uses our CloudForms credential to populate itself. We must also ensure that this group is marked as *Overwrite* and *Update on Launch* (see <<c28i4>>).
-
-[[c28i4]]
-.Inventory Group
-image::images/ch28_ss4.png[Screenshot,650,align="center"]
-
-==== Project
-
-Well create a new Git project from the https://github.com/pemcg/ansible_roles repository (master branch).
+We'll make a slight change to the *SSH Key (ansible-remote)* machine credential. We'll add the vault password for the vault file in which we'll store the Satellite 6 Admin user's password. When decrypted this will be used for the the playbook variable `vault_admin_pass`.
 
 ==== Job Template
 
-From this new project we'll create a job template called *Satellite 6 Client*. It will be a *Run* job type; use the *CloudForms VMs* inventory and *SSH Key (ansible-remote)* machine credential that we defined previously, and will execute the __satellite_client.yaml__ project playbook (see <<c28i5>>).
+From the project that we created in <<running_an_ansible_tower_job_from_a_button>>, we'll create a job template called *Satellite 6 Client*. It will be a *Run* job type; use the *CloudForms VMs* inventory and *SSH Key (ansible-remote)* machine credential that we defined previously, and will execute the __satellite_client.yaml__ project playbook (see <<c28i5>>).
 
 [[c28i5]]
-.Job Template
+.Job template
 image::images/ch28_ss5.png[Screenshot,700,align="center"]
-
-As several of the playbook commands require root privileges, we must ensure that *Enable Privilege Escalation* is checked (see <<c28i6>>).
-
-[[c28i6]]
-.Enabling Privilege Escalation
-image::images/ch28_ss6.png[Screenshot,250,align="center"]
+{zwsp} +
 
 We'll define some defaults for the extra variables that will be passed to the playbook:
 
@@ -125,10 +89,11 @@ We'll define some defaults for the extra variables that will be passed to the pl
 We must also ensure that *Prompt on Launch* is checked, to allow the variables to be overridden from CloudForms/ManageIQ if we wish (see <<c28i7>>).
 
 [[c28i7]]
-.Default Extra Variables
+.Default extra variables
 image::images/ch28_ss7.png[Screenshot,350,align="center"]
+{zwsp} +
 
-The playbook uses an additional variable `admin_pass`, which has the value "{{ vault_admin_pass }}". The value for `vault_admin_pass` should be stored as an encrypted string, and so must be defined in a vault file. We can create this using the following commands on the Tower server:
+This playbook uses an additional variable `admin_pass`, which has the value `{{ vault_admin_pass }}`. The value for `vault_admin_pass` should be stored as an encrypted string, and so must be defined in a vault file. We can create this using the following commands on the Tower server:
 
 ....
 su - awx
@@ -159,33 +124,18 @@ We need our newly provisioned virtual machine to be configured as an Ansible man
 
 ==== Service Dialog and Button
 
-Before we integrate the new playbook into our virtual machine provisioning workflow, it is useful to be able to test its functionality from a button on a VM object. This will allow us to troubleshoot its operation, and will also add useful functionality to our VM-related button group.
+Before we integrate the new playbook into our virtual machine provisioning workflow, it is useful to be able to test its functionality from a button on a VM object as we did in <<running_an_ansible_tower_job_from_a_button>>. This will allow us to troubleshoot its operation, and will also add useful functionality to our VM-related button group.
 
-We first create a service dialog from the Ansible job template (see <<c28i8>>).
+Once again we'll create a service dialog from the Ansible job template. We'll give the new service dialog the name "Satellite 6 Client" so that we can identify it as coming from the job template. We can delete the *Options* box and its *Limit* element as before, and this time we'll also edit the *hostgroup* element to change 't' to 'true' and untick the 'Read only' checkbox. Similarly we'll edit the *updatehost* element to change 'f' to 'false'.
 
-[[c28i8]]
-.Job Template in CloudForms
-image::images/ch28_ss8.png[Screenshot,700,align="center"]
-
-We'll give the new service dialog the name "Satellite 6 Client" so that we can identify it as coming from the job template. We need to make some minor changes to the dialog. 
-
-We can delete the *Options* box and its *Limit* element as we don't need to manually specify these when we call an Ansible job template from a button. We'll also edit the *hostgroup* element to change 't' to 'true' and untick the 'Read only' checkbox. Similarly we'll edit the *updatehost* element to change 'f' to 'false' (see <<c28i9>>).
-
-[[c28i9]]
-.Edited Service Dialog
-image::images/ch28_ss9.png[Screenshot,400,align="center"]
-
-Having created the dialog, we can add a button to our VM button group if we wish. Our button will use the new "Satellite 6 Client" dialog, and will call the ansible_tower_job instance, as shown in <<c28i14>>.
-
-[[c28i14]]
-.Button request details
-image::images/ch28_ss14.png[Screenshot,500,align="center"]
+Having created the dialog, we can add a button to our VM button group. Our button will use the new "Satellite 6 Client" dialog, and will call the ansible_tower_job instance.
 
 Once defined we can use this button to test the integration with Ansible Tower.
 
 [[c28i13]]
 .Button added to button group
 image::images/ch28_ss13.png[Screenshot,450,align="center"]
+{zwsp} +
 
 ==== JobTemplate Instance
 
@@ -194,6 +144,7 @@ We'll clone the _/ConfigurationManagement/AnsibleTower/Operations/JobTemplate_ c
 [[c28i10]]
 .Fields of the satellite_6_client instance
 image::images/ch28_ss10.png[Screenshot,600,align="center"]
+{zwsp} +
 
 ==== register_satellite
 
@@ -211,6 +162,7 @@ The schema of _register_satellite_ is shown in <<c28i11>>.
 [[c28i11]]
 .Fields of the register_satellite instance
 image::images/ch28_ss11.png[Screenshot,700,align="center"]
+{zwsp} +
 
 ==== Modify the Provisioning Workflow
 
@@ -219,6 +171,7 @@ We must add an additional state to the _VMProvision_VM_ state machine schema at 
 [[c28i12]]
 .Fields of the VMProvision_VM/template state machine instance
 image::images/ch28_ss12.png[Screenshot,700,align="center"]
+{zwsp} +
 
 === Testing the Integration
 
@@ -233,12 +186,14 @@ To ensure that the new server is automatically provisioned as an Ansible managed
 [[c28i16]]
 .Selecting the cloud-init template
 image::images/ch28_ss16.png[Screenshot,800,align="center"]
+{zwsp} +
 
 We'll also complete the *Root Password* and *Host Name* fields as these values are passed to the cloud-init script (see <<c28i15>>).
 
 [[c28i15]]
 .Customize tab of the provisioning dialog
 image::images/ch28_ss15.png[Screenshot,550,align="center"]
+{zwsp} +
 
 The absence of any overridden parameters in our initial _satellite_6_client_ instance means that the default value of 'false' for the *hostgroup* extra variable will be used. When this value is passed to the Ansible playbook, the server is registered with Satellite 6 as a content host using *+subscription-manager+*.
 
@@ -306,6 +261,7 @@ Before we start the provisioning process however, we'll edit the __satellite_6_c
 [[c28i18]]
 .Content host in Satellite 6
 image::images/ch28_ss18.png[Screenshot,800,align="center"]
+{zwsp} +
 
 If we follow the provisioning process in _automation.log_ we once again we see our assertion evaluate to *true*, and the Ansible job template being called. On the Tower server we can follow the progress of the job:
 
@@ -353,6 +309,7 @@ In Satellite we can see the two new hosts added. We can verify that the second h
 [[c28i19]]
 .New hosts added to Satellite inventory
 image::images/ch28_ss19.png[Screenshot,800,align="center"]
+{zwsp} +
 
 ==== Test 3 - Provisioning a CentOS 7.2 Server
 

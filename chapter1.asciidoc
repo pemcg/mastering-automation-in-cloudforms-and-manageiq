@@ -135,8 +135,7 @@ Why Rails? Ruby on Rails is a powerful development framework for database-centri
 
 === Projects, Products and Some History
 
-Red Hat is an open source company, and its _products_ are derived from one or more "upstream" open source 
-ManageIQ is the upstream project for Red Hat CloudForms.
+Red Hat is an open source company, and its _products_ are derived from one or more "upstream" open source projects. ManageIQ is the upstream project for Red Hat CloudForms.
 
 ==== ManageIQ (the _Project_)
 
