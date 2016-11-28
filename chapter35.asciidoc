@@ -40,6 +40,7 @@ We can illustrate the main object structure in <<c35i1>> (some objects and links
 [[c35i1]]
 .Service Object Relationship
 image::images/ch35_service_objects.png[Service Objects,750,align="center"]
+{zwsp} +
 
 ==== Service Template Provision Task
 
@@ -111,6 +112,7 @@ These are generally zero or _nil_ for a single-item service, but represent the v
 [[c35i1]]
 .Start and stop actions and delays in a multi-item bundle
 image::images/ch35_ss1.png[Screenshot,500,align="center"]
+{zwsp} +
 
 The service resource has a relationship to the _ServiceTemplate_ object via `child_task.service_resource.service_template`.
 

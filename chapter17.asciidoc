@@ -12,6 +12,7 @@ The provisioning profiles are stored under _/{Cloud,Infrastructure}/VM/Provision
 [[c17i1]]
 .Provisioning profiles
 image::images/ch17_ss1.png[Screenshot,350,align="center"]
+{zwsp} +
 
 === Schema
 
@@ -20,12 +21,14 @@ The provisioning profile schema contains a number of attributes, relationships a
 [[c17i2]]
 .The name and value fields in the profile schema
 image::images/ch17_ss2.png[Screenshot,500,align="center"]
+{zwsp} +
 
 Each of these is selected using a message, and the attributes are propagated up to `$evm.root` in the provisioning operation using _collect_  (see <<c17i3>>).
 
 [[c17i3]]
 .The collect and message fields in the profile schema
 image::images/ch17_ss3.png[Screenshot,650,align="center"]
+{zwsp} +
 
 === Customising the Profile
 
@@ -44,6 +47,7 @@ The provisioning dialog presents the main set of tabs and elements that prompt u
 [[c17i4]]
 .The provisioning dialog
 image::images/ch17_ss4.png[Screenshot,700,align="center"]
+{zwsp} +
 
 To find the correct provisioning dialog to launch when we select a template and click the *Continue* button, the profile instance is launched using the messages *get_pre_dialog_name* and *get_dialog_name*. This action queries the *pre_dialog_name* and *dialog_name* attributes, and runs the _vm_dialog_name_prefix_ method. The dialog name to load is assembled from the run-time substitution of the variables in the string "${#dialog_name_prefix}_${/#dialog_input_request_type}".
 
@@ -78,6 +82,7 @@ Once the request object is created, we begin a series of event-driven processing
 [[c17i5]]
 .MiqProvision-Related Policy Instances
 image::images/ch17_ss5.png[Screenshot,370,align="center"]
+{zwsp} +
 
 The first of these to be triggered is _MiqProvisionRequest_created_. This contains two relationships, the first of which queries the profile using the message *get_auto_approval_state_machine* to retrieve the state machine name to be used to handle the auto-approval process. The second relationship runs the _Default_ instance of this state machine.
 

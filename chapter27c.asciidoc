@@ -110,7 +110,7 @@ We're ready to test the operation of the Ansible playbook, called by CloudForms/
 
 [[c27ci9]]
 .Adding the button
-image::images/ch27c_ss10.png[Screenshot,350,align="center"]
+image::images/ch27c_ss10.png[Screenshot,400,align="center"]
 {zwsp} +
 
 We fill in the dialog parameters; in this case we'll override the default values for *ntpserver* and *dbname* (see <<c27ci10>>).

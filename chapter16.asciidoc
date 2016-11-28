@@ -13,12 +13,14 @@ The virtual machine provisioning process starts with a user (the _requester_) se
 [[c16i1]]
 .Initiating a provisioning operation
 image::images/ch16_ss1.png[Screenshot,450,align="center"]
+{zwsp} +
 
 This takes us into a selection dialog where we pick an image or template to provision from, and click the *Continue* button (see <<c16i2>>).
 
 [[c16i2]]
 .Selecting the provisioning source template
 image::images/ch16_ss2.png[Screenshot,650,align="center"]
+{zwsp} +
 
 Once we click **Continue**, we enter into the virtual machine provisioning workflow, starting with information retrieved from the _profile_ and moving into the _state machine_.
 

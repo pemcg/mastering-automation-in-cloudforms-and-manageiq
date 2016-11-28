@@ -16,12 +16,14 @@ So far when we have created our service catalog items, we have specified a provi
 [[c38i1]]
 .Setting the reconfigure entry point when creating a service item
 image::images/ch38_ss1.png[Screenshot,700,align="center"]
+{zwsp} +
 
 If we create a service catalog item to have a reconfigure entry point state machine, then any service created from that catalog item will have a *Reconfigure this Service* option available under its *Configuration* menu (see <<c38i2>>).
 
 [[c38i2]]
 .Reconfiguring a service
 image::images/ch38_ss2.png[Screenshot,500,align="center"]
+{zwsp} +
 
 If we select this option, we are presented with the original service dialog once more. Entering new values and clicking the *Submit* button will create a _ServiceReconfigureRequest_ to peform the reconfiguration action, based on the revised values that we have have entered into the dialog.
 
@@ -36,6 +38,7 @@ We can add our Satellite 6 server to CloudForms or ManageIQ as a _configuration 
 [[c38i3]]
 .Configuration profiles imported from Satellite 6
 image::images/ch38_ss3.png[Screenshot,700,align="center"]
+{zwsp} +
 
 === Automate Datastore Components
 
@@ -48,12 +51,14 @@ In our own domain, we'll create a _/Service/Reconfiguration/StateMachines_ names
 [[c38i4]]
 ./Service/Reconfiguration/StateMachines namespace
 image::images/ch38_ss4.png[Screenshot,350,align="center"]
+{zwsp} +
 
 We'll create a simple state machine class called _ServiceReconfigure_, with 7 states (see <<c38i5>>).
 
 [[c38i5]]
 .ServiceReconfigure state machine class schema
 image::images/ch38_ss5.png[Screenshot,600,align="center"]
+{zwsp} +
 
 *pre\{1-3}* and *post\{1-3}* are future-proofing placeholders in case we wish to enhance the functionality in future. For now we'll just be using the *reconfigure* state.
 
@@ -77,12 +82,14 @@ We'll edit the **On Entry**, *On Exit* and *On Error* columns in the state machi
 [[c38i6]]
 .Setting the On Entry methods
 image::images/ch38_ss6.png[Screenshot,450,align="center"]
+{zwsp} +
 
 We create a _Default_ instance of the _ServiceReconfiguration_ state machine class, and we'll point the *reconfigure* stage to the _/Integration/Satellite/Methods/SetConfiguration_ instance that we'll create (see <<c38i7>>).
 
 [[c38i7]]
 .Schema of the default instance
 image::images/ch38_ss7.png[Screenshot,450,align="center"]
+{zwsp} +
 
 ==== Email Classes
 
@@ -91,6 +98,7 @@ We need to create two new email instances with associated methods, to send email
 [[c38i8]]
 .Copied and renamed email instances and methods
 image::images/ch38_ss8.png[Screenshot,350,align="center"]
+{zwsp} +
 
 ==== Policies
 
@@ -103,6 +111,7 @@ We copy _ManageIQ/System/Policy/ServiceTemplateProvisionRequest_approved_ into o
 [[c38i9]]
 .Copied and renamed policy instances
 image::images/ch38_ss9.png[Screenshot,350,align="center"]
+{zwsp} +
 
 === Modifying the VM Provision Workflow
 
@@ -111,6 +120,7 @@ We need to change our VM provision workflow to add a state to perform the initia
 [[c38i10]]
 .Adding the SetConfiguration stage to the VM provision state machine
 image::images/ch38_ss10.png[Screenshot,600,align="center"]
+{zwsp} +
 
 === Service Dialog
 
@@ -139,6 +149,7 @@ When ordered the dialog will look like <<c38i12>>).
 [[c38i12]]
 .The Final Service Dialog
 image::images/ch38_ss12.png[Screenshot,500,align="center"]
+{zwsp} +
 
 === Instances and Methods
 
@@ -151,6 +162,7 @@ The dynamic dialog instances and methods are defined under an _/Integration/Sate
 [[c38i13]]
 .Dynamic Dialog Instances and Methods
 image::images/ch38_ss13.png[Screenshot,350,align="center"]
+{zwsp} +
 
 The schema for the _Methods_ class holds variables containing the credentials to connect to our Satellite server (we first used this technique in <<using-schema-variables>>).
 
@@ -433,6 +445,7 @@ We'll order a new service, and select appropriate host group and activation keys
 [[c38i14]]
 .Setting an initial value for motd when provisoning a service
 image::images/ch38_ss14.png[Screenshot,550,align="center"]
+{zwsp} +
 
 We click *Submit*, and wait for our newly provisioned service.
 
@@ -451,6 +464,7 @@ If we look at the details of our new service in *My Services* and select **Confi
 [[c38i15]]
 .Setting new value for motd when reconfiguring the service
 image::images/ch38_ss15.png[Screenshot,550,align="center"]
+{zwsp} +
 
 We can select the _motd_ Puppet class again, enter a new value for the _content_ smart class parameter, and click **Submit**.
 
@@ -474,6 +488,7 @@ We can login to the Satellite 6 User Interface to confirm that the "Override val
 [[c38i16]]
 .Confirming the Puppet Smart Class Parameter in Satellite
 image::images/ch38_ss16.png[Screenshot,550,align="center"]
+{zwsp} +
 
 Once the Puppet agent has run on the client again, we can login and see the new message:
 

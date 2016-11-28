@@ -22,7 +22,8 @@ When we assemble several of these intelligent states together, it become an Auto
 
 [[c13i0]]
 .Simple automate state machine workflow
-image::images/ch13_state_machine_logic.png[State Machine Logic,700,align="center"]
+image::images/ch13_state_machine_logic.png[screenshot,650,align="center"]
+{zwsp} +
 
 === Building a State Machine
 
@@ -39,7 +40,8 @@ If we look at all of the attributes that we can add for a schema field, in addit
 
 [[c13i1]]
 .Schema field column headings
-image::images/ch13_ss1.png[]
+image::images/ch13_ss1.png[screenshot,700,align="center"]
+{zwsp} +
 
 The schema columns for a state machine are the same as in any other class schema, but we use more of them.
 
@@ -49,7 +51,8 @@ As in any other class schema, this is a relationship to an instance or method to
 
 [[c13i2]]
 .Specifying value fields as an instance URI or a locally defined method
-image::images/ch13_ss5.png[State Machine Logic,600,align="center"]
+image::images/ch13_ss5.png[Screenshot,550,align="center"]
+{zwsp} +
 
 Surprising as it may seem, we don't necessarily need to populate the *Value* field for a state machine (see *On Entry*, next), although it is good practice to do so.
 
@@ -83,7 +86,8 @@ We can look at the out-of-the-box _/Infrastructure/VM/Provisoning/StateMachines/
 
 [[c13i3]]
 .The /ProvisionRequestApproval/Default state machine
-image::images/ch13_ss2.png[]
+image::images/ch13_ss2.png[Screenshot,700,align="center"]
+{zwsp} +
 
 Neither state has a *Value* relationship, but each runs a locally defined class method to perform the main processing of the state.
 
@@ -182,7 +186,8 @@ As has been mentioned, the *Value* field of a state machine should be a relation
 
 [[c13i4]]
 .Nested state machines
-image::images/ch13_ss3.png[Nested State Machines,450,align="center"]
+image::images/ch13_ss3.png[Nested State Machines,350,align="center"]
+{zwsp} +
 
 === Saving Variables Between State Retries
 

@@ -12,6 +12,7 @@ Go to **Import /Export**, and *Reset all Datastore custom classes and instances 
 [[c47i1]]
 .Resetting the locked domains after an appliance upgrade
 image::images/ch47_ss1.png[ch47_ss,500,align="center"]
+{zwsp} +
 
 [NOTE]
 This does not, as the wording might suggest, reset our custom domains, it merely reloads the RedHat and ManageIQ domains.
@@ -86,15 +87,16 @@ The built-in WebUI code editor is fairly basic. It is often easier to develop in
 
 === Version Control
 
-There isn't any yet, although Git integration for the Automate Datastore is in development for a future release of ManageIQ. In the meantime we should use our own Git repository, but this is a manual process unfortunately.
+Git integration for the Automate Datastore has been ontroduced in CloudForms 4.2/ManageIQ _Euwe_. 
 
-Several of Red Hat's US consultants have created an open source project for handling version control and continuous integration (CI) of CloudForms artefacts such as Automate code and dialogs, across regions. footnote:[The project code is located https://github.com/rhtconsulting/miq-ci[here]]
+Several of Red Hat's US consultants have also created an open source project for handling version control and continuous integration (CI) of CloudForms artefacts such as Automate code and dialogs, across regions. footnote:[The project code is located https://github.com/rhtconsulting/miq-ci[here]]
 
 The CI workflow is created using Jenkins. It provides a pipeline view that allows us to visualize which version of any of the artefacts is in any region at a given time. We can implement regions as lifecycle stages in our development process, such as DEV, TEST, QA, and promote code through the lifecycle as our testing progresses (see <<c47i2>>).
 
 [[c47i2]]
 .Continuous integration workflow for ManageIQ automation development
 image::images/ch47_miq_ci_workflow.png[]
+{zwsp} +
 
 === Use Configuration Domains
 

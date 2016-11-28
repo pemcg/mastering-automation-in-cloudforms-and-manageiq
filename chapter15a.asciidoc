@@ -6,6 +6,7 @@ Since CloudForms 4.0/ManageIQ _Capablanca_, all user operations have been perfor
 [[c15ai1]]
 .A tenant hierarchy within an organization
 image::images/ch15a_tenant_hierarchy.svg[Screenshot,700,align="center"]
+{zwsp} +
 
 Tenancy is very useful if we wish to sub-divide our organization into multiple semi-autonomous units that we can delegate a degree of authority to, and define quotas for. We create new RBAC groups, add our users to these groups, and we can then assign the groups to tenants or projects.
 
@@ -124,12 +125,14 @@ A tenant domain will be visible and editable to all tenant users who have access
 [[c15ai2]]
 .Automate Explorer view from an Engineering domain Administrator
 image::images/ch15a_ss2.png[Screenshot,300,align="center"]
+{zwsp} +
 
 The domain will not be visible to any users in a parent tenant who have access to the Automate Explorer (even if they have an RBAC role of EvmRole-super_administrator or equivalent).
 
 [[c15ai3]]
 .Automate Explorer view from a Bit63 domain Super Administrator
 image::images/ch15a_ss1.png[Screenshot,300,align="center"]
+{zwsp} +
 
 Tenant domains follow the same priority order as any other Automate domains, although only unlocked domains can be re-ordered in priority.
 

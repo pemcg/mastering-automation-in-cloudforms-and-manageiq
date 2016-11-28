@@ -13,13 +13,16 @@ The *Automation Engine* server role is now enabled by default in CloudForms 4.0 
 [[c3i1]]
 .Setting the Automation Engine server role
 image::images/ch3_ss1.png[Screenshot,330,align="center"]
+{zwsp} +
 
+'''
 .The Automation Engine Role
 ****
 Setting the *Automation Engine* role is necessary to be able to run _queued_ Automate tasks (this includes anything that starts off as an automation __request__, which we'll cover later in <<requests-and-tasks>>). Automate actions initiated directly from the WebUI - such as running instances from simulation, or processing methods to populate dynamic dialogs - are run on the WebUI appliance itself, regardless of whether it has the *Automation Engine* role enabled.
 
 Our first Automate examples in the book will be run from simulation, so we don't need the *Automation Engine* role to be set for these to work. When we move on to more advanced ways of running our scripts we will need the role enabled, so by checking that it's set now, we'll have one less thing to troubleshoot as we progress through the book.
 ****
+'''
 
 === Creating the Environment
 
@@ -32,6 +35,7 @@ In the Automate Explorer, highlight the *Datastore* icon, and click *Configurati
 [[c3i2]]
 .Adding a new domain
 image::images/ch3_ss2.png[Screenshot,450,align="center"]
+{zwsp} +
 
 We'll give the domain the *Name* _ACME_, the *Description* _ACME Corp._, and ensure the *Enabled* checkbox is selected.
 
@@ -42,6 +46,7 @@ Now we'll add a namespace into this domain, called __General__. Highlight the _A
 [[c3i3]]
 .Adding a new namespace
 image::images/ch3_ss3.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Give the namespace the *Name* _General_ and the *Description* _General Content_
 
@@ -57,6 +62,7 @@ Highlight the _General_ domain icon in the sidebar, and click *Configuration -> 
 [[c3i4]]
 .Adding a new class
 image::images/ch3_ss4.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Give the class the *Name* _Methods_ and the *Description* _General Instances and Methods_. We'll leave the *Display Name* empty for this example.
 
@@ -67,12 +73,14 @@ We'll create a simple schema. Click the *Schema* tab for the _Methods_ class, an
 [[c3i5]]
 .Editing the schema
 image::images/ch3_ss5.png[Screenshot,600,align="center"]
+{zwsp} +
 
 Click **New Field**, and add a single field with name __execute__, *Type* _Method_ and *Data Type* __String__ (see <<c3i6>>).
 
 [[c3i6]]
 .Adding a new schema field
 image::images/ch3_ss6.png[Screenshot,550,align="center"]
+{zwsp} +
 
 Click the *tick* icon in the lefthand column to save the field entry, and click the *Save* button to save the schema. We now have our generic class definition called _Methods_ setup, with a simple schema that executes a single method.
 
@@ -93,12 +101,14 @@ As mentioned in <<introduction-to-the-automate-datastore>> the Automation Engine
 [[c3i8]]
 .Adding a new instance to our class
 image::images/ch3_ss8.png[Screenshot,500,align="center"]
+{zwsp} +
 
 We'll call the instance __hello_world__, and it'll run (execute) a method called __hello_world__ (see <<c3i9>>).
 
 [[c3i9]]
 .Entering the instance details
 image::images/ch3_ss9.png[Screenshot,430,align="center"]
+{zwsp} +
 
 Click the *Add* button.
 
@@ -109,12 +119,14 @@ In the *Methods* tab of the new _Methods_ class, select **Configuration -> Add a
 [[c3i10]]
 .Adding a new method to our class
 image::images/ch3_ss10.png[Screenshot,500,align="center"]
+{zwsp} +
 
 Name the method _hello_world_, and paste our two lines of code into the *Data* window (see <<c3i11>>).
 
 [[c3i11]]
 .Entering the method details
 image::images/ch3_ss11.png[Screenshot,430,align="center"]
+{zwsp} +
 
 Click *Validate*, and then the *Add* button.
 
@@ -135,6 +147,7 @@ From the *Automate -> Simulation* menu, complete the details (see <<c3i12>>).
 [[c3i12]]
 .Completing the Simulation details
 image::images/ch3_ss12.png[Screenshot,480,align="center"]
+{zwsp} +
 
 Click *Submit*
 
@@ -189,6 +202,7 @@ MIQ_STOP stops the currently running instance, but if this instance was called v
 
 MIQ_ABORT stops the currently running instance and any parent instance that called it, terminating the Automate task altogether. 
 ====
+
 === Summary
 
 In this chapter we've seen how simple it is to create our own domain, namespace, class, instance and method, and run our script from simulation. These are the fundamental techniques that we use for all of our automation scripts, and we'll use this knowledge extensively as we progress through the book.

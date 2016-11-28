@@ -30,6 +30,7 @@ Now we edit the schema of the copied class (see <<c22i2>>).
 [[c22i2]]
 .Editing the schema of the copied class
 image::images/ch22_ss2.png[ch22_ss,700,align="center"]
+{zwsp} +
 
 ===== Add the new states
 
@@ -38,6 +39,7 @@ We add two more steps, *AddDisk* and *StartVM* to the bottom of the schema (see 
 [[c22i3]]
 .Adding two further states
 image::images/ch22_ss3.png[ch22_ss,550,align="center"]
+{zwsp} +
 
 ===== Adjust the sequence
 
@@ -46,6 +48,7 @@ Now we adjust the class schema sequence so that our new states come after **Post
 [[c22i4]]
 .Adjusting the class schema sequence
 image::images/ch22_ss4.png[ch22_ss,450,align="center"]
+{zwsp} +
 
 ==== Step 2. Disable Auto-Power-On
 
@@ -61,6 +64,7 @@ The _RedHat_ domain contains an enhanced version of _redhat_CustomizeRequest_. W
 [[c22i5]]
 .Copying the redhat_CustomizeRequest method into our own domain
 image::images/ch22_ss5.png[ch22_ss,350,align="center"]
+{zwsp} +
 
 ===== Edit the method
 
@@ -93,6 +97,7 @@ We'll create a new namespace _Integration/RedHat_ in our own domain, and create 
 [[c22i6]]
 .Adding two new instances and methods
 image::images/ch22_ss6.png[ch22_ss,320,align="center"]
+{zwsp} +
 
 Next we'll examine the interesting parts of the code in each of the methods.
 
@@ -302,6 +307,7 @@ Now we edit our copied _Provision VM from Template_ state machine instance to ad
 [[c22i7]]
 .Adding the instance URIs to the provisioning state machine
 image::images/ch22_ss7.png[ch22_ss]
+{zwsp} +
 
 ==== Step 5. Provision a Virtual Machine
 
@@ -323,6 +329,7 @@ We can take a look at the number of disks in the virtual machine Details page in
 [[c22i8]]
 .VM details pane showing additional disk
 image::images/ch22_ss8.png[ch22_ss]
+{zwsp} +
 
 Here we see the second disk attached to the virtual machine. Our modified VM provisioning workflow has been successful.
 

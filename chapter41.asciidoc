@@ -10,6 +10,7 @@ When we create a service catalog item, we can optionally specify a retirement en
 [[c41i1]]
 .Setting a service retirement entry point state machine
 image::images/ch41_ss3.png[Screenshot,700,align="center"]
+{zwsp} +
 
 If we specify our own retirement entry point, then this state machine will be used to retire any services created from this catalog item. If we do not specify our own entry point here then then the _Default_ retirement state machine will be used..
 
@@ -20,6 +21,7 @@ Service retirement is initiated from the Lifecycle menu on the service details f
 [[c41i2]]
 .Service Retirement Menu
 image::images/ch41_ss1.png[Screenshot,400,align="center"]
+{zwsp} +
 
 Clicking on *Retire this Service* raises a *request_service_retire* event that begins a chain of relationships through the datastore:
 
@@ -65,6 +67,7 @@ The _Default_ service retirement state machine is simpler than its VM counterpar
 [[c41i3]]
 .Default service retirement state machine
 image::images/ch41_ss5.png[Screenshot,600,align="center"]
+{zwsp} +
 
 ==== StartRetirement
 

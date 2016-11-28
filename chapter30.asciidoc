@@ -10,12 +10,14 @@ The service provisioning state machine (the _ServiceProvision_Template_ class) c
 [[c30i1]]
 .ServiceProvision_Template class, instances and method
 image::images/ch30_ss1.png[Screenshot,350,align="center"]
+{zwsp} +
 
 The _ServiceProvision_Template_ class schema contains a number of states. <<c30i2>> shows the _default_ instance of this state machine:
 
 [[c30i2]]
 .ServiceProvision_Template class schema
 image::images/ch30_ss2.png[Screenshot,550,align="center"]
+{zwsp} +
 
 As we can see, most of the fields are *pre* and *post* placeholders around the main *provision* and *checkprovisioned* states, to allow for optional processing if required. The *configurechilddialog* state can be used to populate the `options[:dialog]` hash in the child task if required.
 
@@ -26,6 +28,7 @@ One of the more complex tasks that must be achieved by some state in the service
 [[c30i3]]
 .Task object hierarchy
 image::images/ch30_task_hierarchy.png[Screenshot,600,align="center"]
+{zwsp} +
 
 This object hierarchy is represented at the highest level by the service template provision task. We access this from:
 

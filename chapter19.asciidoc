@@ -14,12 +14,14 @@ Quota management has been completely rewritten for CloudForms 4.0/ManageIQ _Capa
 [[c19i1]]
 .Quota classes, instances and methods
 image::images/ch19_ss1.png[Screenshot,260,align="center"]
+{zwsp} +
 
 The _ManageIQ/System/CommonMethods/QuotaStateMachine/quota_ state machine instance has the field values shown in <<c19i2>>.
 
 [[c19i2]]
 .Schema of the quota state machine
 image::images/ch19_ss2.png[Screenshot,700,align="center"]
+{zwsp} +
 
 We can see that quota processing follows a simple workflow of:
 
@@ -36,6 +38,7 @@ A new concept with the re-implemented quota management mechanism is that of _quo
 [[c19i3]]
 .Setting quotas for a tenant
 image::images/ch19_ss3.png[Screenshot,700,align="center"]
+{zwsp} +
 
 The tenant object keeps track of allocated values in virtual columns:
 
@@ -85,6 +88,7 @@ The quota checking process for a virtual machine or instance provision request i
 [[c19i4]]
 .Event-triggered provision request quota workflow
 image::images/ch19_quota_workflow.png[Screenshot,350,align="center"]
+{zwsp} +
 
 This event policy is handled by the _/System/Policy/MiqProvisionRequest_starting_ policy instance, which has a single *rel5* relationship that calls the _/System/CommonMethods/QuotaStateMachine/quota_ state machine.
 

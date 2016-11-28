@@ -30,6 +30,7 @@ on Rails/Getting Started/Model-View-Controller]]
 [[c6i1]]
 .An MVC application
 image::images/ch6_mvc.png[Screenshot,450,align="center"]
+{zwsp} +
 
 The _model_ is a representation of the underlying, logical structure of data from the database (which in the case of CloudForms and ManageIQ is PostgreSQL). When writing automation scripts, we work with models extensively (although we may not necessarily realise it).
 

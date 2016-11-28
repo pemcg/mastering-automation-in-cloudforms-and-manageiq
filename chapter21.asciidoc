@@ -14,6 +14,7 @@ The VM provision state machine (_{Cloud/Infrastructure}/VM/Provisioning/StateMac
 [[c21i1]]
 .The VMProvision_VM state machine
 image::images/ch21_ss1.png["The VMProvision_VM State Machine"]
+{zwsp} +
 
 Several of these states (such as *RegisterCMDB* or *RegisterAD*) contain no out-of-the-box values, but are there as placeholders should we wish to add the functionality to our own customised Instance.
 

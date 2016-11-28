@@ -136,8 +136,9 @@ The Rails code that implements the `create_provision_request` call makes the ass
 
 .Setting the environment placement options for a cloud instance
 image::images/ch27_ss1.png[Screenshot,450,align="center"]
+{zwsp} +
 
-With CloudForms 4.1/ManageIQ _Darga_ we can override this behaviour by explicitly setting `:placement_auto` to be `false` in the vmFields argument, and then setting the placement options ourselves, as follows:
+With CloudForms 4.1/ManageIQ _Darga_ and later we can override this behaviour by explicitly setting `:placement_auto` to be `false` in the vmFields argument, and then setting the placement options ourselves, as follows:
 
 [source,ruby]
 ----

@@ -24,6 +24,7 @@ When we create a new service catalog item, we are presented with a drop-down lis
 [[c39i1]]
 .Selection of Catalog Item Type
 image::images/ch39_ss1.png[Screenshot,420,align="center"]
+{zwsp} +
 
 As <<c39i1>> shows there's a *Generic* selection that we can use. If we select this catalog item type, we can create our own custom instance of the _ServiceProvision_Template_ state machine class. This can handle the parsing of any service catalog elements, and assemble arguments for a call to +$evm.execute('create_provision_request')+ to complete the VM provision. (see <<creating-provisioning-requests-programmatically>>).
 

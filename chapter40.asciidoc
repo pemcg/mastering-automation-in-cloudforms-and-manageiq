@@ -17,6 +17,7 @@ Virual machine or instance retirement is initiated from the *Lifecycle* menu on 
 [[c40i1]]
 .Virtual machine or instance retirement menu
 image::images/ch40_ss1.png[Screenshot,400,align="center"]
+{zwsp} +
 
 Clicking on *Retire this VM* raises a *request_vm_retire* event that begins a chain of relationships through the datastore:
 
@@ -43,6 +44,11 @@ $evm.root['vm'].retirement_state=
 $evm.root['vm'].retirement_warn=
 $evm.root['vm'].retires_on=
 ....
+
+[NOTE]
+====
+CloudForms 4.2/ManageIQ _Euwe_ also added a new method `extend_retires_on` so that the retirement date can be extended.
+====
 
 It also has several attributes:
 
@@ -78,6 +84,7 @@ The VM retirement state machines(s) undo many of the operations performed by the
 [[c40i2]]
 .VM retirement state machine
 image::images/ch40_ss2.png[Screenshot,700,align="center"]
+{zwsp} +
 
 ==== StartRetirement
 

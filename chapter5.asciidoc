@@ -10,6 +10,7 @@ CloudForms/ManageIQ naturally collects a large amount of data about each virtual
 [[c5i17]]
 .Example custom attributes
 image::images/ch5_ss17.png[Screenshot,500,align="center"]
+{zwsp} +
 
 [TIP]
 Custom attributes are a useful way to store any related free-text information with an object, particularly a virtual machine. We might store a CMDB Configuration Item ID for example, or perhaps some text describing the configuration status. Virtual machine custom attributes are visible in the WebUI, and readable from an automation script.
@@ -27,36 +28,42 @@ Navigate to **Automate -> Customization**, select *Service Dialogs* in the accor
 [[c5i1]]
 .Adding a new service dialog
 image::images/ch5_ss1.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Enter _Button_ for the dialog information *Label* and *Description*, select the *Submit* and *Cancel* options, and click *+ Add a new Tab to this Dialog* (don't click the *Add* button yet) (see <<c5i2>>).
 
 [[c5i2]]
 .Adding a new tab to the dialog
 image::images/ch5_ss2.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Enter _Main_ for the tab information *Label* and *Description*, and click *+ Add a new Box to this Tab* (don't click the *Add* button yet). Notice how the shape of the dialog dynamically builds in the lefthand _accordion_ pane (see <<c5i3>>).
 
 [[c5i3]]
 .Adding a new box to the tab
 image::images/ch5_ss3.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Enter _Custom Attribute_ for the box information *Label* and *Description*, and click *+ Add a new Element to this Box* (don't click the *Add* button yet). The dialog continues to take shape in the accordion (see <<c5i4>>).
 
 [[c5i4]]
 .Adding a new element to the box
 image::images/ch5_ss4.png[Screenshot,450,align="center"]
+{zwsp} +
 
 We'll give the first element the *Label* of _Key_, the *Name* of _key_, and a *Type* of _Text Box_. Leave the other values as default (don't click the *Add* button yet). The *Key* attribute appears in the accordion as soon as we add the element Name (see <<c5i5>>).
 
 [[c5i5]]
 .Entering the element information
 image::images/ch5_ss5.png[Screenshot,500,align="center"]
+{zwsp} +
 
 Click *+ Add a new Element to this Box* to create a second element. We'll give the second element the *Label* of _Value_, the *Name* of _value_, and a *Type* of _Text Box_. Leave the other values as default, and now, finally click the *Add* button. The completed dialog is saved and displayed (see <<c5i16>>).
 
 [[c5i16]]
 .The completed dialog
 image::images/ch5_ss16.png[Screenshot,350,align="center"]
+{zwsp} +
 
 === Creating the Instance and Method
 
@@ -101,6 +108,7 @@ First we must copy the _ManageIQ/System/Request_ class into our own domain (see 
 [[c5i7]]
 .Copying the /System/Request class
 image::images/ch5_ss7.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Copy the class into the _ACME_ domain, and ensure that *Copy to same path* is selected.
 
@@ -109,12 +117,14 @@ Now we have to create a new instance of the class (see <<c5i8>>).
 [[c5i8]]
 .Adding a new instance to the copied /System/Request class
 image::images/ch5_ss8.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Give the new instance the name __add_custom_attribute__. Enter __/General/Methods/add_custom_attribute__ into the *rel1* field (see <<c5i9>>).
 
 [[c5i9]]
 .Setting the new instance name and rel1 field
 image::images/ch5_ss9.png[Screenshot,350,align="center"]
+{zwsp} +
 
 === Running Automation Scripts from a Button
 
@@ -129,6 +139,7 @@ Navigate to **Automate -> Customization**, and select *Buttons* in the accordion
 [[c5i10]]
 .Adding a new button group
 image::images/ch5_ss10.png[Screenshot,480,align="center"]
+{zwsp} +
 
 Set the *Button Group Text* and *Button Group Hover Text* to _VM Operations_. Select a suitable *Button Group Image* from the available drop-down list, and click the *Add* button to create the Button Group.
 
@@ -141,12 +152,14 @@ Highlight the new _VM Operations_ Button Group in the accordion, and select **Co
 [[c5i11]]
 .Adding a new button to the button group
 image::images/ch5_ss11.png[Screenshot,430,align="center"]
+{zwsp} +
 
 Set the *Button Text* and *Button Hover Text* to _Add Custom Attribute_. Select a suitable *Button Image* from the available drop-down list, and pick our new _Button_ Dialog from the *Dialog* drop-down list. In the *Object Details* section we'll specify the new __add_custom_attribute__ instance that we created in _/System/Request_  (see <<c5i12>>).
 
 [[c5i12]]
 .Completing the button details
 image::images/ch5_ss12.png[Screenshot,550,align="center"]
+{zwsp} +
 
 ==== Running the Instance
 
@@ -155,18 +168,21 @@ If we navigate to a virtual machine in the WebUI and examine its details, we sho
 [[c5i13]]
 .The new button group and button added to the toolbar
 image::images/ch5_ss13.png[Screenshot,450,align="center"]
+{zwsp} +
 
 If we click on the *Add Custom Attribute* button we should be presented with our dialog (see <<c5i14>>).
 
 [[c5i14]]
 .Completing the service dialog
 image::images/ch5_ss14.png[Screenshot,430,align="center"]
+{zwsp} +
 
 Enter some text, click **Submit**, and wait a few seconds. We should see the new custom attribute displayed at the botton of the VM details pane (see <<c5i15>>).
 
 [[c5i15]]
 .The newly added custom attribute
 image::images/ch5_ss15.png[Screenshot,450,align="center"]
+{zwsp} +
 
 === Summary
 

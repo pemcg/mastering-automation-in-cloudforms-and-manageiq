@@ -6,6 +6,7 @@ When we use the Automate capability of CloudForms/ManageIQ, we write scripts in 
 [[c2i1]]
 .Automate top-tevel menu for CloudForms 4.1
 image::images/ch2_ss1.png[screenshot,270,align="center"]
+{zwsp} +
 
 === The Automate Explorer
 
@@ -14,6 +15,7 @@ The first menu item that we see takes us to the _Explorer_. This is our visual i
 [[c2i2]]
 .Automate Explorer
 image::images/ch2_ss2.png[screenshot,450,align="center"]
+{zwsp} +
 
 Before we start our journey into learning CloudForms/ManageIQ Automate, we'll take a tour of the Automate Datastore to familiarise ourselves with the objects that we'll find there.
 
@@ -24,6 +26,7 @@ The Automate Datastore has a directory-like structure, consisting of several typ
 [[c2i3]]
 .Automate datastore icon styles
 image::images/ch2_datastore.png[screenshot,300,align="center"]
+{zwsp} +
 
 We can look at each of these types of object in more detail.
 
@@ -43,6 +46,7 @@ User-added domains can be individually enabled or disabled, and can be ordered b
 [[c2i4]]
 .Editing the priority order of domains
 image::images/ch2_ss3.png[screenshot,450,align="center"]
+{zwsp} +
 
 ==== Importing and Exporting Domains
 
@@ -60,12 +64,14 @@ We frequently need to customise code in one of the the locked domains, for examp
 [[c2i6]]
 .Copying a class
 image::images/ch2_ss4.png[screenshot,450,align="center"]
+{zwsp} +
 
 When we copy an object such as a class, we are prompted for the *From* and *To* domains. We can optionally deselect *Copy to same path* and specify our own destination path for the object (see <<c2i7>>).
 
 [[c2i7]]
 .Specifying the destination domain and path
 image::images/ch2_ss5.png[screenshot,400,align="center"]
+{zwsp} +
 
 ==== Importing Old Format Exports
 
@@ -86,6 +92,7 @@ A _namespace_ is a folder-like container for classes, instances and methods, and
 [[c2i8]]
 .Namespaces
 image::images/ch2_ss6.png[screenshot,240,align="center"]
+{zwsp} +
 
 === Classes
 
@@ -102,6 +109,7 @@ A _schema_ is made up of a number of elements, or __fields__, that describe the 
 [[c2i9]]
 .A more complex schema
 image::images/ch2_ss7.png[screenshot,380,align="center"]
+{zwsp} +
 
 ==== Adding or Editing a Schema 
 
@@ -110,12 +118,14 @@ We add or edit each schema field in the schema editor by specifying the *Type* f
 [[c2i10]]
 .Schema field type
 image::images/ch2_ss8.png[screenshot,500,align="center"]
+{zwsp} +
 
 Each field type has an associated *Data Type* which is also selectable from a drop-down list (see <<c2i11>>).
 
 [[c2i11]]
 .Schema field data type
 image::images/ch2_ss9.png[screenshot,500,align="center"]
+{zwsp} +
 
 We can define default values for fields in a class schema. These will be inherited by all instances created from the class, but can be optionally overridden in the schema of any particular instance.
 
@@ -126,6 +136,7 @@ One of the schema field types is a __relationship__, which links to other instan
 [[c2i12]]
 .Relationship fields showing variable substitutions
 image::images/ch2_ss10.png[screenshot,450,align="center"]
+{zwsp} +
 
 === Instances
 
@@ -134,6 +145,7 @@ An _instance_ is a specific _instantiation_ or "clone" of the generic class, and
 [[c2i13]]
 .Single class definition with three instances
 image::images/ch2_ss11.png[screenshot,280,align="center"]
+{zwsp} +
 
 === Methods
 

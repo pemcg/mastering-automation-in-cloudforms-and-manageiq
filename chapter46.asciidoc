@@ -17,6 +17,7 @@ For this first case we call __object_walker__ (via _/System/Process/Request/Call
 [[c46i1]]
 .Simple dialog to prompt for input values
 image::images/ch46_ss1.png[Screenshot,350,align="center"]
+{zwsp} +
 
 We then add the button to a button group anywhere.
 
@@ -103,6 +104,7 @@ For this use case we've edited the _Provision VM from Template_ state machine to
 [[c46i3]]
 .Calling ObjectWalker from the VmProvision_VM state machine
 image::images/ch46_ss3.png[Screenshot,700,align="center"]
+{zwsp} +
 
 These stages could modify the provisioning process if required based on the custom values passed in. An example of this might be to specify the disk size for an additional disk to be added by the AddDisk stage.
 
@@ -159,12 +161,14 @@ When an instance (such as a state machine) calls a method in the same class as i
 [[c46i4]]
 .Text Arguments Passed to update_provision_status
 image::images/ch46_ss4.png[Screenshot,400,align="center"]
+{zwsp} +
 
 When we create a method that accepts input parameters in this way, we need to specify the name and data type of each parameter in the method definition (see <<c46i1>>).
 
 [[c46i5]]
 .Specifying Input Parameters
 image::images/ch46_ss5.png[Screenshot,700,align="center"]
+{zwsp} +
 
 The method then reads the parameters from `$evm.inputs`:
 

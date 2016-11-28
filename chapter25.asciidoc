@@ -14,6 +14,7 @@ The provisioning dialog contains a number of tabs (**Request**, **Purpose**, **C
 [[c25i1]]
 .The hardware tab of the VM provisioning dialog
 image::images/ch25_ss1.png[screenshot]
+{zwsp} +
 
 The provisioning dialog is context-sensitive, so a different set of input field options will be displayed when provisioning into VMware or OpenStack, for example.
 
@@ -174,6 +175,12 @@ In some cases it's useful to be able to expand the range of options presented by
 [[c25i2]]
 .Default memory size options
 image::images/ch25_ss2.png[Screenshot,380,align="center"]
+{zwsp} +
+
+[NOTE]
+====
+CloudForms 4.2/ManageIQ _Euwe_ has increased the default memory sizes available in this drop-down
+====
 
 These options come from the `:vm_memory` dialog section:
 
@@ -220,12 +227,14 @@ Now we copy the _/Infrastructure/VM/Provisioning/Profile_ class into our own dom
 [[c25i3]]
 .Creating a new profile instance
 image::images/ch25_ss3.png[Screenshot,350,align="center"]
+{zwsp} +
 
 The *dialog_name* field in the new profile should contain the name of our new dialog (see <<c25i4>>).
 
 [[c25i4]]
 .The dialog_name schema field value changed to the new profile name
 image::images/ch25_ss4.png[Screenshot,500,align="center"]
+{zwsp} +
 
 ===== Testing the provisioning dialog
 
@@ -234,6 +243,7 @@ To test this we login as a user who is a member of the *Bit63Group-user* group, 
 [[c25i5]]
 .Expanded range of memory sizes
 image::images/ch25_ss5.png[Screenshot,380,align="center"]
+{zwsp} +
 
 === Summary
 

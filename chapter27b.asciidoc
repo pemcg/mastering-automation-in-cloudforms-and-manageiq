@@ -151,6 +151,7 @@ If there is no instance in the JobTemplate class with the same name as the job t
 [[c27bi5]]
 .Fields of the .missing instance
 image::images/ch27b_ss2.png[Screenshot,550,align="center"]
+{zwsp} +
 
 The _.missing_ instance uses the translated `${#_missing_instance}` substitution variable (which in this example will contain the string "JBoss_Standalone_Server") as the value for the *job_template_name* attribute. The instance then runs the __Job/default__ state machine from the *Launch* field.
 

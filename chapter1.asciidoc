@@ -71,6 +71,7 @@ As part of the provisoning process CloudForms also manages the integration workf
 [[c1i2]]
 .CloudForms providers and workflows
 image::images/ch1_cloudforms_rich_picture.png[Rich Picture,600,align="center"]
+{zwsp} +
 
 === The Capabilities of CloudForms
 

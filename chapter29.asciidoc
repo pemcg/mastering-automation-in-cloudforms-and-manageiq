@@ -6,6 +6,7 @@ When we design our services in CloudForms or ManageIQ, we try to simplify the or
 [[c29i1]]
 .Ordering VMs in 'T-shirt' sizes
 image::images/ch29_ss1.png[Screenshot,450,align="center"]
+{zwsp} +
 
 We have already seen how to create a simple service dialog in <<working-with-virtual-machines>>. This chapter will discuss service dialogs in more detail, and show how we can create _dynamic elements_ that are populated at runtime when the user orders the catalog item.
 
@@ -16,6 +17,7 @@ The service dialog that we created in <<working-with-virtual-machines>> used two
 [[c29i2]]
 .The available dialog element types
 image::images/ch29_ss2.png[Screenshot,380,align="center"]
+{zwsp} +
 
 Service dialog elements gained several useful new features with recent versions of ManageIQ, as we'll see in this chapter.
 
@@ -89,6 +91,7 @@ CloudForms 3.1/ManageIQ _Anand_ added the ability to mark a text box as protecte
 [[c29i3]]
 .Dialog that prompts for a password in a protected element
 image::images/ch29_ss3.png[Screenshot,480,align="center"]
+{zwsp} +
 
 ManageIQ _Botvinnik_ introduced the concept of read-only elements for service dialogs, that cannot be changed once displayed. Having a text box dynamically populated, but read-only, makes it ideal for displaying messages.
 
@@ -121,6 +124,7 @@ CloudForms 3.2/ManageIQ _Botvinnik_ introduced the ability to add input field va
 [[c29i4]]
 .Validator rule for an IP address element
 image::images/ch29_ss4.png[Screenshot,480,align="center"]
+{zwsp} +
 
 === Using the Input from One Element in Another Element's Dynamic Method
 
@@ -129,6 +133,8 @@ We can link elements in such a way that a user's input in one element can be use
 We can use this in several useful ways, such as to populate a dynamic list based on a value input previously, or to create a validation method.
 
 ==== Example
+
+The following is an example service dialog requirement, and how it was matched by a solution.
 
 ===== Requirement
 
@@ -185,6 +191,7 @@ It is worth noting that dynamic dialog methods always run on the WebUI appliance
 [[c29i5]]
 .Typical real-world CloudForms installation with multiple appliances and zones
 image::images/ch29_separated_zones.png[Screenshot,500,align="center"]
+{zwsp} +
 
 If we write a dynamic dialog method to retrieve any information from an external system, we might expect the method to run on any of our provider zone 'worker' appliances, but it doesn't. We must ensure that the WebUI zone firewalls allow our WebUI appliances to directly connect to any external systems that our dialog methods need access to.
 

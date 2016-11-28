@@ -14,6 +14,7 @@ There are several alternative placement methods that we can use out-of-the-box t
 [[c24i1]]
 .Placement methods in the ManageIQ domain
 image::images/ch24_ss2.png[Screenshot,350,align="center"]
+{zwsp} +
 
 The default value for the *Placement* stage in the _VMProvision_VM/template_ state machine is as follows:
 
@@ -28,6 +29,7 @@ If we look at the schema fields in the _/Infrastructure/VM/Provisioning/Placemen
 [[c24i2]]
 .The schema fields of the default placement instance
 image::images/ch24_ss1.png[Screenshot,500,align="center"]
+{zwsp} +
 
 This is a neat way of handling provider-specific placement requirements in an automated manner. The message is dynamically translated for each provisioning operation, and this selects the correct placement method.
 
@@ -41,6 +43,7 @@ As part of the added value that CloudForms brings over ManageIQ, the _RedHat_ do
 [[c24i3]]
 .Placement methods in the RedHat domain
 image::images/ch24_ss4.png[Screenshot,380,align="center"]
+{zwsp} +
 
 The _with_scope methods allow us to apply a tag from the `prov_scope` (provisioning scope) tag category to selected hosts and datastores. This tag indicates whether or not they should be included for consideration for automatic VM placement. The `prov_scope` tag should be `all`, or the name of a CloudForms user group. By tagging with a group name, we can direct selected workloads (such as developer VMs) to specific hosts and datastores.
 
@@ -56,6 +59,7 @@ To use the _RedHat_ domain placement methods (or any others that we choose to wr
 [[c24i4]]
 .Editing the Placement/default instance
 image::images/ch24_ss3.png[Screenshot,750,align="center"]
+{zwsp} +
 
 For example, if we wished to use the RHEV placement method from the _RedHat_ domain we would set the `redhat` schema field value to be `redhat_best_placement_with_scope`.
 

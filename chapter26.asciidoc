@@ -12,6 +12,7 @@ There are several service model objects involved in the virtual machine or insta
 [[c26i1]]
 .VM Provisioning Objects
 image::images/ch26_provisioning_objects.png["VM Provisioning Objects"]
+{zwsp} +
 
 === The Provision Request Object
 

@@ -29,6 +29,7 @@ We will look at these methods in more detail in the next sections.
 [[c7i1]]
 .The object model
 image::images/ch7_object_model.png[Object Model,500,align="center"]
+{zwsp} +
 
 `$evm.root` contains a lot of useful information that we use programmatically to establish our running context - for example to see if we've been called by an API call or from a button (see also <<investigative-debugging>>)
 
@@ -107,7 +108,7 @@ We should exercise caution when using the two-argument form. If there is no serv
 owner = $evm.vmdb('user', evm_owner_id) rescue nil
 ----
 
-
+'''
 .VM or Template?
 ****
 *Question:* When should we use 'vm' (`:Vm`) or 'vm_or_template' (`:VmOrTemplate`) in our `$evm.vmdb` searches?
@@ -118,6 +119,7 @@ There are some subtle differences between the objects. `MiqAeServiceVm` is a sub
 
 Both `MiqAeServiceVmOrTemplate` and `MiqAeServiceVm` have a boolean attribute `template`, which is _true_ for an image or template, and _false_ for a VM.
 ****
+'''
 
 === $evm.execute
 

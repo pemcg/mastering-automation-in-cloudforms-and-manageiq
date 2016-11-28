@@ -21,6 +21,7 @@ naming logic.
 [[c23i1]]
 .Prompting for the VM name during provisioning
 image::images/ch23_ss1.png[Screenshot,450,align="center"]
+{zwsp} +
 
 The symbol is added to the _request_ options hash as:
 
@@ -36,6 +37,7 @@ miq_provision_request.options[:vm_name]
 [[c23i2]]
 .Defining the vm_prefix value in the default naming instance
 image::images/ch23_ss2.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Alternatively we can set a value in the _request_ options hash:
 
@@ -51,6 +53,7 @@ miq_provision_request.options[:vm_prefix]
 [[c23i3]]
 .Prompting for the VM hostname during provisioning
 image::images/ch23_ss3.png[Screenshot,400,align="center"]
+{zwsp} +
 
 The symbol is added to the _request_ options hash as:
 

@@ -10,30 +10,35 @@ In line with this organisational use, we can arrange services in hierarchies for
 [[c37i1]]
 .A service hierarchy
 image::images/ch37_ss1.png[Screenshot,370,align="center"]
+{zwsp} +
 
 In this example we have three child services, representing the three tiers of our simple intranet platform. <<c37i2>> shows the single server making up the database tier of our architecture.
 
 [[c37i2]]
 .The database tier
 image::images/ch37_ss2.png[Screenshot,700,align="center"]
+{zwsp} +
 
 <<c37i3>> shows the two servers making up the middleware tier of our architecture.
 
 [[c37i3]]
 .The middleware tier
 image::images/ch37_ss3.png[Screenshot,700,align="center"]
+{zwsp} +
 
 <<c37i4>> shows the four servers making up the web tier of our architecture.
 
 [[c37i4]]
 .The web tier
 image::images/ch37_ss4.png[Screenshot,700,align="center"]
+{zwsp} +
 
 When we view the parent service, we see that it contains details of all child services, including the cumulative CPU, memory and disk counts (see <<c37i5>>).
 
 [[c37i5]]
 .Parent service view 
 image::images/ch37_ss5.png[Screenshot,700,align="center"]
+{zwsp} +
 
 === Organising Our Services
 
@@ -58,6 +63,7 @@ First we'll copy _ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_T
 [[c37i6]]
 .Schema of the EmptyService state machine
 image::images/ch37_ss6.png[Screenshot,600,align="center"]
+{zwsp} +
 
 ===== Method
 
@@ -93,6 +99,7 @@ We create a simple service dialog called "New Service" with element names *servi
 [[c37i7]]
 .Service dialog
 image::images/ch37_ss7.png[Screenshot,450,align="center"]
+{zwsp} +
 
 ===== Putting it all together
 
@@ -101,6 +108,7 @@ Finally we assemble all of these parts by creating a new service catalog called 
 [[c37i8]]
 .The completed "Empty Service" service catalog item
 image::images/ch37_ss8.png[Screenshot,550,align="center"]
+{zwsp} +
 
 We can order from this service catalog item to create our new empty services.
 
@@ -111,6 +119,7 @@ We'll provide the ability to move both services and virtual machines into existi
 [[c37i9]]
 .Listing available services in a dynamic drop-down
 image::images/ch37_ss9.png[Screenshot,450,align="center"]
+{zwsp} +
 
 ==== Adding the Button
 
@@ -123,10 +132,11 @@ We create a simple button dialog with a dynamic drop-down element named **servic
 [[c37i10]]
 .Button Dialog
 image::images/ch37_ss10.png[Screenshot,600,align="center"]
+{zwsp} +
 
 ===== Dialog element method
 
-The dynamic drop-down element in the service dialog calls a method called _list_services_. We only wish to display a service in the drop-down list if the user has permissions to see it via their tenant membership and role-based access control (RBAC) filter. We define three methods; `get_visible_tenant_ids` to get our tenant and any child tenant IDs; `get_current_group_rbac_array` to retrieve a user's RBAC filter array, and `service_visible?` to check that a service has a tag that matches the filter:
+The dynamic drop-down element in the service dialog calls a method called _list_services_. We only wish to display a service in the drop-down list if the user has permissions to see it via their tenant membership and role-based access control (RBAC) filter. We define three methods; `get_visible_tenant_ids` to get our tenant and any child tenant IDs; `get_current_group_rbac_array` to retrieve a user's RBAC filter array, and `service_visible?` to check that a service has a tag that matches the filter. The code for CloudForms 4.1/ManageIQ _Darga_ is as follows:
 
 [source,ruby]
 ----
@@ -173,6 +183,14 @@ def service_visible?(visible_tenants, rbac_array, service)
   end
   visible
 end
+----
+
+The method of implementing RBAC filters changed slightly with CloudForms 4.2/ManageIQ _Euwe_. For this release and later we must change the __get_current_group_rbac_array__ to the following code:
+
+[source,ruby]
+----
+#
+# Code to be included once tested
 ----
 
 When we enumerate the services, we check on visibility to the user before adding to the drop-down list:

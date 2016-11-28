@@ -20,12 +20,14 @@ The *rel6* relationship runs the _Default_ Instance of this state machine.
 [[c32i1]]
 .ServiceProvisionRequestApproval state machine instance and methods
 image::images/ch32_ss2.png[Screenshot,350,align="center"]
+{zwsp} +
 
 The schema for the _ServiceProvisionRequestApproval/Default_ state machine is shown in <<c32i2>>.
 
 [[c32i2]]
 .ServiceProvisionRequestApproval/Default state machine schema
 image::images/ch32_ss1.png[Screenshot,550,align="center"]
+{zwsp} +
 
 The methods _pending_request_ and _approve_request_ are the same as their counterparts for virtual machine provisioning approval. The default value of _validate_request_ does nothing, so this state machine instance will auto-approve all service provisioning requests. 
 

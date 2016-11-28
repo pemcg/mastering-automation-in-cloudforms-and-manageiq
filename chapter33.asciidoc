@@ -41,6 +41,7 @@ As an alternative (or confirmation) to finding the key names from the provisioni
 [[c33i1]]
 .State added to the VM provisioning state machine to run ObjectWalker
 image::images/ch33_ss1.png[]
+{zwsp} +
 
 Using the _object_walker_reader_ after we've provisioned a virtual machine, we see that the same values are in the miq_provision task's options hash:
 
@@ -93,6 +94,7 @@ We'll create a new service dialog called _RHEL7 VM_. Our new service dialog will
 [[c33i2]]
 .Service dialog with two boxes and four elements
 image::images/ch33_ss2.png[Screenshot,400,align="center"]
+{zwsp} +
 
 The *Service Name* and *VM Name* elements in the first box are both of type **Text Box**, and have the names *service_name* and *vm_name* respectively.
 
@@ -101,24 +103,28 @@ The *Number of CPUs* element in the second box is of type **Drop Down List** (se
 [[c33i3]]
 .Number of CPUs element
 image::images/ch33_ss3.png[Screenshot,400,align="center"]
+{zwsp} +
 
 We'll populate the list with options to provision one, two or four CPUs (see <<c33i4>>).
 
 [[c33i4]]
 .Defining the selection of available CPUs
 image::images/ch33_ss4.png[Screenshot,500,align="center"]
+{zwsp} +
 
 The *VM Memory* element in the second box is of type **Drop Down List** (see <<c33i5>>).
 
 [[c33i5]]
 .VM memory element
 image::images/ch33_ss5.png[Screenshot,400,align="center"]
+{zwsp} +
 
 We'll populate the list with options to provision 1,2,4 or 8 GB of memory (see <<c33i6>>).
 
 [[c33i6]]
 .Defining the selection of available memory
 image::images/ch33_ss6.png[Screenshot,500,align="center"]
+{zwsp} +
 
 === Creating the Service Catalog Item
 
@@ -133,6 +139,7 @@ Navigate to the *Catalogs* section in the accordion, and select *Configuration -
 [[c33i7]]
 .Adding a new catalog
 image::images/ch33_ss7.png[Screenshot,620,align="center"]
+{zwsp} +
 
 Give the catalog a name (for this example we'll use "Generic Servers"), leave everything else as default, and click *Add*.
 
@@ -143,18 +150,21 @@ Navigate to the *Catalog Items* section in the accordion, highlight the newly cr
 [[c33i8]]
 .Adding a new catalog item
 image::images/ch33_ss8.png[Screenshot,700,align="center"]
+{zwsp} +
 
 Select *RHEV* from the *Catalog Item Type* drop-down list (see <<c33i9>>).
 
 [[c33i9]]
 .Selecting the catalog item type
 image::images/ch33_ss9.png[Screenshot,400,align="center"]
+{zwsp} +
 
 Enter a name and description for the catalog item, and select the *Display in Catalog* check-box to expose the remaining fields to be filled in. Select our newly created *Generic Servers* catalog and *RHEL7 VM* dialog in the appropriate drop-downs. For the Provisioning Entry Point, navigate to _ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template/CatalogItemInitialization_ (see <<c33i10>>).
 
 [[c33i10]]
 .Completing the basic info tab
 image::images/ch33_ss10.png[Screenshot,700,align="center"]
+{zwsp} +
 
 Click on the *Details* tab, and enter some HTML-formatted text to describe the catalog item to anyone viewing in the catalog:
 
@@ -174,6 +184,7 @@ Click on the *Request Info* tab, and fill in the details. Select an appropriate 
 [[c33i11]]
 .Completing the request info tab
 image::images/ch33_ss11.png[Screenshot,600,align="center"]
+{zwsp} +
 
 Finally click the *Add* button.
 
@@ -186,12 +197,14 @@ Navigate to the *Service Catalogs* section in the accordion, expand the *Generic
 [[c33i12]]
 .Navigating to the service catalog item
 image::images/ch33_ss12.png[Screenshot,700,align="center"]
+{zwsp} +
 
 Click **Order**, and fill out the service dialog values (see <<c33i13>>).
 
 [[c33i13]]
 .Completing the service dialog
 image::images/ch33_ss13.png[Screenshot,420,align="center"]
+{zwsp} +
 
 Click *Submit*
 
@@ -200,12 +213,14 @@ After a new minutes, the new service should be visible in *My Services*, contain
 [[c33i14]]
 .The finished service
 image::images/ch33_ss14.png[Screenshot,450,align="center"]
+{zwsp} +
 
 If we examine the details of the VM, we see that it has been created with our requested CPU count and memory size (see <<c33i15>>).
 
 [[c33i15]]
 .Confirmation of VM configuration
 image::images/ch33_ss15.png[Screenshot,450,align="center"]
+{zwsp} +
 
 === Summary
 

@@ -11,6 +11,7 @@ Tags are not only applied to virtual machines. We often tag our virtual infrastr
 
 These are just three examples of how tags can simplify systems administration, and help our Automate workflows. Fortunately Automate has comprehensive support for tag-related operations.
 
+'''
 .Tag or Custom Attribute?
 ****
 We've already seen the use of a custom attribute on a virtual machine. At first glance tags and custom attributes seem to be similar, but there are good reasons to use one over the other.
@@ -19,6 +20,7 @@ Tags are better if we wish to categorise, sort or filter an object based on its 
 
 Custom Attributes are better if we just wish to assign a generic text string to an object, but don't need to sort or categorise objects by the attribute name or string.
 ****
+'''
 
 === Creating Tags and Categories
 

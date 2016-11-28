@@ -8,12 +8,14 @@ We can populate our service catalog with useful items (see <<c34i1>>).
 [[c34i1]]
 .A service catalog containing three services
 image::images/ch34_ss1.png[Screenshot,600,align="center"]
+{zwsp} +
 
 In these examples the virtual machines are provisioned from fully installed VMware templates, preconfigured with the application packages. The service dialog purely prompts for the Service and VM Names (see <<c34i2>>).
 
 [[c34i2]]
 .The service dialog for each catalog item
 image::images/ch34_ss2.png[Screenshot,400,align="center"]
+{zwsp} +
 
 The next logical step is to be able to provision several items together as a single __service catalog bundle__.
 
@@ -24,6 +26,7 @@ When we create a service catalog bundle, we handle the dialog input for each of 
 [[c34i3]]
 .The service dialog for a catalog bundle
 image::images/ch34_ss3.png[Screenshot,400,align="center"]
+{zwsp} +
 
 We name the dialog elements according to the sequence in which we want our individual items provisioned. Our sequence will be:
 
@@ -36,24 +39,28 @@ Our four dialog elements are therefore constructed as follows. We'll create a te
 [[c34i4]]
 .Dialog element to prompt for service name
 image::images/ch34_ss4.png[Screenshot,400,align="center"]
+{zwsp} +
 
 We add a second text box element to prompt for Web Server Name (see <<c34i5>>).
 
 [[c34i5]]
 .Dialog element to prompt for web server name
 image::images/ch34_ss5.png[Screenshot,400,align="center"]
+{zwsp} +
 
 We add a third text box element to prompt for Middleware Server Name (see <<c34i6>>).
 
 [[c34i6]]
 .Dialog element to prompt for middleware server name
 image::images/ch34_ss6.png[Screenshot,400,align="center"]
+{zwsp} +
 
 Finally we add a fourth text box element to prompt for Database Server Name (see <<c34i7>>).
 
 [[c34i7]]
 .Dialog element to prompt for database server name
 image::images/ch34_ss7.png[Screenshot,400,align="center"]
+{zwsp} +
 
 The number in the element name reflects the sequence number, and the _CatalogItemInitialization_ and _CatalogBundleInitialization_ methods use this sequence number to pass the dialog value to the correct grandchild miq_request_task (see <<the-service-provisioning-state-machine>>).
 
@@ -70,12 +77,14 @@ As we will be handling dialog input when the bundle is ordered, we need to edit 
 [[c34i8]]
 .Preparing the existing service catalog items
 image::images/ch34_ss8.png[Screenshot,700,align="center"]
+{zwsp} +
 
 Once we've done this, the items will appear as **Unassigned** (see <<c34i9>>).
 
 [[c34i9]]
 .Unassigned catalog items
 image::images/ch34_ss9.png[Screenshot,280,align="center"]
+{zwsp} +
 
 === Creating the Service Catalog Bundle
 
@@ -84,6 +93,7 @@ Now we can go ahead and create our catalog bundle. Highlight a catalog name, and
 [[c34i10]]
 .Adding a new catalog bundle
 image::images/ch34_ss10.png[Screenshot,500,align="center"]
+{zwsp} +
 
 Enter a name and description for the bundle, then select the *Display in Catalog* checkbox. Select an appropriate catalog, and the newly created bundle dialog, from the appropriate drop-downs.
 
@@ -92,6 +102,7 @@ For the Provisioning Entry Point, navigate to  _ManageIQ/Service/Provisioning/St
 [[c34i12]]
 .Service bundle basic info
 image::images/ch34_ss11.png[Screenshot,700,align="center"]
+{zwsp} +
 
 Click on the *Details* tab, and enter some HTML-formatted text to describe the catalog item to anyone viewing in the catalog.
 
@@ -108,12 +119,14 @@ Click on the *Resources* tab, and select each of the three unassigned catalog it
 [[c34i13]]
 .Adding resources to the bundle
 image::images/ch34_ss12.png[Screenshot,450,align="center"]
+{zwsp} +
 
 Change the *Action Order* and *Provisioning Order* according to our desired sequence ('3' won't be visible until '2' is set for an option) see <<c34i14>>. The sequence should match the *option_<n>_vm_name* sequence that we gave our dialog elements.
 
 [[c34i14]]
 .Setting the action and provision orders
 image::images/ch34_ss13.png[Screenshot,700,align="center"]
+{zwsp} +
 
 Finally click the *Add* button.
 
@@ -126,12 +139,14 @@ Navigate to the *Service Catalogs* section in the accordion, expand the *Intrane
 [[c34i16]]
 .Ordering the catalog bundle
 image::images/ch34_ss14.png[Screenshot,,align="center"]
+{zwsp} +
 
 Click **Order**, and fill out the service dialog values (see <<c34i17>>).
 
 [[c34i17]]
 .Entering the service and server names in the service dialog
 image::images/ch34_ss15.png[Screenshot,400,align="center"]
+{zwsp} +
 
 Click *Submit*
 
@@ -140,6 +155,7 @@ After a new minutes, the new service should be visible in **My Services**, conta
 [[c34i18]]
 .The completed service
 image::images/ch34_ss16.png[Screenshot,650,align="center"]
+{zwsp} +
 
 If we weren't watching the order that the VMs were created in, we could look in the database to check that our desired provisioning sequence was followed:
 
