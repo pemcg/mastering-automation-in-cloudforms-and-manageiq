@@ -34,7 +34,7 @@
 * [Part 3](part3.asciidoc)
   * [Automation Using Ansible](chapter27a.asciidoc)
   * [Tower-Related Automate Components](chapter27b.asciidoc)
-  * [(placeholder) Running an Ansible Tower Job from a Button](chapterxx.asciidoc.wip)
+  * [Running an Ansible Tower Job from a Button](chapter27c.asciidoc)
   * [Integrating with Satellite 6 During Provisioning](chapter28.asciidoc)
 * [Part 4](part4.asciidoc)
   * [Service Dialogs](chapter29.asciidoc)
