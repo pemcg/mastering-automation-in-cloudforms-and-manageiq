@@ -93,7 +93,7 @@ We must also ensure that *Prompt on Launch* is checked, to allow the variables t
 image::images/ch28_ss7.png[Screenshot,350,align="center"]
 {zwsp} +
 
-This playbook uses an additional variable `admin_pass`, which has the value `{{ vault_admin_pass }}`. The value for `vault_admin_pass` should be stored as an encrypted string, and so must be defined in a vault file. We can create this using the following commands on the Tower server:
+This playbook uses an additional variable called `admin_pass`. The value for this should be stored as an encrypted string, and so we defined it in a vault file as the encrypted variable `vault_admin_pass`. We can create this using the following commands on the Tower server:
 
 ....
 su - awx
