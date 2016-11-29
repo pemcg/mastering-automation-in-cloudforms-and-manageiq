@@ -1,5 +1,4 @@
 [[provisioning-a-vm]]
-:numbered:
 == Provisioning a Virtual Machine
 
 One of the most common things that we do as cloud or virtualisation administrators is to create new virtual machines or instances. We get used to the procedure; picking a template, selecting a target cluster, datastore and network, choosing a suitable name. These are generally manual steps, but CloudForms/ManageIQ has an out-of-the-box virtual machine provisioning workflow that automates the process.

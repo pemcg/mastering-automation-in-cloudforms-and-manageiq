@@ -1,5 +1,4 @@
 [[calling-automation-from-the-restful-api]]
-:numbered:
 == Calling Automation Using the RESTful API
 
 Our first look at the integration capabilities of CloudForms and ManageIQ examines how external systems can make _inbound_ calls to an appliance to run Automate instances using the RESTful API.footnote:[We need to enable the _Web Services_ server role on any of our appliances to which we wish to make RESTful calls]
