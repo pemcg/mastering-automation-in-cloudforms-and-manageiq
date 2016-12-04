@@ -385,3 +385,7 @@ As with the other two objects, a ManageIQ_Providers_ConfigurationManager_Invento
 === Summary
 
 This chapter has explored the features of Automate introduced in CloudForms 4.1/ManageIQ _Darga_ that allow us to integrate with Ansible Tower. They allow us to easily call Tower jobs, either from a running Automate Ruby method, or from a simple instance relationship. We don't necessarily need to write any Ruby code to launch an Ansible Tower job, we can just create a class and instance in the Automate datastore and call this from a button, or - as we'll see in a later chapter - as a service.
+
+==== Further Reading
+
+http://talk.manageiq.org/t/launching-ansible-tower-job-templates-from-manageiq/1394[Launching Ansible Tower Job Templates from ManageIQ]

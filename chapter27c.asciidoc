@@ -53,6 +53,13 @@ As several of the playbook commands require root privileges, we must ensure that
 image::images/ch27c_ss4.png[Screenshot,250,align="center"]
 {zwsp} +
 
+CloudForms 4.2/ManageIQ _Euwe_ now requires the *Prompt on launch* checkbox to be ticked for the *Limit* element (see <<c27ci5>>). When we submit a job request from CloudForms/ManageIQ the limit switch is used to pass the name of the host or comma-separated list of hosts on which to run the job.
+
+[[c27ci5]]
+.Setting Prompt on launch for the Limit element
+image::images/ch27c_ss11.png[Screenshot,250,align="center"]
+{zwsp} +
+
 We'll define some defaults for the extra variables that will be passed to the playbook:
 
 * ntpserver (NTP server IP address) 
@@ -63,9 +70,9 @@ We'll define some defaults for the extra variables that will be passed to the pl
 * http_port (HTTP port to be used by Apache)
 * repository (Git repository URL to pre-load site from)
 
-We must also ensure that *Prompt on Launch* is checked, to allow the variables to be overridden from CloudForms/ManageIQ if we wish (see <<c27ci5>>).
+We must also ensure that *Prompt on Launch* is checked, to allow the variables to be overridden from CloudForms/ManageIQ if we wish (see <<c27ci6>>).
 
-[[c27ci5]]
+[[c27ci6]]
 .Default extra variables
 image::images/ch27c_ss5.png[Screenshot,500,align="center"]
 {zwsp} +
@@ -78,44 +85,44 @@ We have much less preparation to do on our CloudForms or ManageIQ appliance. We 
 
 When we created the job template in Tower, the Ansible provider automatically refreshed the list of available job templates in the CloudForms/ManageIQ WebUI, along with the default extra variables defined for each. We can can select any of these job templates, and automatically create a service dialog from it. 
 
-For our example we select the *Simple LAMP Stack* job template, then select *Configuration -> Create Service Dialog from this Job Template* (see <<c27ci6>>).
+For our example we select the *Simple LAMP Stack* job template, then select *Configuration -> Create Service Dialog from this Job Template* (see <<c27ci7>>).
 
-[[c27ci6]]
+[[c27ci7]]
 .Simple LAMP Stack Job template in CloudForms
 image::images/ch27c_ss6.png[Screenshot,700,align="center"]
 {zwsp} +
 
-We'll give the new service dialog the name "Simple LAMP Stack" so that we can identify it as coming from the job template. We need to make some minor changes to the dialog, so we navigate to *Automate -> Customization* in the WebUI, find the newly created dialog in the *Service Dialogs* section of the accordion, and click *Configuration -> Edit this Dialog*. We can delete the *Options* box and its *Limit* element as we don't need to manually specify these when we call an Ansible job template from a button. We'll also edit each element to deselect the 'Read only' checkbox (see <<c27ci7>>).
+We'll give the new service dialog the name "Simple LAMP Stack" so that we can identify it as coming from the job template. We need to make some minor changes to the dialog, so we navigate to *Automate -> Customization* in the WebUI, find the newly created dialog in the *Service Dialogs* section of the accordion, and click *Configuration -> Edit this Dialog*. We can delete the *Options* box and its *Limit* element as we don't need to manually specify these when we call an Ansible job template from a button. We'll also edit each element to deselect the 'Read only' checkbox (see <<c27ci8>>).
 
 [NOTE]
 ====
 Notice that the service dialog element names are created by default with the "param_" prefix, so that they can be recognised as extra variables by the __launch_ansible_job__ method that we discussed in <<tower-related-automate-components>>
 ====
 
-[[c27ci7]]
+[[c27ci8]]
 .Edited service dialog
 image::images/ch27c_ss7.png[Screenshot,400,align="center"]
 {zwsp} +
 
-Having created the dialog, we can add a button to our VM button group if we wish. Our button will use the new "Simple LAMP Stack" dialog, and will call the __ansible_tower_job instance__, as shown in <<c27ci8>>.
+Having created the dialog, we can add a button to our VM button group if we wish. Our button will use the new "Simple LAMP Stack" dialog, and will call the __ansible_tower_job instance__, as shown in <<c27ci9>>.
 
-[[c27ci8]]
+[[c27ci9]]
 .Adding the button
 image::images/ch27c_ss8.png[Screenshot,500,align="center"]
 {zwsp} +
 
 === Ordering the LAMP Stack from the Button
 
-We're ready to test the operation of the Ansible playbook, called by CloudForms/ManageIQ. We'll select a suitable CentOS 7 VM that has been configured with the ansible-remote user and ssh key, and order from the *Simple LAMP Stack* button (see <<c27ci9>>).
+We're ready to test the operation of the Ansible playbook, called by CloudForms/ManageIQ. We'll select a suitable CentOS 7 VM that has been configured with the ansible-remote user and ssh key, and order from the *Simple LAMP Stack* button (see <<c27ci10>>).
 
-[[c27ci9]]
+[[c27ci10]]
 .Adding the button
 image::images/ch27c_ss10.png[Screenshot,400,align="center"]
 {zwsp} +
 
-We fill in the dialog parameters; in this case we'll override the default values for *ntpserver* and *dbname* (see <<c27ci10>>).
+We fill in the dialog parameters; in this case we'll override the default values for *ntpserver* and *dbname* (see <<c27ci11>>).
 
-[[c27ci10]]
+[[c27ci11]]
 .Ordering the button
 image::images/ch27c_ss9.png[Screenshot,500,align="center"]
 {zwsp} +

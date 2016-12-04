@@ -26,8 +26,7 @@ Playbooks are Ansible's configuration, deployment, and orchestration modelling l
 
 Playbooks are designed to be human-readable and are expressed in YAML format. An example snippet from a simple playbook is as follows:
 
-[source,yaml]
-----
+{% raw %}
 ---
   hosts: webservers
   vars:
@@ -46,7 +45,7 @@ Playbooks are designed to be human-readable and are expressed in YAML format. An
         name: "{{ firewall_service }}"
         enabled: true
         state: started
-----
+{% endraw %}
 
 More advanced playbooks separate out various sections (such as variable or handler definitions) into separate files that are included into a main playbook file. This logical separation eases maintenance and promotes reuse.
 
@@ -172,7 +171,7 @@ The *Update on launch* update option is particularly important when we define dy
 
 ===== The Limit Variable
 
-Many Ansible job templates contain playbooks that have a `hosts` key defined as `all`. When we execute a job from CloudForms or ManageIQ, we usually wish to override this and the run the job on a specific system, and the built-in `limit` variable enables us to to this. 
+Many Ansible job templates contain playbooks that have a `hosts` key defined as `all`. When we execute a job from CloudForms or ManageIQ, we usually wish to override this and the run the job on one or more specific systems, and the built-in `limit` variable enables us to to this. 
 
 The `limit` variable is automatically defined for us by Automate and passed to Ansible Tower with a new job request if either of the following two Automate attributes contain valid non-nil values:
 
