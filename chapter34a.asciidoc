@@ -98,6 +98,8 @@ The *pre1* state calls calls the same _CatalogItemInitialization_ instance and m
 
 === Service Models
 
+The Ansible-related service model that is of interest to us is the MiqAeServiceServiceAnsibleTower object.
+
 ==== MiqAeServiceServiceAnsibleTower
 
 The MiqAeServiceServiceAnsibleTower object represents an Ansible Tower service. An object_walker printout of a typical object is as follows:
