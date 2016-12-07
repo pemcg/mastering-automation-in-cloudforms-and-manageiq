@@ -1,5 +1,5 @@
-[[creating-services-to-use-ansible-tower]]
-== Creating Services to use Ansible Tower
+[[ansible-tower-services]]
+== Ansible Tower Services
 
 One of the available catalog item types when we create a new service item is *AnsibleTower* (see <<c34ai1>>)
 
@@ -12,7 +12,7 @@ In this chapter we'll investigate the Automate datastore components that allow u
 
 === The Ansible Tower Service Provisioning State Machine
 
-The _ConfigurationManagement/AnsibleTower/Service/Provisioning_ namespace in the datastore contains the service provisioning state machines, methods and associated email classes that are required to provisioning services into Ansible Tower (see <<c34ai2>>).
+The _/ConfigurationManagement/AnsibleTower/Service/Provisioning_ namespace in the datastore contains the service provisioning state machines, methods and associated email classes that are required to provisioning services into Ansible Tower (see <<c34ai2>>).
 
 [[c34ai2]]
 .ConfigurationManagement/AnsibleTower namespace
@@ -84,17 +84,24 @@ The __provision_from_bundle__ state machine instance is called when an Ansible s
 image::images/ch34a_ss4.png[Screenshot,800,align="center"]
 {zwsp} +
 
-As can be seen, the difference between this state machine and _default_ is the addition of 
+As can be seen, the difference between this state machine and _default_ is that _preprovision_ has moved to the *pre2* state, and there are new relationships in the *sequencer* and *pre1* states to call _GroupSequenceCheck_ and _CatalogItemInitialization_.
 
 ===== Sequencer
 
-The *Sequencer* state calls the 
+The *Sequencer* state calls the same _GroupSequenceCheck_ instance and method that the VM provision state machines run. The _GroupSequenceCheck_ method checks the eligibility of the current service template provisioning task to run, according to the provision order defined when the resources were added to the service bundle. _GroupSequenceCheck_ allows the state machine to continue if all other tasks with a lower provisioning priority have a `state` attribute of "finished". If any of the lower priority tasks are incomplete, _GroupSequenceCheck_ exits with a state retry and a retry interval of one minute.
+
+The common call to _GroupSequenceCheck_ made by both VM provisioning and AnsibleTower job state machines allows us to interleave VM provisioning service items with Ansible configuration service items. We can be sure that the Ansible configuration will not proceed until the virtual machine has been fully provisioned.
+
+===== pre1
+
+The *pre1* state calls calls the same _CatalogItemInitialization_ instance and method that the VM provision state machines run. This is to ensure that any service dialog values passed into the service bundle are available to the Ansible service template provisioning task.
 
 === Service Models
 
 ==== MiqAeServiceServiceAnsibleTower
 
 The MiqAeServiceServiceAnsibleTower object represents an Ansible Tower service. An object_walker printout of a typical object is as follows:
+
 
 ```
  --- attributes follow ---
@@ -214,13 +221,25 @@ The MiqAeServiceServiceAnsibleTower object represents an Ansible Tower service. 
  service.tagged_with?
  service.tags
  --- end of methods ---
- --- no tags ---
- --- no custom attributes ---
- ```
+```
  
+The object is an extension of the standard MiqAeServiceService object type, but adds several useful Ansible-specific methods, as follows:
+
+```
+ service.configuration_manager
+ service.job
+ service.job_options
+ service.job_options=
+ service.job_template
+ service.job_template=
+ service.launch_job
+```
+
+It is the `launch_job` method that is called during the state machine *provision* state to initiate the running of the Ansible Tower job.
+
+=== Summary
+
+The chapter has completed our examination of the Tower-related components in the Automate datastore that we started in <<tower-related-automate-components>>. The state machines, instances and methods that we've studied here are used when we create services to deploy Ansible configuration scripts.
+
+In the next chapter we'll run through two examples of creating Ansible Tower services; one for a single catalog item, and another as part of a catalog bundle.
  
- 
-
-
-
-

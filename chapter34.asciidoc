@@ -97,7 +97,7 @@ image::images/ch34_ss10.png[Screenshot,500,align="center"]
 
 Enter a name and description for the bundle, then select the *Display in Catalog* checkbox. Select an appropriate catalog, and the newly created bundle dialog, from the appropriate drop-downs.
 
-For the Provisioning Entry Point, navigate to  _ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template/CatalogBundleInitialization_ (see <<c34i12>>).
+For the Provisioning Entry Point, navigate to  __ManageIQ/Service/Provisioning/StateMachines/ServiceProvision_Template/CatalogBundleInitialization__ (see <<c34i12>>).
 
 [[c34i12]]
 .Service bundle basic info
