@@ -1,4 +1,4 @@
-[[running_an_ansible_tower_job_from_a_button]]
+[[running-an-ansible-tower-job-from-a-button]]
 == Running an Ansible Tower Job from a Button
 
 In the previous chapter we saw how how to integrate Ansible into our Automate workflows. In this chapter we’ll look at how we run an Ansible job templates from a button, with no Ruby coding involved.

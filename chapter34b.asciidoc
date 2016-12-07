@@ -5,7 +5,7 @@ In this chapter we'll run through practical examples of creating an individual A
 
 === Service Catalog Item
 
-First we'll create a service catalog item to run the "Simple LAMP Stack" job template that we developed in <<running_an_ansible_tower_job_from_a_button>>.
+First we'll create a service catalog item to run the "Simple LAMP Stack" job template that we developed in <<running-an-ansible-tower-job-from-a-button>>.
 
 ==== Service Dialog
 
