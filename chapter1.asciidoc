@@ -1,4 +1,4 @@
-The content from this chapter has been split into version-specific books. Please refer to one of the following links:
+The content from this chapter has been split into version-specific books. Please refer to one of the following links to find the corresponding chapter:
 
 https://pemcg.gitbooks.io/mastering-automation-in-cloudforms-4-1-and-manage/content/introduction/chapter.html[Mastering Automation in CloudForms 4.1 and ManageIQ Darga]
 
