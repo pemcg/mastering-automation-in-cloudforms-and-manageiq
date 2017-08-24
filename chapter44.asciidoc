@@ -73,11 +73,11 @@ The method is called in a loop, passing an IP address into the +body_hash+ argum
 
 The _fog_ gem is a multipurpose cloud services library that supports connectivity to a number of cloud providers.
 
-The follow code uses the fog gem to retrieve OpenStack networks from Neutron, and present them as a dynamic drop-down dialog list. The code filters networks that match a tenant's name, and assumes that the ManageIQ user has a +tenant+ tag containing the same name:
+The follow code uses the https://github.com/fog/fog-openstack[fog-openstack] gem to retrieve OpenStack networks from Neutron, and present them as a dynamic drop-down dialog list. The code filters networks that match a tenant's name, and assumes that the ManageIQ user has a +tenant+ tag containing the same name:
 
 [source,ruby]
 ----
-require 'fog'
+require 'fog/openstack'
 begin
   tenant_name = $evm.root['user'].current_group.tags(:tenant).first
   $evm.log(:info, "Tenant name: #{tenant_name}")
